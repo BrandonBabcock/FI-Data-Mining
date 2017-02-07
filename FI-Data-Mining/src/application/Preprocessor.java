@@ -1,4 +1,5 @@
 package application;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
@@ -12,57 +13,98 @@ import java.util.Scanner;
 public class Preprocessor {
 
 	public static void main(String[] args) {
+		// Declare and Initialize variables
+		HashMap<String, ArrayList<String>> wantedFileAttributesMap = new HashMap<String, ArrayList<String>>();
+		HashMap<String, ArrayList<String>> allFileAttributesMap = new HashMap<String, ArrayList<String>>();
+		HashMap<String, ArrayList<String>> userAttributesMap = new HashMap<String, ArrayList<String>>();
+
+		Scanner userInput = new Scanner(System.in);
+		String input = "";
+		boolean done = false;
+		Scanner fileReader;
+
 		try {
-			// Get all attribute titles into an array from first line of file
-			Scanner fileReader = new Scanner(new File("Data/GroupsByUser.csv"));
-			String[] firstLine = fileReader.nextLine().split(",");
+			// Create attribute maps from user input
+			while (!done) {
+				// Let user select a file until they have no more to select
+				System.out.print("Enter file path (leave blank is no more files): ");
+				input = userInput.nextLine();
 
-			// Store array of all attribute titles as an ArrayList
-			ArrayList<String> allFileAttributes = new ArrayList<String>(Arrays.asList(firstLine));
+				if (input.isEmpty()) {
+					done = true;
+				} else {
+					fileReader = new Scanner(new File(input));
+					String[] firstLine = fileReader.nextLine().split(",");
 
-			// Get wanted attribute titles as a new ArrayList
-			ArrayList<String> wantedAttributes = new ArrayList<String>();
-			wantedAttributes.add("_CUSTOMER1_FISCHER_GROUPS_BY_USER.BANNER_ID");
-			wantedAttributes.add("_CUSTOMER1_FISCHER_GROUPS_BY_USER.GROUP_EMAIL");
+					// Mapped file to its attribute titles
+					allFileAttributesMap.put(input, new ArrayList<String>(Arrays.asList(firstLine)));
 
-			// Select attribute title to group by and remove from the
-			// wantedAttributes ArrayList
-			String groupBy = "_CUSTOMER1_FISCHER_GROUPS_BY_USER.BANNER_ID";
-			wantedAttributes.remove(groupBy);
+					// Show user the file's attributes
+					System.out.print("The attributes for this file are: ");
+					for (String attribute : firstLine) {
+						System.out.print(attribute + ", ");
+					}
+					System.out.println();
 
-			// Create new AttributeLocation object for file
-			AttributeLocation attributeLocation = new AttributeLocation();
-
-			// Get the index of the attribute title to group by and store in
-			// AttributeLocation field
-			for (int i = 0; i < firstLine.length; i++) {
-				if (firstLine[i].equals(groupBy)) {
-					attributeLocation.setGroupByIndex(i);
+					// Let user select important attributes and map them to the
+					// file in wantedFileAttributesMap
+					System.out
+							.print("Enter the important attributes for this file (seperated by comma and no space): ");
+					wantedFileAttributesMap.put(input,
+							new ArrayList<String>(Arrays.asList(userInput.nextLine().split(","))));
 				}
 			}
 
-			// Get the indexes of the wanted attribute titles and store in
-			// AttributeLocation field
-			for (String str : wantedAttributes) {
-				attributeLocation.addAttributeIndex(allFileAttributes.indexOf(str));
-			}
+			// Get the groupBy attribute
+			System.out.print("Enter attribute suffix (what's after final period in attribute) to group files by: ");
+			String groupBy = userInput.nextLine();
 
-			HashMap<String, ArrayList<String>> userAttributesMap = new HashMap<String, ArrayList<String>>();
-
-			// Loop through all lines of file
-			while (fileReader.hasNextLine()) {
-				String[] line = fileReader.nextLine().split(",");
-				String key = line[attributeLocation.getGroupByIndex()];
-
-				// Add new user key if map doesn't have it
-				if (!userAttributesMap.containsKey(key)) {
-					userAttributesMap.put(key, new ArrayList<String>());
+			for (String filePath : wantedFileAttributesMap.keySet()) {
+				// Remove groupBy attribute from wantedAttributes map
+				for (String attr : wantedFileAttributesMap.get(filePath)) {
+					if (attr.contains(groupBy)) {
+						wantedFileAttributesMap.get(filePath).remove(attr);
+					}
 				}
 
-				// Add all wanted attributes to the user key's ArrayList
-				for (Integer num : attributeLocation.getAttributeIndexes()) {
-					userAttributesMap.get(key).add(line[num]);
+				// Read first line of file
+				fileReader = new Scanner(new File(filePath));
+				String[] firstLine = fileReader.nextLine().split(",");
+
+				// Create new AttributeLocation object for file
+				AttributeLocation attributeLocation = new AttributeLocation();
+
+				// Get the index of the attribute title to group by and store in
+				// AttributeLocation field
+				for (int i = 0; i < firstLine.length; i++) {
+					if (firstLine[i].contains(groupBy)) {
+						attributeLocation.setGroupByIndex(i);
+					}
 				}
+
+				// Get the indexes of the wanted attribute titles and store in
+				// AttributeLocation field
+				for (String wantedAttr : wantedFileAttributesMap.get(filePath)) {
+					attributeLocation.addAttributeIndex(allFileAttributesMap.get(filePath).indexOf(wantedAttr));
+				}
+
+				// Loop through all lines of file
+				while (fileReader.hasNextLine()) {
+					String[] line = fileReader.nextLine().split(",");
+					String key = line[attributeLocation.getGroupByIndex()];
+
+					// Add new user key if map doesn't have it
+					if (!userAttributesMap.containsKey(key)) {
+						userAttributesMap.put(key, new ArrayList<String>());
+					}
+
+					// Add all wanted attributes to the user key's ArrayList
+					for (Integer num : attributeLocation.getAttributeIndexes()) {
+						userAttributesMap.get(key).add(line[num]);
+					}
+				}
+
+				fileReader.close();
 			}
 
 			// Print out the keys and values of the userAttributesMap
@@ -77,8 +119,6 @@ public class Preprocessor {
 				System.out.println();
 				iterator.remove();
 			}
-
-			fileReader.close();
 		} catch (FileNotFoundException e) {
 			System.out.println("File not found.");
 			e.printStackTrace();
