@@ -2,6 +2,8 @@ package application;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -122,6 +124,7 @@ public class Preprocessor {
 		for (String filePath : wantedFileAttributesMap.keySet()) {
 			try {
 				fileReader = new Scanner(new File(filePath));
+				fileReader.nextLine(); // Skip first line
 
 				// Loop through all lines of file
 				while (fileReader.hasNextLine()) {
@@ -193,6 +196,65 @@ public class Preprocessor {
 		wantedFileAttributesMap.put("Data/AlumRoles.csv", wantedAttributesInAlumRoles);
 
 		groupByAttribute = "BANNER_ID";
+	}
+
+	public void createPreprocessedFile() {
+		ArrayList<String> attributeTitles = new ArrayList<String>();
+		attributeTitles.add(groupByAttribute);
+
+		for (ArrayList<String> attributes : wantedFileAttributesMap.values()) {
+			for (String attribute : attributes) {
+				attributeTitles.add(attribute);
+			}
+		}
+
+		String fileHeader = String.join(",", attributeTitles) + "\n";
+
+		try {
+			FileWriter fileWriter = new FileWriter("Data/PreprocessedFile.csv");
+
+			fileWriter.append(fileHeader);
+
+			for (Map.Entry<String, ArrayList<Attribute>> entry : userAttributesMap.entrySet()) {
+				String[] attributes = new String[attributeTitles.size()];
+				attributes[0] = entry.getKey();
+
+				for (Attribute attr : entry.getValue()) {
+					if (attributes[attributeTitles.indexOf(attr.getTitle())] == null) {
+						attributes[attributeTitles.indexOf(attr.getTitle())] = attr.getValue();
+					} else {
+						String combined = "";
+						for (int i = 0; i < entry.getValue().size(); i++) {
+							Attribute attr2 = entry.getValue().get(i);
+							if (attr.getTitle().equals(attr2.getTitle())) {
+								if (i != 0) {
+									combined += "," + attr2.getValue();
+								} else {
+									combined += attr2.getValue();
+								}
+							}
+						}
+
+						for (Attribute attr2 : entry.getValue()) {
+							if (attr.getTitle().equals(attr2.getTitle())) {
+								combined += "," + attr2.getValue();
+							}
+						}
+						attributes[attributeTitles.indexOf(attr.getTitle())] = "\"" + combined + "\"";
+					}
+				}
+
+				String line = String.join(",", attributes) + "\n";
+
+				fileWriter.append(line);
+			}
+
+			fileWriter.flush();
+			fileWriter.close();
+		} catch (IOException e) {
+			System.out.println("Unable to create file.");
+			e.printStackTrace();
+		}
 	}
 
 }

@@ -19,7 +19,8 @@ public class Main {
 		preprocessor.removeGroupByAttributeFromWantedMap();
 		preprocessor.mapAttributeLocations();
 		preprocessor.mapUserAttributes();
-		preprocessor.printUserAttributesMap();
+//		preprocessor.printUserAttributesMap();
+		preprocessor.createPreprocessedFile();
 	}
 
 }
