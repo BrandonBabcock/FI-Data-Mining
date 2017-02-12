@@ -65,7 +65,6 @@ public class Preprocessor {
 				}
 			}
 		}
-		userInput.close();
 	}
 
 	public void getGroupByAttribute() {
