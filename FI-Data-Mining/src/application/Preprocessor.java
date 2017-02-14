@@ -234,11 +234,6 @@ public class Preprocessor {
 							}
 						}
 
-//						for (Attribute attr2 : entry.getValue()) {
-//							if (attr.getTitle().equals(attr2.getTitle())) {
-//								combined += "," + attr2.getValue();
-//							}
-//						}
 						attributes[attributeTitles.indexOf(attr.getTitle())] = "\"" + combined + "\"";
 					}
 				}
