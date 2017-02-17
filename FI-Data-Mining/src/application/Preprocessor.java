@@ -154,16 +154,13 @@ public class Preprocessor {
 	// Method used for testing
 	public void printUserAttributesMap() {
 		// Print out the keys and values of the userAttributesMap
-		Iterator<Entry<String, ArrayList<Attribute>>> iterator = userAttributesMap.entrySet().iterator();
-		while (iterator.hasNext()) {
-			Map.Entry pair = (Map.Entry) iterator.next();
-			System.out.println("Key is: " + pair.getKey());
+		for (Map.Entry<String, ArrayList<Attribute>> entry : userAttributesMap.entrySet()) {
+			System.out.println("Key is: " + entry.getKey());
 			System.out.print("Values are: ");
-			for (Attribute attr : (ArrayList<Attribute>) pair.getValue()) {
-				System.out.print(attr.getValue() + ", ");
+			for (Attribute attr : entry.getValue()) {
+				System.out.print(attr.getValue());
 			}
 			System.out.println();
-			iterator.remove();
 		}
 	}
 
@@ -234,11 +231,6 @@ public class Preprocessor {
 							}
 						}
 
-						for (Attribute attr2 : entry.getValue()) {
-							if (attr.getTitle().equals(attr2.getTitle())) {
-								combined += "," + attr2.getValue();
-							}
-						}
 						attributes[attributeTitles.indexOf(attr.getTitle())] = "\"" + combined + "\"";
 					}
 				}
