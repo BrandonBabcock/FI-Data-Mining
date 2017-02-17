@@ -1,8 +1,12 @@
 package application;
 
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.Writer;
 import java.util.Scanner;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -62,9 +66,50 @@ public class XmlToCsvConverter {
 	public void convertToCsv() throws SAXException, IOException, ParserConfigurationException {
 
 		try {
+
+			// write to the new file
+			PrintWriter writer = new PrintWriter("Data/newBio.csv");
+			
+			// we append the values to string builder then write it to a csv file
+			StringBuilder strBuilder = new StringBuilder();
+
+			// remove the commas from the xml file values
 			File xmlFile = removeCommasFromXML();
 
-			// do conversion here
+			// parse the new Xml
+			document = builder.parse(xmlFile);
+
+			Element root = document.getDocumentElement();
+
+			// Hardcoded need to find way to make general
+			NodeList nList = document.getElementsByTagName("jdbc:record");
+			/*
+			 * This loop is used to find the attributes 
+			 */
+			Node node = nList.item(0);
+			for (int i = 0; i < node.getAttributes().getLength(); i++) {
+				String str = node.getAttributes().item(i).getNodeName();
+				strBuilder.append(str);
+				strBuilder.append(',');
+			}
+
+			// Make a new line
+			strBuilder.append('\n');
+
+			// add the attribute values to the string builder
+			for (int i = 0; i < nList.getLength(); i++) {
+				node = nList.item(i);
+				for (int j = 0; j < node.getAttributes().getLength(); j++) {
+					String str = node.getAttributes().item(j).getNodeValue();
+					strBuilder.append(str);
+					strBuilder.append(',');
+				}
+				strBuilder.append('\n');
+			}
+
+			// write the string builder to a file 
+			writer.write(strBuilder.toString());
+			writer.close();
 
 		} catch (TransformerException e) {
 			// TODO Auto-generated catch block
