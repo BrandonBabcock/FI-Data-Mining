@@ -4,12 +4,13 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.Scanner;
 
 /**
  * Purpose: This class is used to contruct the a .arff file. This file type used
  * by weka. Especially for using the apriori association algorithm.
- * 
+ *
  * @author Shawn Reece 2/25/2017
  *
  */
@@ -19,10 +20,11 @@ public class CsvToArff {
 	private File arffFile; // the csc file converted into the arff format.
 	private String[] attributes; // array that holds all the csv attributes
 	private ArrayList<String[]> data; // structure thats holds all the csv data
+    private ArrayList<LinkedHashSet> sets;
 
 	// Used for development
 	public static void main(String[] args) {
-		CsvToArff converter = new CsvToArff(new File("Data/newBio.csv")); 
+		CsvToArff converter = new CsvToArff(new File("Data/Roles.csv"));
 		converter.convertFile();
 	}
 
@@ -35,6 +37,7 @@ public class CsvToArff {
 
 			fileAttributes(); // get the file attributes
 			fileData(); // get the files data
+            valueSet(); // get the set of values
 			makeFile(); // create the arff file
 
 		} catch (FileNotFoundException e) {
@@ -45,7 +48,7 @@ public class CsvToArff {
 	/**
 	 * This method will create the set of attributes found at the tope of the
 	 * CSV file
-	 * 
+	 *
 	 * @throws FileNotFoundException
 	 */
 	private void fileAttributes() throws FileNotFoundException {
@@ -62,7 +65,7 @@ public class CsvToArff {
 	/**
 	 * Purpose: This method is used to obtain all the values of the attributes
 	 * and store them in an arrayList and fills blank values with "?"
-	 * 
+	 *
 	 * @throws FileNotFoundException
 	 */
 	private void fileData() throws FileNotFoundException {
@@ -77,6 +80,7 @@ public class CsvToArff {
 
 			// Fill empty values with a questio mark
 			for (int i = 0; i < row.length; i++) {
+
 				if (row[i].equals("")) {
 					row[i] = "?";
 				}
@@ -90,7 +94,7 @@ public class CsvToArff {
 
 	/**
 	 * Purpose: To build the arff file
-	 * 
+	 *
 	 * @throws FileNotFoundException
 	 */
 	private void makeFile() throws FileNotFoundException {
@@ -137,36 +141,79 @@ public class CsvToArff {
 		}
 
 		writer.close();
-
 	}
+
+    /**
+     * Purpose: Build the sets containing all the values in the file. Stores the sets in an array list
+     */
+	private void valueSet(){
+
+        sets = new ArrayList(); // initialize the array list
+
+        // build sets for each attribute
+        for(int i = 0; i < attributes.length; i++){
+            LinkedHashSet<String> value = new LinkedHashSet<String>();
+            sets.add(value);
+        }
+
+        // go through the data and an add the value to the correct set
+        for(String[] arr : data){
+            for(int i = 0; i < arr.length; i++){
+                sets.get(i).add(arr[i]);
+            }
+        }
+    }
 
 	/**
 	 * Purpose: Create the attributes and the values contained in the curly
 	 * braces
-	 * 
+	 *
 	 * @param s
 	 *            the attribute
 	 * @return the contructed attribute value
 	 */
 	private String createArffAttribute(String s) {
 
+        int index = 0;
+
+        // find the index value for that attribute
+        for(int i = 0; i < attributes.length; i++){
+            if(s.equals(attributes[i])) {
+                index = i;
+                break;
+            }
+        }
+
 		StringBuilder strBuilder = new StringBuilder();
 
 		strBuilder.append("@attribute " + s + "{");
 
-		// add the values to the attribute here
+        // go to the set and get the values in it
+        for(String str : (LinkedHashSet<String>)sets.get(index)){
+            strBuilder.append(str);
+            strBuilder.append(",");
+        }
 
-		strBuilder.append("}");
+        // replace the last comma with a curly brace
+        strBuilder.replace(strBuilder.length() - 1,strBuilder.length(),"}");
 
 		return strBuilder.toString();
 	}
 
 	/**
 	 * Returns the generated arff File
-	 * 
+	 *
 	 * @return File the converted csv into arff format
 	 */
 	public File getArffFile() {
 		return this.arffFile;
 	}
+
+    /**
+     * Return the sets of values for each attribute
+     * @return ArrayList containing LinkedHashSets with all the unqiue values in the file
+     */
+    public ArrayList<LinkedHashSet> getSets(){
+        return this.sets;
+    }
 }
