@@ -75,11 +75,14 @@ public class Preprocessor {
 	}
 
 	public void removeGroupByAttributeFromWantedMap() {
-		for (String filePath : wantedFileAttributesMap.keySet()) {
-			// Remove groupBy attribute from wantedAttributes map
-			for (String attr : wantedFileAttributesMap.get(filePath)) {
+		for (Iterator<Map.Entry<String, ArrayList<String>>> iterator = wantedFileAttributesMap.entrySet()
+				.iterator(); iterator.hasNext();) {
+			Map.Entry<String, ArrayList<String>> entry = iterator.next();
+
+			for (Iterator<String> iterator2 = entry.getValue().iterator(); iterator2.hasNext();) {
+				String attr = iterator2.next();
 				if (attr.contains(groupByAttribute)) {
-					wantedFileAttributesMap.get(filePath).remove(attr);
+					iterator2.remove();
 				}
 			}
 		}
@@ -164,32 +167,103 @@ public class Preprocessor {
 		}
 	}
 
+	// public void useTestingFiles() {
+	// ArrayList<String> allAttributesInGroupsByUser = new ArrayList<String>();
+	// allAttributesInGroupsByUser.add("_changetype");
+	// allAttributesInGroupsByUser.add("_CUSTOMER1_FISCHER_GROUPS_BY_USER.LAST_NAME_NON_CUSTOMER1");
+	// allAttributesInGroupsByUser.add("_CUSTOMER1_FISCHER_GROUPS_BY_USER.USER_EMAIL");
+	// allAttributesInGroupsByUser.add("_CUSTOMER1_FISCHER_GROUPS_BY_USER.FIRST_NAME_NON_CUSTOMER1");
+	// allAttributesInGroupsByUser.add("_CUSTOMER1_FISCHER_GROUPS_BY_USER.BANNER_ID");
+	// allAttributesInGroupsByUser.add("_CUSTOMER1_FISCHER_GROUPS_BY_USER.GROUP_EMAIL");
+	// allAttributesInGroupsByUser.add("_CUSTOMER1_FISCHER_GROUPS_BY_USER.GROUP_ID");
+	// allFileAttributesMap.put("Data/GroupsByUser.csv",
+	// allAttributesInGroupsByUser);
+	//
+	// // ArrayList<String> allAttributesInAlumRoles = new ArrayList<String>();
+	// // allAttributesInAlumRoles.add("_changetype");
+	// //
+	// allAttributesInAlumRoles.add("_CUSTOMER1_FISCHER_ROLES_ALUM_VIEW.BANNER_ID");
+	// //
+	// allAttributesInAlumRoles.add("_CUSTOMER1_FISCHER_ROLES_ALUM_VIEW.ROLE");
+	// // allFileAttributesMap.put("Data/AlumRoles.csv",
+	// // allAttributesInAlumRoles);
+	//
+	// ArrayList<String> wantedAttributesInGroupsByUser = new
+	// ArrayList<String>();
+	// wantedAttributesInGroupsByUser.add("_CUSTOMER1_FISCHER_GROUPS_BY_USER.BANNER_ID");
+	// wantedAttributesInGroupsByUser.add("_CUSTOMER1_FISCHER_GROUPS_BY_USER.GROUP_EMAIL");
+	// //
+	// wantedAttributesInGroupsByUser.add("_CUSTOMER1_FISCHER_GROUPS_BY_USER.LAST_NAME_NON_CUSTOMER1");
+	// wantedFileAttributesMap.put("Data/GroupsByUser.csv",
+	// wantedAttributesInGroupsByUser);
+	//
+	// // ArrayList<String> wantedAttributesInAlumRoles = new
+	// // ArrayList<String>();
+	// //
+	// wantedAttributesInAlumRoles.add("_CUSTOMER1_FISCHER_ROLES_ALUM_VIEW.BANNER_ID");
+	// //
+	// wantedAttributesInAlumRoles.add("_CUSTOMER1_FISCHER_ROLES_ALUM_VIEW.ROLE");
+	// // wantedFileAttributesMap.put("Data/AlumRoles.csv",
+	// // wantedAttributesInAlumRoles);
+	//
+	// groupByAttribute = "BANNER_ID";
+	// }
+
 	public void useTestingFiles() {
-		ArrayList<String> allAttributesInGroupsByUser = new ArrayList<String>();
-		allAttributesInGroupsByUser.add("_changetype");
-		allAttributesInGroupsByUser.add("_CUSTOMER1_FISCHER_GROUPS_BY_USER.LAST_NAME_NON_CUSTOMER1");
-		allAttributesInGroupsByUser.add("_CUSTOMER1_FISCHER_GROUPS_BY_USER.USER_EMAIL");
-		allAttributesInGroupsByUser.add("_CUSTOMER1_FISCHER_GROUPS_BY_USER.FIRST_NAME_NON_CUSTOMER1");
-		allAttributesInGroupsByUser.add("_CUSTOMER1_FISCHER_GROUPS_BY_USER.BANNER_ID");
-		allAttributesInGroupsByUser.add("_CUSTOMER1_FISCHER_GROUPS_BY_USER.GROUP_EMAIL");
-		allAttributesInGroupsByUser.add("_CUSTOMER1_FISCHER_GROUPS_BY_USER.GROUP_ID");
-		allFileAttributesMap.put("Data/GroupsByUser.csv", allAttributesInGroupsByUser);
+		// ArrayList<String> allAttributesInGroupsByUser = new
+		// ArrayList<String>();
+		// allAttributesInGroupsByUser.add("_changetype");
+		// allAttributesInGroupsByUser.add("_CUSTOMER1_FISCHER_GROUPS_BY_USER.LAST_NAME_NON_CUSTOMER1");
+		// allAttributesInGroupsByUser.add("_CUSTOMER1_FISCHER_GROUPS_BY_USER.USER_EMAIL");
+		// allAttributesInGroupsByUser.add("_CUSTOMER1_FISCHER_GROUPS_BY_USER.FIRST_NAME_NON_CUSTOMER1");
+		// allAttributesInGroupsByUser.add("_CUSTOMER1_FISCHER_GROUPS_BY_USER.BANNER_ID");
+		// allAttributesInGroupsByUser.add("_CUSTOMER1_FISCHER_GROUPS_BY_USER.GROUP_EMAIL");
+		// allAttributesInGroupsByUser.add("_CUSTOMER1_FISCHER_GROUPS_BY_USER.GROUP_ID");
+		// allFileAttributesMap.put("Data/GroupsByUser.csv",
+		// allAttributesInGroupsByUser);
 
-		ArrayList<String> allAttributesInAlumRoles = new ArrayList<String>();
-		allAttributesInAlumRoles.add("_changetype");
-		allAttributesInAlumRoles.add("_CUSTOMER1_FISCHER_ROLES_ALUM_VIEW.BANNER_ID");
-		allAttributesInAlumRoles.add("_CUSTOMER1_FISCHER_ROLES_ALUM_VIEW.ROLE");
-		allFileAttributesMap.put("Data/AlumRoles.csv", allAttributesInAlumRoles);
+		// ArrayList<String> allAttributesInAlumRoles = new ArrayList<String>();
+		// allAttributesInAlumRoles.add("_changetype");
+		// allAttributesInAlumRoles.add("_CUSTOMER1_FISCHER_ROLES_ALUM_VIEW.BANNER_ID");
+		// allAttributesInAlumRoles.add("_CUSTOMER1_FISCHER_ROLES_ALUM_VIEW.ROLE");
+		// allFileAttributesMap.put("Data/AlumRoles.csv",
+		// allAttributesInAlumRoles);
 
-		ArrayList<String> wantedAttributesInGroupsByUser = new ArrayList<String>();
-		wantedAttributesInGroupsByUser.add("_CUSTOMER1_FISCHER_GROUPS_BY_USER.BANNER_ID");
-		wantedAttributesInGroupsByUser.add("_CUSTOMER1_FISCHER_GROUPS_BY_USER.GROUP_EMAIL");
-		wantedFileAttributesMap.put("Data/GroupsByUser.csv", wantedAttributesInGroupsByUser);
+		// ArrayList<String> wantedAttributesInGroupsByUser = new
+		// ArrayList<String>();
+		// wantedAttributesInGroupsByUser.add("_CUSTOMER1_FISCHER_GROUPS_BY_USER.BANNER_ID");
+		// wantedAttributesInGroupsByUser.add("_CUSTOMER1_FISCHER_GROUPS_BY_USER.GROUP_EMAIL");
+		// wantedAttributesInGroupsByUser.add("_CUSTOMER1_FISCHER_GROUPS_BY_USER.LAST_NAME_NON_CUSTOMER1");
+		// wantedFileAttributesMap.put("Data/GroupsByUser.csv",
+		// wantedAttributesInGroupsByUser);
 
-		ArrayList<String> wantedAttributesInAlumRoles = new ArrayList<String>();
-		wantedAttributesInAlumRoles.add("_CUSTOMER1_FISCHER_ROLES_ALUM_VIEW.BANNER_ID");
-		wantedAttributesInAlumRoles.add("_CUSTOMER1_FISCHER_ROLES_ALUM_VIEW.ROLE");
-		wantedFileAttributesMap.put("Data/AlumRoles.csv", wantedAttributesInAlumRoles);
+		// ArrayList<String> wantedAttributesInAlumRoles = new
+		// ArrayList<String>();
+		// wantedAttributesInAlumRoles.add("_CUSTOMER1_FISCHER_ROLES_ALUM_VIEW.BANNER_ID");
+		// wantedAttributesInAlumRoles.add("_CUSTOMER1_FISCHER_ROLES_ALUM_VIEW.ROLE");
+		// wantedFileAttributesMap.put("Data/AlumRoles.csv",
+		// wantedAttributesInAlumRoles);
+
+		ArrayList<String> allAttributesInNewBio = new ArrayList<String>();
+		allAttributesInNewBio.add("CUSTOMER1_FISCHER_BIO_VIEW.BANNER_ID");
+		allAttributesInNewBio.add("CUSTOMER1_FISCHER_BIO_VIEW.DEPT");
+		allAttributesInNewBio.add("CUSTOMER1_FISCHER_BIO_VIEW.DEPT_FILE_SERVER");
+		allAttributesInNewBio.add("CUSTOMER1_FISCHER_BIO_VIEW.FACULTY_EMERITUS");
+		allAttributesInNewBio.add("CUSTOMER1_FISCHER_BIO_VIEW.GRADUATED_IND");
+		allAttributesInNewBio.add("CUSTOMER1_FISCHER_BIO_VIEW.GRADUATING_TERM_IND");
+		allAttributesInNewBio.add("CUSTOMER1_FISCHER_BIO_VIEW.GUEST_SPONSOR_EMAIL");
+		allAttributesInNewBio.add("CUSTOMER1_FISCHER_BIO_VIEW.INCOMPLETE_COURSE_IND");
+		allAttributesInNewBio.add("CUSTOMER1_FISCHER_BIO_VIEW.LEAVE_OF_ABSENCE_IND");
+		allAttributesInNewBio.add("CUSTOMER1_FISCHER_BIO_VIEW.UDC_IDENTIFIER");
+		allAttributesInNewBio.add("CUSTOMER1_FISCHER_BIO_VIEW.WITHDRAW_DQ_IND");
+		allAttributesInNewBio.add("changetype");
+		allFileAttributesMap.put("Data/newBio.csv", allAttributesInNewBio);
+
+		ArrayList<String> wantedAttributesInNewBio = new ArrayList<String>();
+		wantedAttributesInNewBio.add("CUSTOMER1_FISCHER_BIO_VIEW.BANNER_ID");
+		wantedAttributesInNewBio.add("CUSTOMER1_FISCHER_BIO_VIEW.DEPT");
+		wantedAttributesInNewBio.add("CUSTOMER1_FISCHER_BIO_VIEW.DEPT_FILE_SERVER");
+		wantedFileAttributesMap.put("Data/newBio.csv", wantedAttributesInNewBio);
 
 		groupByAttribute = "BANNER_ID";
 	}
