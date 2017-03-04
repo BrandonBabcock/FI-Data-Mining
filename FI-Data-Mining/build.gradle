@@ -1,0 +1,17 @@
+apply plugin: 'java'
+
+sourceSets {
+   main {
+      java {
+         srcDir 'src'
+      }
+   }
+}
+
+repositories {
+   mavenCentral()
+}
+
+dependencies {
+   compile group: 'nz.ac.waikato.cms.weka', name: 'weka-stable', version: '3.6.6'
+}
