@@ -42,7 +42,10 @@ local.properties
 # Code Recommenders
 .recommenders/
 
-#Intellij Folders and files
+# Intellij Folders and files
 .idea/
 out/
 *.iml
+
+# Gradle
+.gradle/
