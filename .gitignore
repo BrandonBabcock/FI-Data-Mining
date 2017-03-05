@@ -47,5 +47,12 @@ local.properties
 out/
 *.iml
 
+
 # Gradle
 .gradle/
+build/
+gradle/
+gradlew
+
+#batch file
+*.bat
