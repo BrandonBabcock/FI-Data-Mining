@@ -1,5 +1,8 @@
 package application.GUI;
 
+import application.DataMining.CsvToArff;
+import application.DataMining.Preprocessor;
+import application.DataMining.XmlToCsvConverter;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -10,6 +13,10 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
+import org.xml.sax.SAXException;
+import javax.xml.parsers.ParserConfigurationException;
+import java.io.File;
+import java.io.IOException;
 
 /**
  * Created by shawn on 3/5/2017.
@@ -18,8 +25,42 @@ public class PreProcessingScene {
 
     Button previousButton = new Button("Previous");
     Button nextButton = new Button("Next");
+    File dataFile;
+    Preprocessor preprocessor;
+    XmlToCsvConverter xmlConverter;
+    CsvToArff csvConverter;
+
+    public void setDataFile(File file){
+        this.dataFile = file;
+    }
+
+    public void fileHandler(){
+        String fileName = dataFile.getName();
+
+        if(fileName.contains(".xml")){
+            try {
+                xmlConverter = new XmlToCsvConverter(dataFile);
+                xmlConverter.convertToCsv();
+                dataFile = xmlConverter.getCSVFile();
+                preprocessor = new Preprocessor(dataFile);
+                preprocessor.getFileAttributes();
+
+            } catch (ParserConfigurationException e) {
+                e.printStackTrace();
+            } catch (SAXException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        } else {
+            preprocessor = new Preprocessor(dataFile);
+            preprocessor.getFileAttributes();
+        }
+    }
+
 
     public Scene preProcessingScene(){
+
         BorderPane borderPane = new BorderPane();
         borderPane.setPadding(new Insets(20, 5, 5, 5));
 
@@ -42,6 +83,8 @@ public class PreProcessingScene {
         stepInfoBox.setPadding(new Insets(200, 0, 25, 0));
         stepInfoBox.getChildren().addAll(currentStepText, stepDescriptionText);
 
+        VBox attributes = fileAttributes();
+
         // Add navigation buttons to a horizontal box
         HBox navigationBox = new HBox(25);
         navigationBox.setAlignment(Pos.TOP_CENTER);
@@ -51,7 +94,7 @@ public class PreProcessingScene {
         // Add step info box, configuration grid pane, and navigation buttons
         // box to a vertical box container
         VBox centerContent = new VBox(20);
-        centerContent.getChildren().addAll(stepInfoBox,navigationBox);
+        centerContent.getChildren().addAll(stepInfoBox,attributes,navigationBox);
 
         // Sets the border pane's center as centerContent
         borderPane.setCenter(centerContent);
@@ -59,6 +102,14 @@ public class PreProcessingScene {
         // Configure scene
         Scene scene = new Scene(borderPane, 1080, 720);
         return scene;
+    }
+
+    public VBox fileAttributes(){
+        VBox box = new VBox();
+
+
+
+        return box;
     }
 
 }

@@ -59,8 +59,10 @@ public class XmlToCsvConverter {
 
 		try {
 
+			String newFile = "Data/" + xmlFile.getName().replaceAll(".xml",".csv");
+
 			// write to the new file
-			PrintWriter writer = new PrintWriter("Data/newBio.csv");
+			PrintWriter writer = new PrintWriter(new File(newFile));
 			
 			// we append the values to string builder then write it to a csv file
 			StringBuilder strBuilder = new StringBuilder();

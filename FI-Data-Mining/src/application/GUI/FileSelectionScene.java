@@ -24,6 +24,7 @@ public class FileSelectionScene {
 
     String fileName;
     Button nextButton;
+    File selectedFile;
 
     public FileSelectionScene(){
         nextButton = new Button();
@@ -64,9 +65,9 @@ public class FileSelectionScene {
             @Override
             public void handle(ActionEvent event) {
                 FileChooser fileChooser = new FileChooser();
-                File file = fileChooser.showOpenDialog(null);
-                if (file != null && checkFileType(file)) {
-                    fileName = file.getAbsolutePath();
+                selectedFile = fileChooser.showOpenDialog(null);
+                if (selectedFile != null && checkFileType(selectedFile)) {
+                    fileName = selectedFile.getAbsolutePath();
                     fileInputField.setText(fileName);
                     nextButton.setDisable(false);
                 }

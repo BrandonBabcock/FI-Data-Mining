@@ -64,6 +64,8 @@ public class GUI extends Application {
     private void goToNextStep() {
         switch (currentStepNumber) {
             case 1:
+                preprocess.setDataFile(fileSelection.selectedFile);
+                preprocess.fileHandler();
                 stage.setScene(stepTwoScene);
                 currentStepNumber++;
                 break;

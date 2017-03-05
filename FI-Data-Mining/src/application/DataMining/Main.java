@@ -23,8 +23,8 @@ public class Main {
 		// preprocessor.createPreprocessedFile();
 
 		// DATA MINER TEST
-		DataMiner dataMiner = new DataMiner();
-		dataMiner.findSimilarities("Data/weather.nominal.arff");
+		//DataMiner dataMiner = new DataMiner();
+		//dataMiner.findSimilarities("Data/weather.nominal.arff");
 	}
 
 }
