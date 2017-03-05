@@ -24,7 +24,7 @@ public class CsvToArff {
 
 	// Used for development
 	public static void main(String[] args) {
-		CsvToArff converter = new CsvToArff(new File("Data/Roles.csv"));
+		CsvToArff converter = new CsvToArff(new File("Data/GroupsByUser.csv"));
 		converter.convertFile();
 	}
 
@@ -188,14 +188,20 @@ public class CsvToArff {
 
 		strBuilder.append("@attribute " + s + "{");
 
+		int count = 0;
+		int length = sets.get(index).size();
+
         // go to the set and get the values in it
         for(String str : (LinkedHashSet<String>)sets.get(index)){
             strBuilder.append(str);
-            strBuilder.append(",");
+
+            count++;
+            if(count != length){
+				strBuilder.append(",");
+			}
         }
 
-        // replace the last comma with a curly brace
-        strBuilder.replace(strBuilder.length() - 1,strBuilder.length(),"}");
+		strBuilder.append("}");
 
 		return strBuilder.toString();
 	}
