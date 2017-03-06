@@ -1,8 +1,6 @@
 package application.GUI;
 
 import javafx.application.Application;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 
@@ -16,10 +14,10 @@ public class GUI extends Application {
     private Stage stage;
     private int currentStepNumber = 1;
     private Scene stepOneScene, stepTwoScene, getStepThreeScene;
-    FileSelectionScene fileSelection;
-    ConfigurationScene configuration;
-    PreProcessingScene preprocess;
-    File dataFile;
+    private FileSelectionScene fileSelectionScene;
+    private ConfigurationScene configuration;
+    private PreProcessingScene preprocessScene;
+    private File dataFile;
 
     /*
      * (non-Javadoc)
@@ -46,14 +44,14 @@ public class GUI extends Application {
     }
 
     public void initComponents(){
-        fileSelection = new FileSelectionScene();
-        stepOneScene = fileSelection.fileSelection();
-        fileSelection.nextButton.setOnAction(e -> goToNextStep());
+        fileSelectionScene = new FileSelectionScene();
+        stepOneScene = fileSelectionScene.fileSelection();
+        fileSelectionScene.nextButton.setOnAction(e -> goToNextStep());
 
-        preprocess = new PreProcessingScene();
-        stepTwoScene = preprocess.preProcessingScene();
-        preprocess.nextButton.setOnAction(e -> goToNextStep());
-        preprocess.previousButton.setOnAction(e -> goToPreviousStep());
+        preprocessScene = new PreProcessingScene();
+        stepTwoScene = preprocessScene.preProcessingScene();
+        preprocessScene.nextButton.setOnAction(e -> goToNextStep());
+        preprocessScene.previousButton.setOnAction(e -> goToPreviousStep());
 
         configuration = new ConfigurationScene();
         getStepThreeScene = configuration.configurationScene();
@@ -64,8 +62,8 @@ public class GUI extends Application {
     private void goToNextStep() {
         switch (currentStepNumber) {
             case 1:
-                preprocess.setDataFile(fileSelection.selectedFile);
-                preprocess.fileHandler();
+                preprocessScene.setDataFile(fileSelectionScene.selectedFile);
+                preprocessScene.processFile();
                 stage.setScene(stepTwoScene);
                 currentStepNumber++;
                 break;

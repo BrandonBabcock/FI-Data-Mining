@@ -16,15 +16,15 @@ import java.util.Scanner;
 public class Preprocessor {
 
 
-    HashMap<String, ArrayList<String>> allFileAttributesMap = new HashMap<String, ArrayList<String>>();
-	HashMap<String, ArrayList<String>> wantedFileAttributesMap = new HashMap<String, ArrayList<String>>();
-	HashMap<String, AttributeLocation> attributeLocationMap = new HashMap<String, AttributeLocation>();
-	HashMap<String, ArrayList<Attribute>> userAttributesMap = new HashMap<String, ArrayList<Attribute>>();
+    private HashMap<String, ArrayList<String>> allFileAttributesMap = new HashMap<String, ArrayList<String>>();
+	private HashMap<String, ArrayList<String>> wantedFileAttributesMap = new HashMap<String, ArrayList<String>>();
+	private HashMap<String, AttributeLocation> attributeLocationMap = new HashMap<String, AttributeLocation>();
+	private HashMap<String, ArrayList<Attribute>> userAttributesMap = new HashMap<String, ArrayList<Attribute>>();
 
-	String groupByAttribute;
+	private String groupByAttribute;
 
-	File dataFile;
-	File[] dataFiles;
+	private File dataFile;
+	private File[] dataFiles;
 
     public Preprocessor(){}
 
@@ -47,7 +47,7 @@ public class Preprocessor {
             fileReader = new Scanner(dataFile);
             String[] firstLine = fileReader.nextLine().split(",");
             // Map file to its attribute titles
-            allFileAttributesMap.put(dataFile.getAbsolutePath(), new ArrayList<String>(Arrays.asList(firstLine)));
+            allFileAttributesMap.put(dataFile.getName(), new ArrayList<String>(Arrays.asList(firstLine)));
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
@@ -231,7 +231,6 @@ public class Preprocessor {
 
     public boolean chechForPipes(){
 	    return false;
-
     }
     
     public HashMap<String, ArrayList<String>> getAllFileAttributesMap() {

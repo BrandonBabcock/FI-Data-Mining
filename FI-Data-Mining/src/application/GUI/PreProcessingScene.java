@@ -7,6 +7,8 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.CheckBox;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
@@ -17,6 +19,8 @@ import org.xml.sax.SAXException;
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Array;
+import java.util.ArrayList;
 
 /**
  * Created by shawn on 3/5/2017.
@@ -29,35 +33,39 @@ public class PreProcessingScene {
     Preprocessor preprocessor;
     XmlToCsvConverter xmlConverter;
     CsvToArff csvConverter;
+    VBox centerContent;
 
-    public void setDataFile(File file){
-        this.dataFile = file;
+    public void setDataFile(File file){ this.dataFile = file; }
+
+    public void processFile(){
+        preprocessor = new Preprocessor(dataFile);
+        preprocessor.getFileAttributes();
+
+        ArrayList<String> attributes = preprocessor.getAllFileAttributesMap().get(dataFile.getName());
+
+        VBox checkBoxes = new VBox();
+
+        Text label = new Text("Select attributes to remove");
+        checkBoxes.getChildren().addAll(label);
+        for(String s : attributes){
+            CheckBox box = new CheckBox(s);
+            checkBoxes.getChildren().add(box);
+        }
+
+        BorderPane sp = new BorderPane();
+        sp.setLeft(checkBoxes);
+
+        centerContent.getChildren().addAll(sp);
+
     }
 
-    public void fileHandler(){
-        String fileName = dataFile.getName();
-
-        if(fileName.contains(".xml")){
-            try {
-                xmlConverter = new XmlToCsvConverter(dataFile);
-                xmlConverter.convertToCsv();
-                dataFile = xmlConverter.getCSVFile();
-                preprocessor = new Preprocessor(dataFile);
-                preprocessor.getFileAttributes();
-
-            } catch (ParserConfigurationException e) {
-                e.printStackTrace();
-            } catch (SAXException e) {
-                e.printStackTrace();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        } else {
-            preprocessor = new Preprocessor(dataFile);
-            preprocessor.getFileAttributes();
+    public void fileAttributes(){
+        System.out.print("File name" + dataFile.getName());
+        ArrayList<String> list = preprocessor.getAllFileAttributesMap().get(dataFile.getName());
+        for(String s : list){
+            System.out.println(s);
         }
     }
-
 
     public Scene preProcessingScene(){
 
@@ -83,7 +91,6 @@ public class PreProcessingScene {
         stepInfoBox.setPadding(new Insets(200, 0, 25, 0));
         stepInfoBox.getChildren().addAll(currentStepText, stepDescriptionText);
 
-        VBox attributes = fileAttributes();
 
         // Add navigation buttons to a horizontal box
         HBox navigationBox = new HBox(25);
@@ -93,23 +100,19 @@ public class PreProcessingScene {
 
         // Add step info box, configuration grid pane, and navigation buttons
         // box to a vertical box container
-        VBox centerContent = new VBox(20);
-        centerContent.getChildren().addAll(stepInfoBox,attributes,navigationBox);
+        centerContent = new VBox(20);
+        centerContent.getChildren().addAll(stepInfoBox,navigationBox);
+
 
         // Sets the border pane's center as centerContent
         borderPane.setCenter(centerContent);
+        borderPane.setBottom(navigationBox);
+
 
         // Configure scene
         Scene scene = new Scene(borderPane, 1080, 720);
         return scene;
     }
 
-    public VBox fileAttributes(){
-        VBox box = new VBox();
-
-
-
-        return box;
-    }
 
 }
