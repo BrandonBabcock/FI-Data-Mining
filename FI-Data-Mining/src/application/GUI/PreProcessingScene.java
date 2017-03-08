@@ -19,6 +19,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Scanner;
 
 /**
@@ -26,11 +27,19 @@ import java.util.Scanner;
  */
 public class PreProcessingScene {
 
-    Button previousButton = new Button("Previous");
-    Button nextButton = new Button("Next");
+    Button previousButton;
+    Button nextButton;
     File dataFile;
     VBox centerContent;
     Preprocessor preprocessor;
+    ArrayList<RadioButton> radiobuttons;
+    ArrayList<CheckBox> checkBoxes;
+
+    public PreProcessingScene(){
+        previousButton = new Button("Previous");
+        nextButton = new Button("Next");
+        nextButton.setDisable(true);
+    }
 
     public void setDataFile(File file){
         this.dataFile = file;
@@ -66,7 +75,6 @@ public class PreProcessingScene {
         // build navigation box and add it
         VBox stepInfoBox = createStepInfoBox();
 
-
         // Add step info box, configuration grid pane, and navigation buttons
         // box to a vertical box container
         centerContent = new VBox(20);
@@ -83,7 +91,7 @@ public class PreProcessingScene {
 
     private BorderPane createGroupByPanel() {
         BorderPane pane = new BorderPane();
-        ArrayList<RadioButton> radiobuttons = new ArrayList<RadioButton>();
+        radiobuttons = new ArrayList<RadioButton>();
         TitledPane groupByBox = new TitledPane();
         groupByBox.setText("Group by Attribute");
 
@@ -93,6 +101,7 @@ public class PreProcessingScene {
             RadioButton radiobutton = new RadioButton(s);
             radiobuttons.add(radiobutton);
             radionbuttonVB.getChildren().add(radiobutton);
+            radiobutton.setOnAction(e -> radioButtonHandler(radiobutton));
         }
 
         groupByBox.setContent(radionbuttonVB);
@@ -105,7 +114,7 @@ public class PreProcessingScene {
 
     private BorderPane createWantedAttributePanel() {
         BorderPane pane = new BorderPane();
-        ArrayList<CheckBox> checkBoxes = new ArrayList<CheckBox>();
+        checkBoxes = new ArrayList<CheckBox>();
         TitledPane groupByBox = new TitledPane();
         groupByBox.setText("Select wanted attributes");
 
@@ -115,6 +124,7 @@ public class PreProcessingScene {
             CheckBox newCheckBox = new CheckBox(s);
             checkBoxes.add(newCheckBox);
             checkBoxVB.getChildren().add(newCheckBox);
+            newCheckBox.setOnAction(e -> enableNextButton());
         }
         groupByBox.setContent(checkBoxVB);
         groupByBox.setAlignment(Pos.TOP_CENTER);
@@ -148,4 +158,54 @@ public class PreProcessingScene {
         return navigationBox;
     }
 
+    private void radioButtonHandler(RadioButton button){
+        for(RadioButton rb : radiobuttons){
+            rb.setSelected(false); // turn off all button
+        }
+        button.setSelected(true); // turn on the one clicked
+        enableNextButton();
+    }
+
+    public void processFile() {
+        String groupBy = "";
+        for(RadioButton rb : radiobuttons) {
+            if (rb.isSelected()) {
+                groupBy = rb.getText();
+            }
+        }
+        preprocessor.setGroupByAttribute(groupBy);
+
+        ArrayList<String> wantedAttributes = new ArrayList<>();
+        for(CheckBox cb : checkBoxes){
+            if(cb.isSelected()) {
+                wantedAttributes.add(cb.getText());
+            }
+        }
+        HashMap<String, ArrayList<String>> wantedAttributesMap = new HashMap<String, ArrayList<String>>();
+        wantedAttributesMap.put(dataFile.getName(), wantedAttributes);
+        preprocessor.setWantedFileAttributesMap(wantedAttributesMap);
+
+        preprocessor.removeGroupByAttributeFromWantedMap();
+        preprocessor.mapAttributeLocations();
+        preprocessor.mapUserAttributes();
+        preprocessor.createPreprocessedFile();
+
+    }
+
+    public void enableNextButton(){
+        boolean isGroupBySelected = false;
+        boolean isWantedAttributes = false;
+
+        for(RadioButton rb : radiobuttons){
+            isGroupBySelected = (rb.isSelected()) ? true : false;
+            if(isGroupBySelected) {break;}
+        }
+
+        for(CheckBox cb : checkBoxes){
+            isWantedAttributes = (cb.isSelected());
+            if(isWantedAttributes) {break;}
+        }
+
+        nextButton.setDisable((isGroupBySelected && isWantedAttributes) ? false : true);
+    }
 }

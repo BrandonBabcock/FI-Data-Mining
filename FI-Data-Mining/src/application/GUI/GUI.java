@@ -50,7 +50,10 @@ public class GUI extends Application {
 
         preprocessScene = new PreProcessingScene();
         stepTwoScene = preprocessScene.preProcessingScene();
-        preprocessScene.nextButton.setOnAction(e -> goToNextStep());
+        preprocessScene.nextButton.setOnAction(e -> {
+            goToNextStep();
+            preprocessScene.processFile();
+        });
         preprocessScene.previousButton.setOnAction(e -> goToPreviousStep());
 
         configuration = new ConfigurationScene();
