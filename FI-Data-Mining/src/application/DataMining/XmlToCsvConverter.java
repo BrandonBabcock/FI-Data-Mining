@@ -1,23 +1,15 @@
-package application;
+package application.DataMining;
 
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.io.Writer;
-import java.util.Scanner;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.Result;
-import javax.xml.transform.Source;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
-import javax.xml.transform.stream.StreamSource;
 import javax.xml.parsers.DocumentBuilder;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
@@ -67,8 +59,10 @@ public class XmlToCsvConverter {
 
 		try {
 
+			String newFile = "Data/" + xmlFile.getName().replaceAll(".xml",".csv");
+
 			// write to the new file
-			PrintWriter writer = new PrintWriter("Data/newBio.csv");
+			PrintWriter writer = new PrintWriter(new File(newFile));
 			
 			// we append the values to string builder then write it to a csv file
 			StringBuilder strBuilder = new StringBuilder();

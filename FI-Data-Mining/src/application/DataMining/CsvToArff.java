@@ -1,4 +1,4 @@
-package application;
+package application.DataMining;
 
 import java.io.File;
 import java.io.FileNotFoundException;
