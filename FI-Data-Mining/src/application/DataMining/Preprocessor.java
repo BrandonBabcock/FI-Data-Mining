@@ -25,10 +25,6 @@ public class Preprocessor {
 		this.setDataFile(file);
 	}
 
-	public void processFile(){
-
-	}
-
 	public void removeGroupByAttributeFromWantedMap() {
 		for (Iterator<Map.Entry<String, ArrayList<String>>> iterator = getWantedFileAttributesMap().entrySet()
 				.iterator(); iterator.hasNext();) {
@@ -106,19 +102,6 @@ public class Preprocessor {
 				System.out.println("File " + filePath + " not found.");
 				e.printStackTrace();
 			}
-		}
-	}
-
-	// Method used for testing
-	public void printUserAttributesMap() {
-		// Print out the keys and values of the userAttributesMap
-		for (Map.Entry<String, ArrayList<Attribute>> entry : getUserAttributesMap().entrySet()) {
-			System.out.println("Key is: " + entry.getKey());
-			System.out.print("Values are: ");
-			for (Attribute attr : entry.getValue()) {
-				System.out.print(attr.getValue());
-			}
-			System.out.println();
 		}
 	}
 
@@ -203,4 +186,6 @@ public class Preprocessor {
 	public void setGroupByAttribute(String groupByAttribute) {
 		this.groupByAttribute = groupByAttribute;
 	}
+
+
 }

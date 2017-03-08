@@ -14,7 +14,6 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
-
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -29,18 +28,25 @@ public class PreProcessingScene {
 
     Button previousButton;
     Button nextButton;
-    File dataFile;
-    VBox centerContent;
-    Preprocessor preprocessor;
-    ArrayList<RadioButton> radiobuttons;
-    ArrayList<CheckBox> checkBoxes;
+    private File dataFile;
+    private VBox centerContent;
+    private Preprocessor preprocessor;
+    private ArrayList<RadioButton> radiobuttons;
+    private ArrayList<CheckBox> checkBoxes;
 
+    /**
+     * Constructor init the buttons and disable the next button
+     */
     public PreProcessingScene(){
         previousButton = new Button("Previous");
         nextButton = new Button("Next");
         nextButton.setDisable(true);
     }
 
+    /**
+     * Purpose: Used to set the data file
+     * @param file file we wish to preprocess
+     */
     public void setDataFile(File file){
         this.dataFile = file;
         preprocessor = new Preprocessor(file);
@@ -60,6 +66,10 @@ public class PreProcessingScene {
         }
     }
 
+    /**
+     * Purpose: Used to build the scene
+     * @return
+     */
     public Scene preProcessingScene(){
 
         BorderPane borderPane = new BorderPane();
@@ -112,6 +122,9 @@ public class PreProcessingScene {
         return pane;
     }
 
+    /**
+     * Purpose: Used to create the wanted attributes drop down
+     */
     private BorderPane createWantedAttributePanel() {
         BorderPane pane = new BorderPane();
         checkBoxes = new ArrayList<CheckBox>();
@@ -134,6 +147,10 @@ public class PreProcessingScene {
         return pane;
     }
 
+    /**
+     * Purpose: Used to create the step info box
+     * @return Vbox containing the step information
+     */
     private VBox createStepInfoBox(){
         // Create step info nodes
         Font stepInfoFont = Font.font("Times New Roman", FontWeight.BOLD, 28);
@@ -150,6 +167,10 @@ public class PreProcessingScene {
         return stepInfoBox;
     }
 
+    /**
+     * Purposed: Used to build the navigation box the user will use to change scene
+     * @return Hbox containing the previous and next buttons
+     */
     private HBox createNavigationBox(){
         HBox navigationBox = new HBox(25);
         navigationBox.setAlignment(Pos.TOP_CENTER);
@@ -158,6 +179,10 @@ public class PreProcessingScene {
         return navigationBox;
     }
 
+    /**
+     * Purposed: Used to control the radio buttons. Allows only one button to be selected at a given time
+     * @param button
+     */
     private void radioButtonHandler(RadioButton button){
         for(RadioButton rb : radiobuttons){
             rb.setSelected(false); // turn off all button
@@ -166,46 +191,61 @@ public class PreProcessingScene {
         enableNextButton();
     }
 
+    /**
+     * Purpose: Used to drive the preprocessor to build the preprocessed CSV
+     */
     public void processFile() {
+        // get the name of the group by attribute
         String groupBy = "";
         for(RadioButton rb : radiobuttons) {
             if (rb.isSelected()) {
                 groupBy = rb.getText();
             }
         }
-        preprocessor.setGroupByAttribute(groupBy);
+        preprocessor.setGroupByAttribute(groupBy); // set the attribute
 
+        // get the name of the check boxes that are selected
         ArrayList<String> wantedAttributes = new ArrayList<>();
         for(CheckBox cb : checkBoxes){
             if(cb.isSelected()) {
                 wantedAttributes.add(cb.getText());
             }
         }
+
+        // build a map with the file name and selected attributes
         HashMap<String, ArrayList<String>> wantedAttributesMap = new HashMap<String, ArrayList<String>>();
         wantedAttributesMap.put(dataFile.getName(), wantedAttributes);
-        preprocessor.setWantedFileAttributesMap(wantedAttributesMap);
 
-        preprocessor.removeGroupByAttributeFromWantedMap();
-        preprocessor.mapAttributeLocations();
-        preprocessor.mapUserAttributes();
-        preprocessor.createPreprocessedFile();
+        preprocessor.setWantedFileAttributesMap(wantedAttributesMap); // set the wanted attribute map
+        preprocessor.removeGroupByAttributeFromWantedMap(); // removes unwanted attributes
+        preprocessor.mapAttributeLocations(); // map attribute locations
+        preprocessor.mapUserAttributes(); // map attributes
+        preprocessor.createPreprocessedFile(); // create preprocessed file
 
     }
 
-    public void enableNextButton(){
+    /**
+     * Purpose: To check if the next button should be enabled
+     *
+     * Condition to enable: The group by attribute is selected and at least one wanted attribute is selected
+     */
+    private void enableNextButton(){
         boolean isGroupBySelected = false;
         boolean isWantedAttributes = false;
 
+        // check to see if a group by attribute is selected
         for(RadioButton rb : radiobuttons){
             isGroupBySelected = (rb.isSelected()) ? true : false;
             if(isGroupBySelected) {break;}
         }
 
+        // check to see if at least one check box is selected
         for(CheckBox cb : checkBoxes){
             isWantedAttributes = (cb.isSelected());
             if(isWantedAttributes) {break;}
         }
 
+        // if the conditions are meet enable the next button
         nextButton.setDisable((isGroupBySelected && isWantedAttributes) ? false : true);
     }
 }
