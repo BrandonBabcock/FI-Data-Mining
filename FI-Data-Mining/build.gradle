@@ -6,4 +6,5 @@ repositories {
 
 dependencies {
    compile group: 'nz.ac.waikato.cms.weka', name: 'weka-stable', version: '3.6.6'
+    testCompile 'junit:junit:4.12'
 }
