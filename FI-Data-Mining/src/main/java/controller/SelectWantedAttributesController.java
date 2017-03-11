@@ -114,7 +114,7 @@ public class SelectWantedAttributesController {
 
 		if (result.get() == ButtonType.OK) {
 			try {
-				BorderPane screen = (BorderPane) FXMLLoader.load(getClass().getResource("/view/FileSelection.fxml"));
+				BorderPane screen = (BorderPane) FXMLLoader.load(getClass().getResource("/view/SelectFiles.fxml"));
 
 				Scene scene = new Scene(screen);
 				Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
