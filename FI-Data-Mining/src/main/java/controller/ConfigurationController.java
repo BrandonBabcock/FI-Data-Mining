@@ -105,7 +105,18 @@ public class ConfigurationController {
 			preprocessor.createPreprocessedFile(wantedAttributesToFilesMap, allAttributesToFilesMap,
 					groupByAttributeComboBox.getValue());
 
-			// Go to next screen
+			try {
+				FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/Results.fxml"));
+				BorderPane screen = (BorderPane) loader.load();
+
+				Scene scene = new Scene(screen);
+				Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+				stage.setScene(scene);
+
+				stage.show();
+			} catch (IOException e) {
+				throw new IllegalArgumentException("Error: " + e.getMessage(), e);
+			}
 		}
 
 	}
@@ -117,7 +128,7 @@ public class ConfigurationController {
 	 * @return true if the user has done everything required to continue and
 	 *         false if not
 	 */
-	public boolean isAbleToContinue() {
+	private boolean isAbleToContinue() {
 		if (groupByAttributeComboBox.getValue() != null && algorithmComboBox.getValue() != null
 				&& performanceMetricsComboBox.getValue() != null) {
 			return true;
@@ -127,6 +138,11 @@ public class ConfigurationController {
 			alert.showAndWait();
 			return false;
 		}
+	}
+
+	private boolean isConfigurationComplete() {
+		return groupByAttributeComboBox.getValue() != null && algorithmComboBox.getValue() != null
+				&& performanceMetricsComboBox.getValue() != null;
 	}
 
 }
