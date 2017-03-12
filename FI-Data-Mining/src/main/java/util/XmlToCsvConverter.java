@@ -43,6 +43,7 @@ public class XmlToCsvConverter {
 	 * Converts an XML file to a CSV file
 	 */
 	public File convertToCsv() {
+
 		// Create the CSV file
 		File csvFile = new File("Data/" + xmlFile.getName().replaceAll(".xml", ".csv"));
 
@@ -111,20 +112,20 @@ public class XmlToCsvConverter {
 				for (int j = 0; j < node.getAttributes().getLength(); j++) {
 					String nodeValue = node.getAttributes().item(j).getNodeValue();
 					if (nodeValue.contains(",")) {
-						String newValue = nodeValue.replaceAll(",", " ");
+						String newValue = nodeValue.replaceAll(",", "");
 						node.getAttributes().item(j).setNodeValue(newValue);
 					}
 				}
 			}
 
-			File newBio = new File("Data/newBio.xml");
+			File removedCommas = new File("removedCommas.xml");
 			TransformerFactory transformFact = TransformerFactory.newInstance();
 
 			Transformer transformer = transformFact.newTransformer();
 			DOMSource source = new DOMSource(document);
-			StreamResult result = new StreamResult(newBio);
+			StreamResult result = new StreamResult(removedCommas);
 			transformer.transform(source, result);
-			return newBio;
+			return removedCommas;
 		} catch (SAXException | IOException | TransformerException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
