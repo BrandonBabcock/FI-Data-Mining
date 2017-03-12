@@ -140,9 +140,4 @@ public class ConfigurationController {
 		}
 	}
 
-	private boolean isConfigurationComplete() {
-		return groupByAttributeComboBox.getValue() != null && algorithmComboBox.getValue() != null
-				&& performanceMetricsComboBox.getValue() != null;
-	}
-
 }

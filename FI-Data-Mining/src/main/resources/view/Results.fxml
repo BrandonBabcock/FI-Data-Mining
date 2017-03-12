@@ -38,7 +38,7 @@
                   <Insets />
                </VBox.margin>
             </Text>
-            <Button mnemonicParsing="false" onAction="#restart" text="Restart">
+            <Button mnemonicParsing="false" text="Restart">
                <HBox.margin>
                   <Insets left="5.0" right="5.0" />
                </HBox.margin>
