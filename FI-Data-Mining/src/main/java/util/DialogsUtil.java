@@ -8,6 +8,10 @@ import javafx.scene.control.Alert.AlertType;
  */
 public class DialogsUtil {
 
+	private DialogsUtil() {
+
+	}
+
 	/**
 	 * Creates a JavaFX error dialog
 	 * 
@@ -19,7 +23,7 @@ public class DialogsUtil {
 	 */
 	public static Alert createErrorDialog(String errorHeader, String errorContent) {
 		Alert alert = new Alert(AlertType.ERROR);
-		alert.setTitle("Error");
+		System.out.println("Here in");
 		alert.setHeaderText(errorHeader);
 		alert.setContentText(errorContent);
 

@@ -9,6 +9,10 @@ import weka.core.converters.ConverterUtils.DataSource;
  */
 public class DataMiningService {
 
+	private DataMiningService() {
+
+	}
+
 	/**
 	 * Finds the similarities within an ARFF file
 	 * 
@@ -16,18 +20,23 @@ public class DataMiningService {
 	 *            the file path of the file to find the similarities within
 	 * @throws Exception
 	 */
-	public void findSimilarities(String filePath) throws Exception {
-		// Load data
-		Instances data = DataSource.read(filePath);
-		data.setClassIndex(data.numAttributes() - 1);
+	public static Apriori findSimilarities(String filePath) {
+		try {
+			// Load data
+			Instances data = DataSource.read(filePath);
+			data.setClassIndex(data.numAttributes() - 1);
 
-		// Build associator
-		Apriori apriori = new Apriori();
-		apriori.setClassIndex(data.classIndex());
-		apriori.buildAssociations(data);
+			// Build associator
+			Apriori apriori = new Apriori();
+			apriori.setClassIndex(data.classIndex());
+			apriori.buildAssociations(data);
 
-		// Output associator
-		System.out.println(apriori);
+			// Output associator
+			System.out.println(apriori);
+			return apriori;
+		} catch (Exception e) {
+			throw new IllegalArgumentException("Error: " + e.getMessage(), e);
+		}
 	}
 
 }
