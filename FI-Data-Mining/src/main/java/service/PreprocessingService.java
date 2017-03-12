@@ -87,7 +87,7 @@ public class PreprocessingService {
 		HashMap<Path, AttributeLocation> attributeLocationsToFilesMap = mapAttributeLocationsToFiles(
 				wantedAttributesToFilesMap, allAttributesToFilesMap, groupByAttribute);
 
-		HashMap<String, ArrayList<Attribute>> userAttributesMap = mapUserAttributes(wantedAttributesToFilesMap,
+		HashMap<String, ArrayList<Attribute>> userAttributesMap = mapGroupedByAttributes(wantedAttributesToFilesMap,
 				allAttributesToFilesMap, attributeLocationsToFilesMap);
 
 		buildFile(wantedAttributesToFilesMap, userAttributesMap, groupByAttribute);
@@ -146,7 +146,7 @@ public class PreprocessingService {
 		return attributeLocationsToFilesMap;
 	}
 
-	public HashMap<String, ArrayList<Attribute>> mapUserAttributes(
+	public HashMap<String, ArrayList<Attribute>> mapGroupedByAttributes(
 			HashMap<Path, ArrayList<String>> wantedAttributesToFilesMap,
 			HashMap<Path, ArrayList<String>> allAttributesToFilesMap,
 			HashMap<Path, AttributeLocation> attributeLocationsToFilesMap) {
@@ -208,15 +208,14 @@ public class PreprocessingService {
 
 				fileReader.close();
 			} catch (FileNotFoundException e) {
-				System.out.println("File " + filePath + " not found.");
-				e.printStackTrace();
+				throw new IllegalArgumentException("Error: " + e.getMessage(), e);
 			}
 		}
 
 		return userAttributesMap;
 	}
 
-	public void buildFile(HashMap<Path, ArrayList<String>> wantedAttributesToFilesMap,
+	private void buildFile(HashMap<Path, ArrayList<String>> wantedAttributesToFilesMap,
 			HashMap<String, ArrayList<Attribute>> userAttributesMap, String groupByAttribute) {
 		ArrayList<String> attributeTitles = new ArrayList<String>();
 		attributeTitles.add(groupByAttribute);
