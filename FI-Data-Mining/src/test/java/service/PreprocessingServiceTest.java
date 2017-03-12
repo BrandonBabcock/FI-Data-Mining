@@ -111,7 +111,7 @@ public class PreprocessingServiceTest {
 		fileReader.close();
 
 		assertThat(firstLine.equals("attributeOne,attributeTwo"), equalTo(true));
-		assertThat(secondLine.equals("valueOne,valueTwo"), equalTo(true));
+		assertThat(secondLine.equals("valueOne,\"valueTwo,valueTwoDifferent\""), equalTo(true));
 	}
 
 	@Test(expected = IllegalArgumentException.class)
