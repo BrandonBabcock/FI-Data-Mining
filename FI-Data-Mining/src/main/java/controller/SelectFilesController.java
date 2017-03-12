@@ -104,6 +104,9 @@ public class SelectFilesController {
 	public void removeLastFile(ActionEvent event) {
 		if (!inputtedFiles.isEmpty()) {
 			inputtedFiles.remove(inputtedFiles.size() - 1);
+		} else {
+			Alert alert = DialogsUtil.createErrorDialog("No Files To Remove", "There are no files to remove");
+			alert.showAndWait();
 		}
 	}
 
@@ -144,6 +147,10 @@ public class SelectFilesController {
 				throw new IllegalArgumentException("Error: " + e.getMessage(), e);
 			}
 		}
+	}
+
+	public ArrayList<Path> getInputtedFiles() {
+		return this.inputtedFiles;
 	}
 
 	/**
@@ -201,7 +208,7 @@ public class SelectFilesController {
 	private boolean isValidFileType(String filePath) {
 		filePath = filePath.toLowerCase();
 
-		if (filePath.contains(".csv") || filePath.contains(".xml") || filePath.contains("arff")) {
+		if (filePath.contains(".csv") || filePath.contains(".xml")) {
 			return true;
 		} else {
 			Alert alert = DialogsUtil.createErrorDialog("Invalid File Type",
@@ -219,7 +226,7 @@ public class SelectFilesController {
 	 * @return true if the file has already been inputted, false if not
 	 */
 	private boolean isDuplicateFile(String filePath) {
-		if (inputtedFiles.contains(filePath)) {
+		if (inputtedFiles.contains(Paths.get(filePath))) {
 			Alert alert = DialogsUtil.createErrorDialog("File Already Inputted",
 					"The entered file has already been inputted.");
 			alert.showAndWait();

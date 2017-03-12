@@ -22,7 +22,7 @@
    <center>
       <VBox alignment="CENTER" prefHeight="200.0" prefWidth="100.0" BorderPane.alignment="CENTER">
          <children>
-            <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Step 2/4:">
+            <Text fx:id="stepNumberText" strokeType="OUTSIDE" strokeWidth="0.0" text="Step 2/4:">
                <font>
                   <Font size="24.0" />
                </font>
