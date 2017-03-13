@@ -241,6 +241,7 @@ public class PreprocessingService {
 					if (attributes[attributeTitles.indexOf(attr.getTitle())] == null) {
 						attributes[attributeTitles.indexOf(attr.getTitle())] = attr.getValue();
 					} else {
+						System.out.println("Here");
 						String combined = "";
 						for (int i = 0; i < entry.getValue().size(); i++) {
 							Attribute attr2 = entry.getValue().get(i);

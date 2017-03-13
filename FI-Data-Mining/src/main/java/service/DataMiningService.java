@@ -9,10 +9,6 @@ import weka.core.converters.ConverterUtils.DataSource;
  */
 public class DataMiningService {
 
-	private DataMiningService() {
-
-	}
-
 	/**
 	 * Finds the similarities within an ARFF file
 	 * 
@@ -20,7 +16,7 @@ public class DataMiningService {
 	 *            the file path of the file to find the similarities within
 	 * @throws Exception
 	 */
-	public static Apriori findSimilarities(String filePath) {
+	public Apriori findSimilarities(String filePath) {
 		try {
 			// Load data
 			Instances data = DataSource.read(filePath);
