@@ -26,7 +26,7 @@ public class CsvToArffConverter {
 			String filename = csvFile.getName().substring(0, csvFile.getName().indexOf("."));
 
 			// save ARFF
-			File arffFile = new File(filename + ".arff");
+			File arffFile = new File("Data/" + filename + ".arff");
 			ArffSaver saver = new ArffSaver();
 			saver.setInstances(data);
 			saver.setFile(arffFile);
