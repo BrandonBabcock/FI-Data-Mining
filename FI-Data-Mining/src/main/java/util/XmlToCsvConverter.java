@@ -16,12 +16,7 @@ public class XmlToCsvConverter {
     private File xmlFile;
     private DocumentBuilderFactory factory;
     private DocumentBuilder builder;
-    // private Document document;
-    public static void main(String[] args){
-        //XmlToCsvConverter converter = new XmlToCsvConverter(new File("Data/AlumRoles.xml"));
-        XmlToCsvConverter converter = new XmlToCsvConverter(new File("Data/TestXMLOne.xml"));
-        converter.convertToCsv();
-    }
+
     public XmlToCsvConverter(File file) {
         this.xmlFile = file;
         factory = DocumentBuilderFactory.newInstance();
@@ -31,6 +26,7 @@ public class XmlToCsvConverter {
             throw new IllegalArgumentException("Error: " + e.getMessage(), e);
         }
     }
+
     /**
      * Converts an XML file to a CSV file
      */
