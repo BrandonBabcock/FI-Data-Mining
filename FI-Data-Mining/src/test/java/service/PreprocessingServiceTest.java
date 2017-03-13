@@ -1,5 +1,6 @@
 package service;
 
+import static org.hamcrest.CoreMatchers.endsWith;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.junit.Assert.assertThat;
@@ -9,12 +10,12 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Scanner;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import data.Attribute;
 import data.AttributeLocation;
 
 public class PreprocessingServiceTest {
@@ -31,18 +32,15 @@ public class PreprocessingServiceTest {
 		preprocessor = null;
 	}
 
-	// @Test
-	// public void
-	// should_return_a_list_with_a_csv_file_when_passed_a_list_with_an_xml_file()
-	// {
-	// ArrayList<Path> files = new ArrayList<Path>();
-	// files.add(Paths.get("Data/TestXmlOne.xml"));
-	//
-	// ArrayList<Path> convertedFiles = preprocessor.convertXmlToCsv(files);
-	//
-	// assertThat(convertedFiles.get(0).getFileName().toString(),
-	// endsWith(".xml"));
-	// }
+	@Test
+	public void should_return_a_list_with_a_csv_file_when_passed_a_list_with_an_xml_file() {
+		ArrayList<Path> files = new ArrayList<Path>();
+		files.add(Paths.get("Data/TestXmlOne.xml"));
+
+		ArrayList<Path> convertedFiles = preprocessor.convertXmlToCsv(files);
+
+		assertThat(convertedFiles.get(0).getFileName().toString(), endsWith(".csv"));
+	}
 
 	@Test
 	public void should_map_attributes_to_file() {
@@ -102,16 +100,16 @@ public class PreprocessingServiceTest {
 		attributeLocation.setAttributeIndexes(attributeIndexes);
 		attributeLocationsToFilesMap.put(Paths.get("Data/TestCsvOne.csv"), attributeLocation);
 
-		preprocessor.mapGroupedByAttributes(wantedAttributesToFilesMap, allAttributesToFilesMap,
-				attributeLocationsToFilesMap);
+		HashMap<String, ArrayList<Attribute>> map = preprocessor.mapGroupedByAttributes(wantedAttributesToFilesMap,
+				allAttributesToFilesMap, attributeLocationsToFilesMap);
 
-		Scanner fileReader = new Scanner(Paths.get("Data/PreprocessedFile.csv").toFile());
-		String firstLine = fileReader.nextLine();
-		String secondLine = fileReader.nextLine();
-		fileReader.close();
+		ArrayList<Attribute> values = map.get("valueOne");
+		Attribute firstAttr = values.get(0);
+		Attribute secondAttr = values.get(1);
 
-		assertThat(firstLine.equals("attributeOne,attributeTwo"), equalTo(true));
-		assertThat(secondLine.equals("valueOne,\"valueTwo,valueTwoDifferent\""), equalTo(true));
+		assertThat(map.containsKey("valueOne"), equalTo(true));
+		assertThat(firstAttr.getValue(), equalTo("valueTwo"));
+		assertThat(secondAttr.getValue(), equalTo("valueTwoDifferent"));
 	}
 
 	@Test(expected = IllegalArgumentException.class)
