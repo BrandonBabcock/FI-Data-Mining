@@ -65,6 +65,7 @@ public class XmlToCsvConverter {
                                 attributes.add(nl.item(j).getNodeName());
                                 String value = nl.item(j).getFirstChild().getNodeValue();
                                 value = value.replaceAll(",", "");
+                                value = value.replaceAll("\n", "");
                                 value = value.trim().replaceAll(" +", " ");
                                 temp.add(value);
                             }
