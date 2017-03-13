@@ -1,0 +1,15 @@
+@relation csvToArffTestFile
+
+@attribute ﻿attribute1 {y,n}
+@attribute attribute2 {t,f}
+@attribute attribute3 {t,f}
+
+@data
+y,t,t
+y,f,t
+y,f,t
+y,f,f
+n,t,f
+n,t,f
+n,t,t
+n,f,t
