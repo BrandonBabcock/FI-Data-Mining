@@ -1,0 +1,9 @@
+﻿attribute1,attribute2,attribute3
+y,t,t
+y,f,t
+y,f,t
+y,f,f
+n,t,f
+n,t,f
+n,t,t
+n,f,t
