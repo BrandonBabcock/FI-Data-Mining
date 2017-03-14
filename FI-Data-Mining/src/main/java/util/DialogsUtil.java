@@ -23,7 +23,6 @@ public class DialogsUtil {
 	 */
 	public static Alert createErrorDialog(String errorHeader, String errorContent) {
 		Alert alert = new Alert(AlertType.ERROR);
-		System.out.println("Here in");
 		alert.setHeaderText(errorHeader);
 		alert.setContentText(errorContent);
 
