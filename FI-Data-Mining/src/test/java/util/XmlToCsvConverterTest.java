@@ -4,6 +4,9 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.xml.sax.SAXException;
+
+import javax.xml.parsers.ParserConfigurationException;
+
 import static org.hamcrest.core.IsEqual.equalTo;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertThat;
@@ -64,5 +67,13 @@ public class XmlToCsvConverterTest {
             String[] line = scan.nextLine().split(",");
             assertThat(line.length, equalTo(attributes.length));
         }
+    }
+
+    //SAXException | IOException e
+
+    @Test(expected = IllegalArgumentException.class)
+    public void IOExceptionTest(){
+        testConvert = new XmlToCsvConverter(new File("Data/fakeFile.xml"));
+        testConvert.convertToCsv();
     }
 }
