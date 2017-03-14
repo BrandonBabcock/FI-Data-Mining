@@ -20,60 +20,62 @@ import java.util.Scanner;
  */
 public class XmlToCsvConverterTest {
 
-    private XmlToCsvConverter testConvert;
-    private File xmlFile;
+	private XmlToCsvConverter testConvert;
+	private File xmlFile;
 
-    @Before
-    public void setup(){
-        xmlFile = new File("Data/Bio.xml");
-        testConvert = new XmlToCsvConverter(xmlFile);
-    }
+	@Before
+	public void setup() {
+		xmlFile = new File("Data/Bio.xml");
+		testConvert = new XmlToCsvConverter(xmlFile);
+	}
 
-    @After
-    public void teardown(){
-        testConvert = null;
-    }
+	@After
+	public void teardown() {
+		testConvert = null;
+	}
 
-    @Test
-    public void convertToCsvTest() throws IOException, SAXException {
-        File convertedFile = testConvert.convertToCsv();
+	@Test
+	public void convertToCsvTest() throws IOException, SAXException {
+		File convertedFile = testConvert.convertToCsv();
 
-        // check file name
-        assertThat(convertedFile.getName(), equalTo(convertedFile.getName().substring(0, convertedFile.getName().indexOf(".")) + ".csv"));
+		// check file name
+		assertThat(convertedFile.getName(),
+				equalTo(convertedFile.getName().substring(0, convertedFile.getName().indexOf(".")) + ".csv"));
 
-        Scanner scan = new Scanner(convertedFile);
+		Scanner scan = new Scanner(convertedFile);
 
-        String[] attributes = scan.nextLine().split(",");
+		String[] attributes = scan.nextLine().split(",");
 
-        while (scan.hasNext()){
-            String[] line = scan.nextLine().split(",");
-            assertThat(line.length, equalTo(attributes.length));
-        }
+		while (scan.hasNext()) {
+			String[] line = scan.nextLine().split(",");
+			assertThat(line.length, equalTo(attributes.length));
+		}
 
-        File xmlFile2 = new File("Data/TestXmlOne.xml");
+		File xmlFile2 = new File("Data/TestXmlOne.xml");
 
-        testConvert = new XmlToCsvConverter(xmlFile2);
-        convertedFile = testConvert.convertToCsv();
+		testConvert = new XmlToCsvConverter(xmlFile2);
+		convertedFile = testConvert.convertToCsv();
 
-        assertThat(convertedFile.getName(), equalTo(convertedFile.getName().substring(0, convertedFile.getName().indexOf(".")) + ".csv"));
+		assertThat(convertedFile.getName(),
+				equalTo(convertedFile.getName().substring(0, convertedFile.getName().indexOf(".")) + ".csv"));
 
-        scan = new Scanner(convertedFile);
+		scan = new Scanner(convertedFile);
 
-        attributes = scan.nextLine().split(",");
+		attributes = scan.nextLine().split(",");
 
-        assertTrue(attributes.length != 0);
+		assertTrue(attributes.length != 0);
 
-        while (scan.hasNext()){
-            String[] line = scan.nextLine().split(",");
-            assertThat(line.length, equalTo(attributes.length));
-        }
-    }
+		while (scan.hasNext()) {
+			String[] line = scan.nextLine().split(",");
+			assertThat(line.length, equalTo(attributes.length));
+		}
+	}
 
-    //SAXException | IOException e
+	// SAXException | IOException e
 
-    @Test(expected = IllegalArgumentException.class)
-    public void IOExceptionTest(){
-        testConvert = new XmlToCsvConverter(new File("Data/fakeFile.xml"));
-        testConvert.convertToCsv();
-    }
+	@Test(expected = IllegalArgumentException.class)
+	public void IOExceptionTest() {
+		testConvert = new XmlToCsvConverter(new File("Data/fakeFile.xml"));
+		testConvert.convertToCsv();
+	}
 }

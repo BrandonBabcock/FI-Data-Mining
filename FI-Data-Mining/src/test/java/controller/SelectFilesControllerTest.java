@@ -45,9 +45,9 @@ public class SelectFilesControllerTest extends ApplicationTest {
 
 		verifyThat("#fileTextField", hasText(""));
 	}
-
+	
 	@Test
-	public void should_add_file_path_to_list_of_inputted_files() {
+	public void should_allow_adding_of_a_csv_file() {
 		clickOn("#fileTextField").write("Data/TestCsvOne.csv");
 		clickOn("#addFileButton");
 
@@ -56,17 +56,27 @@ public class SelectFilesControllerTest extends ApplicationTest {
 	}
 
 	@Test
-	public void should_allow_adding_of_csv_and_xml_files() {
-		clickOn("#fileTextField").write("Data/TestCsvOne.csv");
-		clickOn("#addFileButton");
+	public void should_allow_adding_of_a_xml_file() {
 		clickOn("#fileTextField").write("Data/TestXmlOne.xml");
 		clickOn("#addFileButton");
 
-		assertThat(controller.getInputtedFiles(), hasItem(Paths.get("Data/TestCsvOne.csv")));
 		assertThat(controller.getInputtedFiles(), hasItem(Paths.get("Data/TestXmlOne.xml")));
+		assertThat(controller.getInputtedFiles().size(), equalTo(1));
+	}
+	
+	@Test
+	public void should_allow_multiple_files_to_be_inputted() {
+		clickOn("#fileTextField").write("Data/TestCsvOne.csv");
+		clickOn("#addFileButton");
+		clickOn("#fileTextField").write("Data/TestCsvTwo.csv");
+		clickOn("#addFileButton");
+
+
+		assertThat(controller.getInputtedFiles(), hasItem(Paths.get("Data/TestCsvOne.csv")));
+		assertThat(controller.getInputtedFiles(), hasItem(Paths.get("Data/TestCsvTwo.csv")));
 		assertThat(controller.getInputtedFiles().size(), equalTo(2));
 	}
-
+	
 	@Test
 	public void should_show_error_dialog_when_adding_file_with_invalid_type() {
 		clickOn("#fileTextField").write("Data/InvalidFileType.txt");
@@ -75,6 +85,7 @@ public class SelectFilesControllerTest extends ApplicationTest {
 		Node errorDialog = lookup(".alert").query();
 
 		assertThat(errorDialog.isVisible(), equalTo(true));
+		assertThat(controller.getInputtedFiles().isEmpty(), equalTo(true));
 
 		clickOn("OK");
 	}
