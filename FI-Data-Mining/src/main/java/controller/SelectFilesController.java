@@ -149,10 +149,6 @@ public class SelectFilesController {
 		}
 	}
 
-	public ArrayList<Path> getInputtedFiles() {
-		return this.inputtedFiles;
-	}
-
 	/**
 	 * Checks if the user can continue to the next step or not
 	 * 
@@ -234,6 +230,15 @@ public class SelectFilesController {
 		} else {
 			return false;
 		}
+	}
+
+	/**
+	 * Gets the list of inputted files
+	 * 
+	 * @return the list of inputted files
+	 */
+	public ArrayList<Path> getInputtedFiles() {
+		return this.inputtedFiles;
 	}
 
 }

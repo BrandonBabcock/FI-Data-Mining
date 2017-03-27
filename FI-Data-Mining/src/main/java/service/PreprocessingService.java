@@ -82,7 +82,7 @@ public class PreprocessingService {
 
 	public void createPreprocessedFile(HashMap<Path, ArrayList<String>> wantedAttributesToFilesMap,
 			HashMap<Path, ArrayList<String>> allAttributesToFilesMap, String groupByAttribute) {
-		removeGroupByAttributeFromWantedMap(wantedAttributesToFilesMap, groupByAttribute);
+		removeAttributeFromMap(wantedAttributesToFilesMap, groupByAttribute);
 
 		HashMap<Path, AttributeLocation> attributeLocationsToFilesMap = mapAttributeLocationsToFiles(
 				wantedAttributesToFilesMap, allAttributesToFilesMap, groupByAttribute);
@@ -93,15 +93,14 @@ public class PreprocessingService {
 		buildFile(wantedAttributesToFilesMap, userAttributesMap, groupByAttribute);
 	}
 
-	private void removeGroupByAttributeFromWantedMap(HashMap<Path, ArrayList<String>> wantedAttributesToFilesMap,
-			String groupByAttribute) {
-		for (Iterator<Map.Entry<Path, ArrayList<String>>> mapIterator = wantedAttributesToFilesMap.entrySet()
-				.iterator(); mapIterator.hasNext();) {
+	private void removeAttributeFromMap(HashMap<Path, ArrayList<String>> map, String attribute) {
+		for (Iterator<Map.Entry<Path, ArrayList<String>>> mapIterator = map.entrySet().iterator(); mapIterator
+				.hasNext();) {
 			Map.Entry<Path, ArrayList<String>> entry = mapIterator.next();
 
 			for (Iterator<String> entryIterator = entry.getValue().iterator(); entryIterator.hasNext();) {
 				String attr = entryIterator.next();
-				if (attr.contains(groupByAttribute)) {
+				if (attr.contains(attribute)) {
 					entryIterator.remove();
 				}
 			}

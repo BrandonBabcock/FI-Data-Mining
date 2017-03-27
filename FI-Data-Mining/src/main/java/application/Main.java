@@ -9,7 +9,7 @@ import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 
 /**
- * Main class to start the application and GUI *
+ * Main class to start the application and GUI
  */
 public class Main extends Application {
 
