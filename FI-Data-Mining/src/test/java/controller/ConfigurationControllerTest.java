@@ -2,6 +2,8 @@ package controller;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.junit.Assert.assertThat;
+import static org.testfx.api.FxAssert.verifyThat;
+import static org.testfx.matcher.base.NodeMatchers.hasText;
 
 import java.io.IOException;
 import java.nio.file.Path;
@@ -15,6 +17,7 @@ import org.testfx.framework.junit.ApplicationTest;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Scene;
+import javafx.scene.control.ComboBox;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
@@ -95,6 +98,37 @@ public class ConfigurationControllerTest extends ApplicationTest {
 		Text text = lookup("#stepNumberText").query();
 
 		assertThat(text.getText(), equalTo("Step 4/4:"));
+	}
+	
+	@Test
+	public void should_allow_selection_of_enabling_performance_metrics() {
+		clickOn("#performanceMetricsComboBox");
+		clickOn("Yes");
+		
+		ComboBox<String> comboBox = lookup("#performanceMetricsComboBox").query();
+		
+		assertThat(comboBox.getValue(), equalTo("Yes"));
+	}
+	
+	@Test
+	public void should_allow_the_selection_of_a_group_by_attribute() {
+		clickOn("#groupByAttributeComboBox");
+		clickOn("attributeOne");
+
+		
+		ComboBox<String> comboBox = lookup("#groupByAttributeComboBox").query();
+		
+		assertThat(comboBox.getValue(), equalTo("attributeOne"));
+	}
+	
+	@Test
+	public void should_allow_the_selection_of_a_data_mining_algorithm() {
+		clickOn("#algorithmComboBox");
+		clickOn("Apriori");
+		
+		ComboBox<String> comboBox = lookup("#algorithmComboBox").query();
+		
+		assertThat(comboBox.getValue(), equalTo("Apriori"));
 	}
 
 	@Test

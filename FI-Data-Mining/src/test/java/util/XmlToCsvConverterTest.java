@@ -3,16 +3,14 @@ package util;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.w3c.dom.Document;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
+
 import javax.xml.parsers.ParserConfigurationException;
+
 import static org.hamcrest.core.IsEqual.equalTo;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertThat;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.assertTrue;
 import java.io.File;
 import java.io.IOException;
 import java.util.Scanner;
@@ -22,74 +20,62 @@ import java.util.Scanner;
  */
 public class XmlToCsvConverterTest {
 
-    private XmlToCsvConverter testConvert;
-    private String[] attributes; // xml file attributes are stored here
-    private DocumentBuilderFactory factory;
-    private DocumentBuilder builder;
-    private File xmlFile;
+	private XmlToCsvConverter testConvert;
+	private File xmlFile;
 
-    @Before
-    public void setup(){
-        xmlFile = new File("Data/Bio.xml");
+	@Before
+	public void setup() {
+		xmlFile = new File("Data/Bio.xml");
+		testConvert = new XmlToCsvConverter(xmlFile);
+	}
 
-        init();
+	@After
+	public void teardown() {
+		testConvert = null;
+	}
 
-        testConvert = new XmlToCsvConverter(xmlFile);
-    }
+	@Test
+	public void convertToCsvTest() throws IOException, SAXException {
+		File convertedFile = testConvert.convertToCsv();
 
-    /**
-     * Used to obtain the xml file attributes
-     */
-    public void init(){
-        factory = DocumentBuilderFactory.newInstance();
+		// check file name
+		assertThat(convertedFile.getName(),
+				equalTo(convertedFile.getName().substring(0, convertedFile.getName().indexOf(".")) + ".csv"));
 
-        try {
-            builder = factory.newDocumentBuilder();
-            Document document = builder.parse(xmlFile);
+		Scanner scan = new Scanner(convertedFile);
 
-            NodeList nList = document.getElementsByTagName("jdbc:record");
-            Node node = nList.item(0);
+		String[] attributes = scan.nextLine().split(",");
 
-            attributes = new String[node.getAttributes().getLength()];
+		while (scan.hasNext()) {
+			String[] line = scan.nextLine().split(",");
+			assertThat(line.length, equalTo(attributes.length));
+		}
 
-            for (int i = 0; i < node.getAttributes().getLength(); i++) {
-                String str = node.getAttributes().item(i).getNodeName();
-                attributes[i] =  str;
-            }
+		File xmlFile2 = new File("Data/TestXmlOne.xml");
 
-        } catch (ParserConfigurationException e) {
-            throw new IllegalArgumentException("Error: " + e.getMessage(), e);
-        } catch (IOException e){
+		testConvert = new XmlToCsvConverter(xmlFile2);
+		convertedFile = testConvert.convertToCsv();
 
-        } catch (SAXException e){
+		assertThat(convertedFile.getName(),
+				equalTo(convertedFile.getName().substring(0, convertedFile.getName().indexOf(".")) + ".csv"));
 
-        }
-    }
+		scan = new Scanner(convertedFile);
 
-    @After
-    public void teardown(){
-        testConvert = null;
-    }
+		attributes = scan.nextLine().split(",");
 
-    @Test
-    public void convertToCsvTest(){
-        File convertedFile = testConvert.convertToCsv();
+		assertTrue(attributes.length != 0);
 
-        // test file extension is changed from xml to csv
-        assertThat(convertedFile.getName(), equalTo("Bio.csv"));
+		while (scan.hasNext()) {
+			String[] line = scan.nextLine().split(",");
+			assertThat(line.length, equalTo(attributes.length));
+		}
+	}
 
-        try {
-            Scanner scan = new Scanner(convertedFile); // get csv attributes
-            String[] att = scan.nextLine().split(",");
-            assertThat(att, equalTo(attributes)); // test to see if the attributes from the xml match the attributes in the csv
+	// SAXException | IOException e
 
-            // check file content
-            while(scan.hasNext()){
-                String[] values = scan.nextLine().split(",");
-                assertThat(attributes.length, equalTo(values.length)); // the number of values match the number of attributes
-            }
-        } catch (IOException e){
-            fail("IO exception");
-        }
-    }
+	@Test(expected = IllegalArgumentException.class)
+	public void IOExceptionTest() {
+		testConvert = new XmlToCsvConverter(new File("Data/fakeFile.xml"));
+		testConvert.convertToCsv();
+	}
 }
