@@ -4,9 +4,38 @@ repositories {
    mavenCentral()
 }
 
+configurations {
+    integrationTestCompile.extendsFrom testCompile
+    integrationTestRuntime.extendsFrom testRuntime
+}
+
+sourceSets {
+	integrationTest {
+		java {
+			compileClasspath += main.output + test.output
+			runtimeClasspath += main.output + test.output
+			srcDir file("src/integrationTest/java")
+		}
+		resources.srcDir file("src/integrationTest/resources")
+	}
+}
+
 dependencies {
-	compile group: 'nz.ac.waikato.cms.weka', name: 'weka-stable', version: '3.6.6'
-	testCompile 'junit:junit:4.12'
+	compile group: "nz.ac.waikato.cms.weka", name: "weka-stable", version: "3.6.6"
+	testCompile "junit:junit:4.12"
 	testCompile "org.testfx:testfx-core:4.0.+"
 	testCompile "org.testfx:testfx-junit:4.0.+"
+	testCompile "org.easymock:easymock:3.4"
+
+}
+
+task integrationTest(type: Test) {
+    testClassesDir = sourceSets.integrationTest.output.classesDir
+    classpath = sourceSets.integrationTest.runtimeClasspath
+    outputs.upToDateWhen { false }
+}
+
+configure(integrationTest) {
+	group = "verification"
+	description = "Runs the integration tests."
 }
