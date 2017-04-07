@@ -61,11 +61,14 @@ public class SelectWantedAttributesController {
 	 * @param inputtedFiles
 	 *            the list of inputted files
 	 */
-	public void initData(ArrayList<Path> inputtedFiles) {
+	public void initData(PreprocessingService preprocessor, ArrayList<Path> inputtedFiles) {
+		this.preprocessor = preprocessor;
 		this.inputtedFiles = inputtedFiles;
+
 		convertedFiles = preprocessor.convertXmlToCsv(this.inputtedFiles);
+		System.out.println(convertedFiles);
 		currentFileIndex = 0;
-		currentFileName.setText(this.inputtedFiles.get(currentFileIndex).getFileName().toString());
+		currentFileName.setText(this.convertedFiles.get(currentFileIndex).getFileName().toString());
 		allAttributesToFilesMap = preprocessor.mapAllAttributesToFiles(convertedFiles);
 		loadAttributeCheckBoxes(currentFileIndex);
 	}

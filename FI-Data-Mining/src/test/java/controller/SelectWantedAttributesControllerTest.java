@@ -19,6 +19,7 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
+import service.PreprocessingService;
 
 public class SelectWantedAttributesControllerTest extends ApplicationTest {
 
@@ -46,7 +47,7 @@ public class SelectWantedAttributesControllerTest extends ApplicationTest {
 		inputtedFiles.add(Paths.get("Data/TestCsvOne.csv"));
 		inputtedFiles.add(Paths.get("Data/TestCsvTwo.csv"));
 
-		controller.initData(inputtedFiles);
+		controller.initData(new PreprocessingService(), inputtedFiles);
 	}
 
 	@Test
@@ -116,10 +117,10 @@ public class SelectWantedAttributesControllerTest extends ApplicationTest {
 	@Test()
 	public void should_select_all_attributes() {
 		clickOn("#selectAllButton");
-		
+
 		VBox attributesVbox = lookup("#attributesVbox").query();
 		boolean allChecked = true;
-		
+
 		for (Node child : attributesVbox.getChildren()) {
 			if (child instanceof CheckBox) {
 				if (!((CheckBox) child).isSelected()) {
@@ -127,7 +128,7 @@ public class SelectWantedAttributesControllerTest extends ApplicationTest {
 				}
 			}
 		}
-		
+
 		assertThat(allChecked, equalTo(true));
 	}
 
@@ -135,10 +136,10 @@ public class SelectWantedAttributesControllerTest extends ApplicationTest {
 	public void should_unselect_all_attributes() {
 		clickOn("#selectAllButton");
 		clickOn("#unselectAllButton");
-		
+
 		VBox attributesVbox = lookup("#attributesVbox").query();
 		boolean allUnchecked = true;
-		
+
 		for (Node child : attributesVbox.getChildren()) {
 			if (child instanceof CheckBox) {
 				if (((CheckBox) child).isSelected()) {
@@ -146,7 +147,7 @@ public class SelectWantedAttributesControllerTest extends ApplicationTest {
 				}
 			}
 		}
-		
+
 		assertThat(allUnchecked, equalTo(true));
 	}
 
