@@ -57,6 +57,11 @@ public class XmlToCsvConverter {
 						for (int j = 0; j < nm.getLength(); j++) {
 							attributes.add(nm.item(j).getNodeName());
 							String value = nm.item(j).getNodeValue();
+
+							if(value.equals("")){
+							    value = "null";
+                            }
+
 							value = value.replaceAll(",", "");
 							value = value.trim().replaceAll(" +", " ");
 							temp.add(value);
@@ -67,6 +72,11 @@ public class XmlToCsvConverter {
 									&& nl.item(j).getNodeType() != Node.TEXT_NODE) {
 								attributes.add(nl.item(j).getNodeName());
 								String value = nl.item(j).getFirstChild().getNodeValue();
+
+                                if(value.equals("")){
+                                    value = "null";
+                                }
+
 								value = value.replaceAll(",", "");
 								value = value.replaceAll("\n", "");
 								value = value.trim().replaceAll(" +", " ");
