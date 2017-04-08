@@ -3,6 +3,7 @@ package service;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.junit.Assert.assertThat;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -17,10 +18,13 @@ public class DataMiningServiceTest {
 		service = new DataMiningService();
 	}
 
+	@After
+	public void tearDown() {
+		service = null;
+	}
+
 	@Test
 	public void should_return_rules_within_file() {
-		DataMiningService service = new DataMiningService();
-
 		Apriori apriori = service.findSimilarities("Data/TestCsvOne.csv");
 
 		boolean hasRules = apriori.getNumRules() > 0;

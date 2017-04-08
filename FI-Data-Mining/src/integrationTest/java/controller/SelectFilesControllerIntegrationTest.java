@@ -1,9 +1,6 @@
 package controller;
 
 import java.io.IOException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.ArrayList;
 
 import org.junit.Test;
 import org.mockito.MockitoAnnotations;
@@ -14,19 +11,17 @@ import javafx.scene.Scene;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 
-public class SelectWantedAttributesControllerIntegrationTest extends ApplicationTest {
+public class SelectFilesControllerIntegrationTest extends ApplicationTest {
 
-	private SelectWantedAttributesController controller;
+	private SelectFilesController controller;
 
 	@Override
-	public void start(Stage primaryStage) throws Exception {
+	public void start(Stage primaryStage) {
 		try {
 			MockitoAnnotations.initMocks(this);
-			FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/SelectWantedAttributes.fxml"));
+			FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/SelectFiles.fxml"));
 			BorderPane screen = (BorderPane) loader.load();
 			controller = loader.getController();
-			initializeController();
-
 			Scene scene = new Scene(screen);
 			primaryStage.setScene(scene);
 			primaryStage.setTitle("Fischer International Data Mining");
@@ -34,14 +29,6 @@ public class SelectWantedAttributesControllerIntegrationTest extends Application
 		} catch (IOException e) {
 			throw new IllegalArgumentException("Error: " + e.getMessage(), e);
 		}
-	}
-
-	private void initializeController() throws Exception {
-		ArrayList<Path> inputtedFiles = new ArrayList<Path>();
-		inputtedFiles.add(Paths.get("Data/TestCsvOne.csv"));
-		inputtedFiles.add(Paths.get("Data/TestCsvTwo.csv"));
-
-		controller.initData(inputtedFiles);
 	}
 
 	@Test

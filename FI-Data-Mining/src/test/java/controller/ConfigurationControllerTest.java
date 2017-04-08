@@ -2,8 +2,10 @@ package controller;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.junit.Assert.assertThat;
-import static org.testfx.api.FxAssert.verifyThat;
-import static org.testfx.matcher.base.NodeMatchers.hasText;
+import static org.mockito.Matchers.isA;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doReturn;
+import static org.powermock.api.mockito.PowerMockito.whenNew;
 
 import java.io.IOException;
 import java.nio.file.Path;
@@ -12,6 +14,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import org.junit.Test;
+import org.mockito.MockitoAnnotations;
+import org.mockito.Spy;
+import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.testfx.framework.junit.ApplicationTest;
 
 import javafx.fxml.FXMLLoader;
@@ -21,14 +26,20 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
+import service.PreprocessingService;
 
+@PrepareForTest(ConfigurationController.class)
 public class ConfigurationControllerTest extends ApplicationTest {
 
 	private ConfigurationController controller;
 
+	@Spy
+	private final PreprocessingService preprocessorSpy = new PreprocessingService();
+
 	@Override
-	public void start(Stage primaryStage) {
+	public void start(Stage primaryStage) throws Exception {
 		try {
+			MockitoAnnotations.initMocks(this);
 			FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/Configuration.fxml"));
 			BorderPane screen = (BorderPane) loader.load();
 			controller = loader.getController();
@@ -43,7 +54,7 @@ public class ConfigurationControllerTest extends ApplicationTest {
 		}
 	}
 
-	private void initializeController() {
+	private void initializeController() throws Exception {
 		HashMap<Path, ArrayList<String>> wantedAttributesToFileMap = new HashMap<Path, ArrayList<String>>();
 		HashMap<Path, ArrayList<String>> allAttributesToFilesMap = new HashMap<Path, ArrayList<String>>();
 
@@ -58,6 +69,9 @@ public class ConfigurationControllerTest extends ApplicationTest {
 
 		wantedAttributesToFileMap.put(Paths.get("Data/TestCsvOne.csv"), wantedAttributesList);
 		allAttributesToFilesMap.put(Paths.get("Data/TestCsvOne.csv"), allAttributesList);
+
+		whenNew(PreprocessingService.class).withNoArguments().thenReturn(preprocessorSpy);
+		doReturn(wantedAttributesList).when(preprocessorSpy).findCommonAttributesInMap(isA(HashMap.class));
 
 		controller.initData(wantedAttributesToFileMap, allAttributesToFilesMap);
 	}
@@ -84,6 +98,9 @@ public class ConfigurationControllerTest extends ApplicationTest {
 
 	@Test
 	public void should_continue_to_next_screen() {
+		doNothing().when(preprocessorSpy).createPreprocessedFile(isA(HashMap.class), isA(HashMap.class),
+				isA(String.class));
+
 		clickOn("#groupByAttributeComboBox");
 		clickOn("attributeOne");
 
@@ -99,35 +116,34 @@ public class ConfigurationControllerTest extends ApplicationTest {
 
 		assertThat(text.getText(), equalTo("Step 4/4:"));
 	}
-	
+
 	@Test
 	public void should_allow_selection_of_enabling_performance_metrics() {
 		clickOn("#performanceMetricsComboBox");
 		clickOn("Yes");
-		
+
 		ComboBox<String> comboBox = lookup("#performanceMetricsComboBox").query();
-		
+
 		assertThat(comboBox.getValue(), equalTo("Yes"));
 	}
-	
+
 	@Test
 	public void should_allow_the_selection_of_a_group_by_attribute() {
 		clickOn("#groupByAttributeComboBox");
 		clickOn("attributeOne");
 
-		
 		ComboBox<String> comboBox = lookup("#groupByAttributeComboBox").query();
-		
+
 		assertThat(comboBox.getValue(), equalTo("attributeOne"));
 	}
-	
+
 	@Test
 	public void should_allow_the_selection_of_a_data_mining_algorithm() {
 		clickOn("#algorithmComboBox");
 		clickOn("Apriori");
-		
+
 		ComboBox<String> comboBox = lookup("#algorithmComboBox").query();
-		
+
 		assertThat(comboBox.getValue(), equalTo("Apriori"));
 	}
 

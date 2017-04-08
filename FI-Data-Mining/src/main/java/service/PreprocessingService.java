@@ -27,8 +27,8 @@ public class PreprocessingService {
 			String fileName = filePath.getFileName().toString();
 
 			if (fileName.toLowerCase().contains(".xml")) {
-				XmlToCsvConverter converter = new XmlToCsvConverter(filePath.toFile());
-				File csvFile = converter.convertToCsv();
+				XmlToCsvConverter converter = new XmlToCsvConverter();
+				File csvFile = converter.convertToCsv(filePath.toFile());
 				convertedFiles.add(Paths.get(csvFile.getAbsolutePath()));
 			} else {
 				convertedFiles.add(filePath);

@@ -31,7 +31,7 @@ public class SelectWantedAttributesController {
 	private ArrayList<Path> convertedFiles;
 	private HashMap<Path, ArrayList<String>> allAttributesToFilesMap;
 	private HashMap<Path, ArrayList<String>> wantedAttributesToFilesMap = new HashMap<Path, ArrayList<String>>();
-	private PreprocessingService preprocessor = new PreprocessingService();
+	private PreprocessingService preprocessor;
 	private int currentFileIndex;
 
 	@FXML
@@ -61,12 +61,11 @@ public class SelectWantedAttributesController {
 	 * @param inputtedFiles
 	 *            the list of inputted files
 	 */
-	public void initData(PreprocessingService preprocessor, ArrayList<Path> inputtedFiles) {
-		this.preprocessor = preprocessor;
+	public void initData(ArrayList<Path> inputtedFiles) {
 		this.inputtedFiles = inputtedFiles;
+		this.preprocessor = new PreprocessingService();
 
-		convertedFiles = preprocessor.convertXmlToCsv(this.inputtedFiles);
-		System.out.println(convertedFiles);
+		convertedFiles = this.preprocessor.convertXmlToCsv(this.inputtedFiles);
 		currentFileIndex = 0;
 		currentFileName.setText(this.convertedFiles.get(currentFileIndex).getFileName().toString());
 		allAttributesToFilesMap = preprocessor.mapAllAttributesToFiles(convertedFiles);
@@ -161,7 +160,6 @@ public class SelectWantedAttributesController {
 				loadAttributeCheckBoxes(currentFileIndex);
 			}
 		}
-
 	}
 
 	/**
