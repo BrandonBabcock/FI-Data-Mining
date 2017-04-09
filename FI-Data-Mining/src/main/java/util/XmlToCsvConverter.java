@@ -15,12 +15,10 @@ import org.xml.sax.SAXException;
  * Converter to convert an XML file to a CSV file
  */
 public class XmlToCsvConverter {
-	private File xmlFile;
 	private DocumentBuilderFactory factory;
 	private DocumentBuilder builder;
 
-	public XmlToCsvConverter(File file) {
-		this.xmlFile = file;
+	public XmlToCsvConverter() {
 		factory = DocumentBuilderFactory.newInstance();
 		try {
 			builder = factory.newDocumentBuilder();
@@ -32,7 +30,7 @@ public class XmlToCsvConverter {
 	/**
 	 * Converts an XML file to a CSV file
 	 */
-	public File convertToCsv() {
+	public File convertToCsv(File xmlFile) {
 		// Create the CSV file
 		File csvFile = new File("Data/" + xmlFile.getName().replaceAll(".xml", ".csv"));
 		try {

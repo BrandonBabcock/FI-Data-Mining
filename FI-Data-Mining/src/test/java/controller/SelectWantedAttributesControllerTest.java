@@ -2,13 +2,21 @@ package controller;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Matchers.isA;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doReturn;
+import static org.powermock.api.mockito.PowerMockito.whenNew;
 
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import org.junit.Test;
+import org.mockito.MockitoAnnotations;
+import org.mockito.Spy;
+import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.testfx.framework.junit.ApplicationTest;
 
 import javafx.fxml.FXMLLoader;
@@ -21,13 +29,24 @@ import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import service.PreprocessingService;
 
+@PrepareForTest(SelectWantedAttributesController.class)
 public class SelectWantedAttributesControllerTest extends ApplicationTest {
 
 	private SelectWantedAttributesController controller;
 
+	@Spy
+	private final PreprocessingService preprocessorSpy = new PreprocessingService();
+
+	@Spy
+	private final FXMLLoader fxmlLoaderSpy = new FXMLLoader(getClass().getResource("/view/Configuration.fxml"));
+
+	@Spy
+	private final ConfigurationController configurationControllerSpy = new ConfigurationController();
+
 	@Override
-	public void start(Stage primaryStage) {
+	public void start(Stage primaryStage) throws Exception {
 		try {
+			MockitoAnnotations.initMocks(this);
 			FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/SelectWantedAttributes.fxml"));
 			BorderPane screen = (BorderPane) loader.load();
 			controller = loader.getController();
@@ -42,12 +61,32 @@ public class SelectWantedAttributesControllerTest extends ApplicationTest {
 		}
 	}
 
-	private void initializeController() {
+	private void initializeController() throws Exception {
 		ArrayList<Path> inputtedFiles = new ArrayList<Path>();
 		inputtedFiles.add(Paths.get("Data/TestCsvOne.csv"));
 		inputtedFiles.add(Paths.get("Data/TestCsvTwo.csv"));
 
-		controller.initData(new PreprocessingService(), inputtedFiles);
+		HashMap<Path, ArrayList<String>> allAttributesToFilesMap = new HashMap<Path, ArrayList<String>>();
+		ArrayList<String> firstFileAttributes = new ArrayList<String>();
+		ArrayList<String> secondFileAttributes = new ArrayList<String>();
+
+		firstFileAttributes.add("attributeOne");
+		firstFileAttributes.add("attributeTwo");
+		firstFileAttributes.add("attributeThree");
+
+		secondFileAttributes.add("attributeOne");
+		secondFileAttributes.add("attributeTwo");
+		secondFileAttributes.add("attributeThree");
+		secondFileAttributes.add("attributeFour");
+
+		allAttributesToFilesMap.put(Paths.get("Data/TestCsvOne.csv"), firstFileAttributes);
+		allAttributesToFilesMap.put(Paths.get("Data/TestCsvTwo.csv"), secondFileAttributes);
+
+		whenNew(PreprocessingService.class).withNoArguments().thenReturn(preprocessorSpy);
+		doReturn(inputtedFiles).when(preprocessorSpy).convertXmlToCsv(isA(ArrayList.class));
+		doReturn(allAttributesToFilesMap).when(preprocessorSpy).mapAllAttributesToFiles(isA(ArrayList.class));
+
+		controller.initData(inputtedFiles);
 	}
 
 	@Test
@@ -91,7 +130,12 @@ public class SelectWantedAttributesControllerTest extends ApplicationTest {
 	}
 
 	@Test
-	public void should_continue_to_next_screen() {
+	public void should_continue_to_next_screen() throws Exception {
+		whenNew(FXMLLoader.class).withArguments(getClass().getResource("/view/Configuration.fxml"))
+				.thenReturn(fxmlLoaderSpy);
+		doReturn(configurationControllerSpy).when(fxmlLoaderSpy).getController();
+		doNothing().when(configurationControllerSpy).initData(isA(HashMap.class), isA(HashMap.class));
+
 		clickOn("attributeOne");
 		clickOn("#nextButton");
 
@@ -104,7 +148,7 @@ public class SelectWantedAttributesControllerTest extends ApplicationTest {
 	}
 
 	@Test
-	public void should_show_error_when_clicking_next_without_finishing_configuration() {
+	public void should_show_error_when_clicking_next_without_selecting_any_attributes() {
 		clickOn("#nextButton");
 
 		Node errorDialog = lookup(".alert").query();

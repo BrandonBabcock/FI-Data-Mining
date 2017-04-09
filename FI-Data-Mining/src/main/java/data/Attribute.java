@@ -32,32 +32,12 @@ public class Attribute {
 	}
 
 	/**
-	 * Sets the attribute's title
-	 * 
-	 * @param title
-	 *            the attribute's title to set
-	 */
-	public void setTitle(String title) {
-		this.title = title;
-	}
-
-	/**
 	 * Gets the attribute's value
 	 * 
 	 * @return the attribute's value
 	 */
 	public String getValue() {
 		return value;
-	}
-
-	/**
-	 * Sets the attribute's value
-	 * 
-	 * @param value
-	 *            the attribute's value to set
-	 */
-	public void setValue(String value) {
-		this.value = value;
 	}
 
 }

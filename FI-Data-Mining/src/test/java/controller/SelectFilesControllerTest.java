@@ -3,13 +3,21 @@ package controller;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.hasItem;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Matchers.isA;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doReturn;
+import static org.powermock.api.mockito.PowerMockito.whenNew;
 import static org.testfx.api.FxAssert.verifyThat;
 import static org.testfx.matcher.base.NodeMatchers.hasText;
 
 import java.io.IOException;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 
 import org.junit.Test;
+import org.mockito.MockitoAnnotations;
+import org.mockito.Spy;
+import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.testfx.framework.junit.ApplicationTest;
 
 import javafx.fxml.FXMLLoader;
@@ -19,13 +27,21 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
+@PrepareForTest(SelectFilesController.class)
 public class SelectFilesControllerTest extends ApplicationTest {
 
 	private SelectFilesController controller;
 
+	@Spy
+	private FXMLLoader fxmlLoaderSpy = new FXMLLoader(getClass().getResource("/view/SelectWantedAttributes.fxml"));
+
+	@Spy
+	private SelectWantedAttributesController selectWantedAttributesControllerSpy = new SelectWantedAttributesController();
+
 	@Override
 	public void start(Stage primaryStage) {
 		try {
+			MockitoAnnotations.initMocks(this);
 			FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/SelectFiles.fxml"));
 			BorderPane screen = (BorderPane) loader.load();
 			controller = loader.getController();
@@ -45,7 +61,7 @@ public class SelectFilesControllerTest extends ApplicationTest {
 
 		verifyThat("#fileTextField", hasText(""));
 	}
-	
+
 	@Test
 	public void should_allow_adding_of_a_csv_file() {
 		clickOn("#fileTextField").write("Data/TestCsvOne.csv");
@@ -63,7 +79,7 @@ public class SelectFilesControllerTest extends ApplicationTest {
 		assertThat(controller.getInputtedFiles(), hasItem(Paths.get("Data/TestXmlOne.xml")));
 		assertThat(controller.getInputtedFiles().size(), equalTo(1));
 	}
-	
+
 	@Test
 	public void should_allow_multiple_files_to_be_inputted() {
 		clickOn("#fileTextField").write("Data/TestCsvOne.csv");
@@ -71,12 +87,11 @@ public class SelectFilesControllerTest extends ApplicationTest {
 		clickOn("#fileTextField").write("Data/TestCsvTwo.csv");
 		clickOn("#addFileButton");
 
-
 		assertThat(controller.getInputtedFiles(), hasItem(Paths.get("Data/TestCsvOne.csv")));
 		assertThat(controller.getInputtedFiles(), hasItem(Paths.get("Data/TestCsvTwo.csv")));
 		assertThat(controller.getInputtedFiles().size(), equalTo(2));
 	}
-	
+
 	@Test
 	public void should_show_error_dialog_when_adding_file_with_invalid_type() {
 		clickOn("#fileTextField").write("Data/InvalidFileType.txt");
@@ -152,7 +167,12 @@ public class SelectFilesControllerTest extends ApplicationTest {
 	}
 
 	@Test
-	public void should_continue_to_next_screen() {
+	public void should_continue_to_next_screen() throws Exception {
+		whenNew(FXMLLoader.class).withArguments(getClass().getResource("/view/SelectWantedAttributes.fxml"))
+				.thenReturn(fxmlLoaderSpy);
+		doReturn(selectWantedAttributesControllerSpy).when(fxmlLoaderSpy).getController();
+		doNothing().when(selectWantedAttributesControllerSpy).initData(isA(ArrayList.class));
+
 		clickOn("#fileTextField").write("Data/TestCsvOne.csv");
 		clickOn("#addFileButton");
 		clickOn("#nextButton");

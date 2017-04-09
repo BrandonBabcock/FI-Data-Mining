@@ -17,7 +17,6 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
-import service.PreprocessingService;
 import util.DialogsUtil;
 
 /**
@@ -141,7 +140,7 @@ public class SelectFilesController {
 				stage.setScene(scene);
 
 				SelectWantedAttributesController controller = loader.getController();
-				controller.initData(new PreprocessingService(), inputtedFiles);
+				controller.initData(inputtedFiles);
 
 				stage.show();
 			} catch (IOException e) {

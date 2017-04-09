@@ -11,26 +11,27 @@ import weka.core.converters.CSVLoader;
  */
 public class CsvToArffConverter {
 
-	private File csvFile; // the passed csv file.'
+	private File csvFile; // The passed CSV file
 
 	public CsvToArffConverter(File file) {
 		this.csvFile = file;
 	}
 
-	public File convertFile() throws IOException{
-			// load CSV
-			CSVLoader loader = new CSVLoader();
-			loader.setSource(csvFile);
-			Instances data = loader.getDataSet();
+	public File convertFile() throws IOException {
+		// Load CSV
+		CSVLoader loader = new CSVLoader();
+		loader.setSource(csvFile);
+		Instances data = loader.getDataSet();
 
-			String filename = csvFile.getName().substring(0, csvFile.getName().indexOf("."));
+		String filename = csvFile.getName().substring(0, csvFile.getName().indexOf("."));
 
-			// save ARFF
-			File arffFile = new File("Data/" + filename + ".arff");
-			ArffSaver saver = new ArffSaver();
-			saver.setInstances(data);
-			saver.setFile(arffFile);
-			saver.writeBatch();
-			return arffFile;
+		// Save ARFF
+		File arffFile = new File("Data/" + filename + ".arff");
+		ArffSaver saver = new ArffSaver();
+		saver.setInstances(data);
+		saver.setFile(arffFile);
+		saver.writeBatch();
+		return arffFile;
 	}
+
 }

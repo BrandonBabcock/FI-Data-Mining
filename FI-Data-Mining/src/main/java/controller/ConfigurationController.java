@@ -25,7 +25,7 @@ import util.DialogsUtil;
  */
 public class ConfigurationController {
 
-	PreprocessingService preprocessor = new PreprocessingService();
+	private PreprocessingService preprocessor;
 	private HashMap<Path, ArrayList<String>> wantedAttributesToFilesMap;
 	private HashMap<Path, ArrayList<String>> allAttributesToFilesMap;
 
@@ -59,9 +59,10 @@ public class ConfigurationController {
 			HashMap<Path, ArrayList<String>> allAttributesToFilesMap) {
 		this.wantedAttributesToFilesMap = wantedAttributesToFileMap;
 		this.allAttributesToFilesMap = allAttributesToFilesMap;
+		this.preprocessor = new PreprocessingService();
 
 		groupByAttributeComboBox.getItems()
-				.addAll(preprocessor.findCommonAttributesInMap(this.wantedAttributesToFilesMap));
+				.addAll(this.preprocessor.findCommonAttributesInMap(this.wantedAttributesToFilesMap));
 		algorithmComboBox.getItems().addAll("Apriori");
 		performanceMetricsComboBox.getItems().addAll("Yes", "No");
 	}
@@ -118,7 +119,6 @@ public class ConfigurationController {
 				throw new IllegalArgumentException("Error: " + e.getMessage(), e);
 			}
 		}
-
 	}
 
 	/**
