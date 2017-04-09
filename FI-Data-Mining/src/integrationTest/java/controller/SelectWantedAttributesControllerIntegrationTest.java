@@ -89,19 +89,6 @@ public class SelectWantedAttributesControllerIntegrationTest extends Application
 	}
 
 	@Test
-	public void should_continue_to_next_screen() throws Exception {
-		clickOn("attributeOne");
-		clickOn("#nextButton");
-
-		clickOn("attributeOne");
-		clickOn("#nextButton");
-
-		Text stepNumberText = lookup("#stepNumberText").query();
-
-		assertThat(stepNumberText.getText(), equalTo("Step 3/4:"));
-	}
-
-	@Test
 	public void should_display_correct_group_by_attribute_from_selected_attributes() {
 		clickOn("attributeOne");
 		clickOn("#nextButton");

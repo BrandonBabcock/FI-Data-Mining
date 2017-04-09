@@ -60,24 +60,6 @@ public class ConfigurationControllerIntegrationTest extends ApplicationTest {
 	}
 
 	@Test
-	public void should_continue_to_next_screen() {
-		clickOn("#groupByAttributeComboBox");
-		clickOn("attributeOne");
-
-		clickOn("#algorithmComboBox");
-		clickOn("Apriori");
-
-		clickOn("#performanceMetricsComboBox");
-		clickOn("Yes");
-
-		clickOn("#nextButton");
-
-		Text text = lookup("#stepNumberText").query();
-
-		assertThat(text.getText(), equalTo("Step 4/4:"));
-	}
-
-	@Test
 	public void should_create_preprocessed_file() {
 		File file = new File("Data/PreprocessedFile.csv");
 		file.delete();

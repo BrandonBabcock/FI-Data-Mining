@@ -31,25 +31,26 @@ public class SelectFilesControllerIntegrationTest extends ApplicationTest {
 	}
 
 	@Test
-	public void should_continue_to_next_screen() {
-		clickOn("#fileTextField").write("Data/TestCsvOne.csv");
-		clickOn("#addFileButton");
-		clickOn("#nextButton");
-
-		Text stepNumberText = lookup("#stepNumberText").query();
-
-		assertThat(stepNumberText.getText(), equalTo("Step 2/4:"));
-	}
-
-	@Test
 	public void should_use_inputted_files_for_next_screen() {
 		clickOn("#fileTextField").write("Data/TestCsvOne.csv");
 		clickOn("#addFileButton");
+
+		clickOn("#fileTextField").write("Data/TestXmlOne.xml");
+		clickOn("#addFileButton");
+
 		clickOn("#nextButton");
 
-		Text currentFileName = lookup("#currentFileName").query();
+		Text firstFileName = lookup("#currentFileName").query();
+		String firstFileNameString = firstFileName.getText();
 
-		assertThat(currentFileName.getText(), equalTo("TestCsvOne.csv"));
+		clickOn("#selectAllButton");
+		clickOn("#nextButton");
+
+		Text secondFileName = lookup("#currentFileName").query();
+		String secondFileNameString = secondFileName.getText();
+
+		assertThat(firstFileNameString, equalTo("TestCsvOne.csv"));
+		assertThat(secondFileNameString, equalTo("TestXmlOne.xml"));
 	}
 
 }
