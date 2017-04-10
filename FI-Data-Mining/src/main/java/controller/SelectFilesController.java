@@ -9,14 +9,11 @@ import java.util.ArrayList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.Node;
-import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.FileChooser;
-import javafx.stage.Stage;
 import util.DialogsUtil;
 
 /**
@@ -135,14 +132,10 @@ public class SelectFilesController {
 				FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/SelectWantedAttributes.fxml"));
 				BorderPane screen = (BorderPane) loader.load();
 
-				Scene scene = new Scene(screen);
-				Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-				stage.setScene(scene);
-
 				SelectWantedAttributesController controller = loader.getController();
 				controller.initData(inputtedFiles);
 
-				stage.show();
+				nextButton.getScene().setRoot(screen);
 			} catch (IOException e) {
 				throw new IllegalArgumentException("Error: " + e.getMessage(), e);
 			}
