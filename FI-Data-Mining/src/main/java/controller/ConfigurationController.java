@@ -9,14 +9,11 @@ import java.util.Optional;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.Node;
-import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.ComboBox;
 import javafx.scene.layout.BorderPane;
-import javafx.stage.Stage;
 import service.PreprocessingService;
 import util.DialogsUtil;
 
@@ -63,7 +60,7 @@ public class ConfigurationController {
 
 		groupByAttributeComboBox.getItems()
 				.addAll(this.preprocessor.findCommonAttributesInMap(this.wantedAttributesToFilesMap));
-		algorithmComboBox.getItems().addAll("Apriori");
+		algorithmComboBox.getItems().addAll("Apriori", "Filtered Associator");
 		performanceMetricsComboBox.getItems().addAll("Yes", "No");
 	}
 
@@ -82,12 +79,7 @@ public class ConfigurationController {
 		if (result.get() == ButtonType.OK) {
 			try {
 				BorderPane screen = (BorderPane) FXMLLoader.load(getClass().getResource("/view/SelectFiles.fxml"));
-
-				Scene scene = new Scene(screen);
-				Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-				stage.setScene(scene);
-
-				stage.show();
+				restartButton.getScene().setRoot(screen);
 			} catch (IOException e) {
 				throw new IllegalArgumentException("Error: " + e.getMessage(), e);
 			}
@@ -110,11 +102,7 @@ public class ConfigurationController {
 				FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/Results.fxml"));
 				BorderPane screen = (BorderPane) loader.load();
 
-				Scene scene = new Scene(screen);
-				Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-				stage.setScene(scene);
-
-				stage.show();
+				nextButton.getScene().setRoot(screen);
 			} catch (IOException e) {
 				throw new IllegalArgumentException("Error: " + e.getMessage(), e);
 			}

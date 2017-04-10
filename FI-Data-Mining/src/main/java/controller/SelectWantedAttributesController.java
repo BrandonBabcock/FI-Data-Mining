@@ -10,7 +10,6 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
-import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
@@ -18,7 +17,6 @@ import javafx.scene.control.CheckBox;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
-import javafx.stage.Stage;
 import service.PreprocessingService;
 import util.DialogsUtil;
 
@@ -117,12 +115,7 @@ public class SelectWantedAttributesController {
 		if (result.get() == ButtonType.OK) {
 			try {
 				BorderPane screen = (BorderPane) FXMLLoader.load(getClass().getResource("/view/SelectFiles.fxml"));
-
-				Scene scene = new Scene(screen);
-				Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-				stage.setScene(scene);
-
-				stage.show();
+				restartButton.getScene().setRoot(screen);
 			} catch (IOException e) {
 				throw new IllegalArgumentException("Error: " + e.getMessage(), e);
 			}
@@ -143,14 +136,10 @@ public class SelectWantedAttributesController {
 					FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/Configuration.fxml"));
 					BorderPane screen = (BorderPane) loader.load();
 
-					Scene scene = new Scene(screen);
-					Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-					stage.setScene(scene);
-
 					ConfigurationController controller = loader.getController();
 					controller.initData(wantedAttributesToFilesMap, allAttributesToFilesMap);
 
-					stage.show();
+					nextButton.getScene().setRoot(screen);
 				} catch (IOException e) {
 					throw new IllegalArgumentException("Error: " + e.getMessage(), e);
 				}
