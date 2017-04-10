@@ -61,7 +61,7 @@ public class XmlToCsvConverter {
                             }
 
 							value = value.replaceAll(",", "");
-							value = value.trim().replaceAll(" +", " ");
+							value = value.trim().replaceAll(" +", "_");
 							temp.add(value);
 						}
 					} else {
@@ -77,7 +77,7 @@ public class XmlToCsvConverter {
 
 								value = value.replaceAll(",", "");
 								value = value.replaceAll("\n", "");
-								value = value.trim().replaceAll(" +", " ");
+								value = value.trim().replaceAll(" +", "_");
 								temp.add(value);
 							}
 						}
