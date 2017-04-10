@@ -63,7 +63,7 @@ public class ConfigurationController {
 
 		groupByAttributeComboBox.getItems()
 				.addAll(this.preprocessor.findCommonAttributesInMap(this.wantedAttributesToFilesMap));
-		algorithmComboBox.getItems().addAll("Apriori");
+		algorithmComboBox.getItems().addAll("Apriori", "Filtered Associator");
 		performanceMetricsComboBox.getItems().addAll("Yes", "No");
 	}
 

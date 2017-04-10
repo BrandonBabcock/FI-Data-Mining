@@ -21,7 +21,7 @@ sourceSets {
 }
 
 dependencies {
-	compile group: "nz.ac.waikato.cms.weka", name: "weka-stable", version: "3.6.6"
+	compile group: "nz.ac.waikato.cms.weka", name: "weka-stable", version: "3.8.1"
 	testCompile "junit:junit:4.12"
 	testCompile "org.testfx:testfx-core:4.0.+"
 	testCompile "org.testfx:testfx-junit:4.0.+"
