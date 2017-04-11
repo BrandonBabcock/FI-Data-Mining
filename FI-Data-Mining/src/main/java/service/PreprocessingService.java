@@ -273,75 +273,110 @@ public class PreprocessingService {
 			e.printStackTrace();
 		}
 	}
-	
-	private void handlePipes() {
+
+	public void handlePipes() {
 		// Stores the column numbers the contain pipes
 		ArrayList<Integer> columnsWithPipes = new ArrayList<Integer>();
 
 		// Stores the attribute titles that contain pipes
 		ArrayList<String> attributesWithPipes = new ArrayList<String>();
 
-		Scanner fileReader = new Scanner("Data/PreprocessedFile.csv");
+		try {
+			Scanner fileReader = new Scanner(new File("Data/PreprocessedFile.csv"));
 
-		// First line of the file as array and ArrayList
-		String[] firstLine = fileReader.nextLine().split(",");
-		ArrayList<String> firstLineList = (ArrayList<String>) Arrays.asList(firstLine);
+			// First line of the file as array and ArrayList
+			String[] firstLine = fileReader.nextLine().split(",");
+			ArrayList<String> firstLineList = new ArrayList<String>(Arrays.asList(firstLine));
 
-		// Loop through all lines of file, populating the
-		// columnsWithPipes and attributesWithPipes ArrayLists
-		while (fileReader.hasNextLine()) {
-			String[] line = fileReader.nextLine().split(",");
+			// Loop through all lines of file, populating the
+			// columnsWithPipes and attributesWithPipes ArrayLists
+			while (fileReader.hasNextLine()) {
+				String[] line = fileReader.nextLine().split(",");
 
-			for (int i = 0; i < line.length; i++) {
-				if (line[i].contains("|")) {
-					if (!columnsWithPipes.contains(i)) {
-						columnsWithPipes.add(i);
-						attributesWithPipes.add(firstLineList.get(i));
-					}
-				}
-			}
-		}
-
-		fileReader = new Scanner("Data/PreprocessedFile.csv");
-
-		fileReader.nextLine();
-
-		// Map containing the column with a pipe as the key and the possible
-		// values for that column (taking pipes into consideration) as an
-		// ArrayList
-		HashMap<Integer, ArrayList<String>> pipeColumnsToValuesMap = new HashMap<Integer, ArrayList<String>>();
-
-		// Add an entry for each column and an empty ArrayList
-		for (int i = 0; i < columnsWithPipes.size(); i++) {
-			pipeColumnsToValuesMap.put(i, new ArrayList<String>());
-		}
-
-		// Populate the empty ArrayList with the possible values of the columns
-		while (fileReader.hasNextLine()) {
-			String[] line = fileReader.nextLine().split(",");
-
-			for (int i = 0; i < columnsWithPipes.size(); i++) {
-				String[] values = null;
-
-				if (line[i].contains("|")) {
-					values = line[i].split("|");
-				}
-
-				if (values != null) {
-					for (int j = 0; j < values.length; j++) {
-						if (!pipeColumnsToValuesMap.get(i).contains(values[j])) {
-							pipeColumnsToValuesMap.get(i).add(values[j]);
+				for (int i = 0; i < line.length; i++) {
+					if (line[i].contains("|")) {
+						if (!columnsWithPipes.contains(i)) {
+							columnsWithPipes.add(i);
+							attributesWithPipes.add(firstLineList.get(i));
 						}
 					}
-				} else {
-					if (!pipeColumnsToValuesMap.get(i).contains(line[i])) {
-						pipeColumnsToValuesMap.get(i).add(line[i]);
+				}
+			}
+
+			fileReader = new Scanner(new File("Data/PreprocessedFile.csv"));
+
+			fileReader.nextLine();
+
+			// Map containing the column with a pipe as the key and the possible
+			// values for that column (taking pipes into consideration) as an
+			// ArrayList
+			HashMap<Integer, ArrayList<String>> pipeColumnsToValuesMap = new HashMap<Integer, ArrayList<String>>();
+
+			// Add an entry for each column and an empty ArrayList
+			for (int i = 0; i < columnsWithPipes.size(); i++) {
+				pipeColumnsToValuesMap.put(columnsWithPipes.get(i), new ArrayList<String>());
+			}
+
+			// Populate the empty ArrayList with the possible values of the
+			// columns
+			while (fileReader.hasNextLine()) {
+				String[] line = fileReader.nextLine().split(",");
+
+				for (int i = 0; i < columnsWithPipes.size(); i++) {
+					String[] values = null;
+
+					if (line[columnsWithPipes.get(i)].contains("|")) {
+						values = line[columnsWithPipes.get(i)].split("|");
+					}
+
+					if (values != null) {
+						for (int j = 0; j < values.length; j++) {
+							if (!pipeColumnsToValuesMap.get(columnsWithPipes.get(i)).contains(values[j])) {
+								pipeColumnsToValuesMap.get(columnsWithPipes.get(i)).add(values[j]);
+							}
+						}
+					} else {
+						if (!pipeColumnsToValuesMap.get(columnsWithPipes.get(i)).contains(line[columnsWithPipes.get(i)])) {
+							pipeColumnsToValuesMap.get(columnsWithPipes.get(i)).add(line[columnsWithPipes.get(i)]);
+						}
 					}
 				}
 			}
+
+			// Start making the new file
+			try {
+				FileWriter fileWriter = new FileWriter("Data/FinalPreprocessedFile.csv");
+				fileReader = new Scanner(new File("Data/PreprocessedFile.csv"));
+
+				for (int i = 0; i < columnsWithPipes.size(); i++) {
+					for (String str : pipeColumnsToValuesMap.get(columnsWithPipes.get(i))) {
+//						System.out.println(str);
+//						str = str.replace(" ", "_");
+						System.out.println(str);
+						String newAttribute = attributesWithPipes.get(i) + "_" + str;
+						firstLineList.add(newAttribute);
+					}
+				}
+
+				String newFirstLine = String.join(",", firstLineList);
+				System.out.println(newFirstLine);
+				// fileWriter.append(newFirstLine);
+				fileWriter.flush();
+				fileWriter.close();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		} catch (FileNotFoundException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
 		}
-		
-		// Start making the new file
+	}
+
+	public static void main(String[] args) {
+		PreprocessingService service = new PreprocessingService();
+
+		service.handlePipes();
 	}
 
 }
