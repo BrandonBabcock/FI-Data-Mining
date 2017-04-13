@@ -1,10 +1,14 @@
 package service;
 
+import util.CsvToArffConverter;
 import weka.associations.AbstractAssociator;
 import weka.associations.Apriori;
 import weka.associations.FilteredAssociator;
 import weka.core.Instances;
 import weka.core.converters.ConverterUtils.DataSource;
+
+import java.io.File;
+import java.io.IOException;
 
 /**
  * Service for data mining tasks
@@ -84,4 +88,15 @@ public class DataMiningService {
 		}
 	}
 
+	public static void main(String[] args) {
+		CsvToArffConverter convert = new CsvToArffConverter(new File("Data/updatedPreprocessedFile.csv"));
+		try {
+			convert.convertFile();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+		DataMiningService service = new DataMiningService();
+		service.findAssociationRules("Apriori", "Data/updatedPreprocessedFile.arff");
+	}
 }

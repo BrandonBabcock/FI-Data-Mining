@@ -91,6 +91,15 @@ public class PreprocessingService {
 				allAttributesToFilesMap, attributeLocationsToFilesMap);
 
 		buildFile(wantedAttributesToFilesMap, userAttributesMap, groupByAttribute);
+
+
+		PipeHandlerService service = new PipeHandlerService(new File("Data/PreprocessedFile.csv"));
+		try {
+			service.detectPipe();
+			service.updateFile();
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		}
 	}
 
 	private void removeAttributeFromMap(HashMap<Path, ArrayList<String>> map, String attribute) {
@@ -326,7 +335,7 @@ public class PreprocessingService {
 					String[] values = null;
 
 					if (line[columnsWithPipes.get(i)].contains("|")) {
-						values = line[columnsWithPipes.get(i)].split("|");
+						values = line[columnsWithPipes.get(i)].split("\\|");
 					}
 
 					if (values != null) {
@@ -350,8 +359,8 @@ public class PreprocessingService {
 
 				for (int i = 0; i < columnsWithPipes.size(); i++) {
 					for (String str : pipeColumnsToValuesMap.get(columnsWithPipes.get(i))) {
-//						System.out.println(str);
-//						str = str.replace(" ", "_");
+						System.out.println(str);
+						str = str.replace(" ", "_");
 						System.out.println(str);
 						String newAttribute = attributesWithPipes.get(i) + "_" + str;
 						firstLineList.add(newAttribute);
@@ -360,7 +369,7 @@ public class PreprocessingService {
 
 				String newFirstLine = String.join(",", firstLineList);
 				System.out.println(newFirstLine);
-				// fileWriter.append(newFirstLine);
+				fileWriter.append(newFirstLine);
 				fileWriter.flush();
 				fileWriter.close();
 			} catch (IOException e) {

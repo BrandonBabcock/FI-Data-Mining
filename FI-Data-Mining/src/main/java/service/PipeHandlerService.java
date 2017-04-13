@@ -16,14 +16,12 @@ public class PipeHandlerService {
     private HashSet<String> pipedAttributes;
     private ArrayList<String> newAttributes;
     private ArrayList<String[]> data;
-    private ArrayList<ArrayList<String>> newData;
 
     public PipeHandlerService(File file){
         this.file = file;
         newAttributes = new ArrayList<>();
         pipedAttributes = new HashSet<>();
         data = new ArrayList<>();
-        newData = new ArrayList<>();
     }
 
     public static void main(String[] args){
@@ -65,7 +63,8 @@ public class PipeHandlerService {
             for(Integer i : hasPipes){
                 String[] temp = str[i].split("\\|");
                 for(String s : temp) {
-                    pipedAttributes.add(originalFileAttribute[i] + "." + s.split("-")[0].replace(" ","_"));
+
+                    pipedAttributes.add(originalFileAttribute[i] + "." + s.replace(" ","_").replace("'",""));
                 }
             }
         }
@@ -73,13 +72,10 @@ public class PipeHandlerService {
         updateData();
     }
 
-    public String[] splitValues(String str){
-        return str.split("\\|");
-    }
 
 
     public void updateData(){
-
+        newAttributes = new ArrayList<>();
         for(int i = 0; i < originalFileAttribute.length; i++){
             if(!hasPipes.contains(i)){
                 newAttributes.add(originalFileAttribute[i]);
@@ -90,73 +86,64 @@ public class PipeHandlerService {
             newAttributes.add(s);
         }
 
-        for(String[] row : data){
-            ArrayList<String> values = new ArrayList();
-            for(int i = 0; i < row.length; i++){
-                if(!hasPipes.contains(i)){
-                    values.add(row[i]);
-                }
-            }
-
-            for(int i = 0; i < row.length; i++){
-                if(hasPipes.contains(i)){
-                    if(row[i].contains("|")){
-                        String[] splitValues = splitValues(row[i]);
-                        values.addAll(Arrays.asList(splitValues));
-                    }
-                }
-            }
-            newData.add(values);
-        }
-
+        System.out.println(newAttributes.size());
     }
 
     public void updateFile() throws FileNotFoundException {
         StringBuilder sb = new StringBuilder();
 
         for(String s : newAttributes){
-            sb.append(s);
+            sb.append(s.replace("-","_"));
             sb.append(",");
         }
 
-        sb.delete(sb.length() - 1, sb.length());
+        sb.deleteCharAt(sb.length() - 1);
+        sb.append("\n");
 
         // write the new file attributes
         PrintWriter writer = new PrintWriter(new File("Data/updatedPreprocessedFile.csv"));
 
         writer.write(sb.toString());
 
-        for(ArrayList<String> row : newData){
+
+        for(String[] arr : data){
             sb = new StringBuilder();
-            for(int i = 0; i < row.size(); i++){
+            for(int i = 0; i < arr.length; i++){
                 if(!hasPipes.contains(i)){
-                    sb.append(row.get(i));
+                    sb.append(arr[i]);
                     sb.append(",");
                 }
             }
 
-            for(int i = 0; i < row.size(); i++){
-                if (hasPipes.contains(i)) {
-                    for (String s : newAttributes) {
-                        String value = row.get(i);
-                        if (s.contains(value)) {
-                            sb.append(row.get(i));
-                            sb.append(",");
-                        } else {
-                            sb.append("null");
-                            sb.append(",");
-                        }
-                    }
+
+            for(int i = 0; i < newAttributes.size(); i++){
+                boolean contained = false;
+                String att = newAttributes.get(i);
+                for(int j : hasPipes){
+                    String[] values = arr[j].split("\\|");
+                   for(String s : values){
+                       if(att.contains(s)){
+                           contained = true;
+                       }
+                   }
+                }
+                if(contained){
+                    sb.append("true");
+                    sb.append(",");
+                } else {
+                    sb.append("false");
+                    sb.append(",");
                 }
             }
+            System.out.println(sb.toString().split(",").length);
+            sb.deleteCharAt(sb.length() - 1);
+            sb.append("\n");
             writer.write(sb.toString());
-            writer.write("\n");
-            writer.flush();
         }
 
         sb.delete(sb.length() - 1, sb.length());
-
         writer.close();
     }
-
 }
+
+
