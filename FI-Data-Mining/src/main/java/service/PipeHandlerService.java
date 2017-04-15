@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Scanner;
 
 public class PipeHandlerService {
@@ -53,8 +54,10 @@ public class PipeHandlerService {
 
 			String line = scan.nextLine();
 			line = line.replace(",,", ",null,");
+//			List<String> test2 = new ArrayList<String>(Arrays.asList(line.split(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)", -1)));
+//			System.out.println("size: " + test2.size());
 
-			values.addAll(Arrays.asList(line.split(",")));
+			values.addAll(Arrays.asList(line.split(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)", -1)));
 
 			if (values.size() < originalFileAttribute.length) {
 				values.add("null");
@@ -63,7 +66,11 @@ public class PipeHandlerService {
 			data.add(values);
 
 			for (int i = 0; i < values.size(); i++) {
+//				System.out.println(values.get(i));
+//				System.out.println(i);
 				if (values.get(i).contains("|")) {
+//					System.out.println(values.get(i));
+//					System.out.println(i);
 					hasPipes.add(i);
 				}
 			}
@@ -75,6 +82,11 @@ public class PipeHandlerService {
 	}
 
 	public void buildAttributes() throws FileNotFoundException {
+//		for (Integer i : hasPipes) {
+//			System.out.println(i);
+//		}
+		
+		
 		for (ArrayList<String> arrList : data) {
 			for (Integer i : hasPipes) {
 				String[] temp = arrList.get(i).split("\\|");
@@ -159,7 +171,10 @@ public class PipeHandlerService {
 
 			}
 
-			System.out.println(sb.toString().split(",").length);
+//			for (String s : sb.toString().split(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)", -1)) {
+//				System.out.println(s);
+//			}
+			System.out.println(sb.toString().split(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)", -1).length);
 
 			sb.deleteCharAt(sb.length() - 1);
 			sb.append("\n");

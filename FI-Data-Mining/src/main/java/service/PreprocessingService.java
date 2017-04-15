@@ -92,13 +92,13 @@ public class PreprocessingService {
 
 		buildFile(wantedAttributesToFilesMap, userAttributesMap, groupByAttribute);
 
-		PipeHandlerService service = new PipeHandlerService(new File("Data/PreprocessedFile.csv"));
-		try {
-			service.detectPipe();
-			service.updateFile();
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		}
+//		PipeHandlerService service = new PipeHandlerService(new File("Data/PreprocessedFile.csv"));
+//		try {
+//			service.detectPipe();
+//			service.updateFile();
+//		} catch (FileNotFoundException e) {
+//			e.printStackTrace();
+//		}
 	}
 
 	private void removeAttributeFromMap(HashMap<Path, ArrayList<String>> map, String attribute) {
@@ -178,12 +178,9 @@ public class PreprocessingService {
 						if (readLine.charAt(i) == '"') {
 							inQuotes = !inQuotes;
 						}
-//						if (readLine.charAt(i) == ',' && inQuotes) {
-//							copy += '&';
-//						} else {
-//							copy += readLine.charAt(i);
-//						}
+
 						if (readLine.charAt(i) == ',' && inQuotes) {
+							System.out.println("here");
 //							copy += '&';
 						} else {
 							copy += readLine.charAt(i);
@@ -387,9 +384,9 @@ public class PreprocessingService {
 	}
 
 	public static void main(String[] args) {
-		PreprocessingService service = new PreprocessingService();
+//		PipeHandlerService service = new PipeHandlerService();
 
-		service.handlePipes();
+//		service.handlePipes();
 	}
 
 }
