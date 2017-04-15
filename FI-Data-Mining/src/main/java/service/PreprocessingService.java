@@ -92,13 +92,13 @@ public class PreprocessingService {
 
 		buildFile(wantedAttributesToFilesMap, userAttributesMap, groupByAttribute);
 
-//		PipeHandlerService service = new PipeHandlerService(new File("Data/PreprocessedFile.csv"));
-//		try {
-//			service.detectPipe();
-//			service.updateFile();
-//		} catch (FileNotFoundException e) {
-//			e.printStackTrace();
-//		}
+		PipeHandlerService service = new PipeHandlerService(new File("Data/PreprocessedFile.csv"));
+		try {
+			service.detectPipe();
+			service.updateFile();
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		}
 	}
 
 	private void removeAttributeFromMap(HashMap<Path, ArrayList<String>> map, String attribute) {
@@ -170,27 +170,17 @@ public class PreprocessingService {
 
 					// Remove ,'s between double quotes
 					String readLine = fileReader.nextLine();
-					String copy = new String();
+					readLine = readLine.replace(",,", ",null,");
 
-					boolean inQuotes = false;
-
-					for (int i = 0; i < readLine.length(); ++i) {
-						if (readLine.charAt(i) == '"') {
-							inQuotes = !inQuotes;
-						}
-
-						if (readLine.charAt(i) == ',' && inQuotes) {
-							System.out.println("here");
-//							copy += '&';
-						} else {
-							copy += readLine.charAt(i);
-						}
+					if (readLine.substring(readLine.length() - 1).equals(",")) {
+						readLine += "null";
 					}
 
-					String[] line = copy.split(",");
+					String[] line = readLine.split(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)", -1);
+
 					String key = line[attributeLocationsToFilesMap.get(filePath).getGroupByIndex()];
 
-					// Add new user key if map doesn't have it
+					// Add new group by key if map doesn't have it
 					if (!userAttributesMap.containsKey(key)) {
 						userAttributesMap.put(key, new ArrayList<Attribute>());
 					}
@@ -346,7 +336,8 @@ public class PreprocessingService {
 							}
 						}
 					} else {
-						if (!pipeColumnsToValuesMap.get(columnsWithPipes.get(i)).contains(line[columnsWithPipes.get(i)])) {
+						if (!pipeColumnsToValuesMap.get(columnsWithPipes.get(i))
+								.contains(line[columnsWithPipes.get(i)])) {
 							pipeColumnsToValuesMap.get(columnsWithPipes.get(i)).add(line[columnsWithPipes.get(i)]);
 						}
 					}
@@ -381,12 +372,6 @@ public class PreprocessingService {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
-	}
-
-	public static void main(String[] args) {
-//		PipeHandlerService service = new PipeHandlerService();
-
-//		service.handlePipes();
 	}
 
 }

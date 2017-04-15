@@ -7,7 +7,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
-import java.util.List;
 import java.util.Scanner;
 
 public class PipeHandlerService {
@@ -54,8 +53,6 @@ public class PipeHandlerService {
 
 			String line = scan.nextLine();
 			line = line.replace(",,", ",null,");
-//			List<String> test2 = new ArrayList<String>(Arrays.asList(line.split(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)", -1)));
-//			System.out.println("size: " + test2.size());
 
 			values.addAll(Arrays.asList(line.split(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)", -1)));
 
@@ -66,11 +63,7 @@ public class PipeHandlerService {
 			data.add(values);
 
 			for (int i = 0; i < values.size(); i++) {
-//				System.out.println(values.get(i));
-//				System.out.println(i);
 				if (values.get(i).contains("|")) {
-//					System.out.println(values.get(i));
-//					System.out.println(i);
 					hasPipes.add(i);
 				}
 			}
@@ -82,17 +75,13 @@ public class PipeHandlerService {
 	}
 
 	public void buildAttributes() throws FileNotFoundException {
-//		for (Integer i : hasPipes) {
-//			System.out.println(i);
-//		}
-		
-		
 		for (ArrayList<String> arrList : data) {
 			for (Integer i : hasPipes) {
 				String[] temp = arrList.get(i).split("\\|");
 
 				for (String s : temp) {
-					pipedAttributes.add(originalFileAttribute[i] + "_" + s.replace(" ", "_").replace("'", "").replace("\"", ""));
+					pipedAttributes.add(
+							originalFileAttribute[i] + "_" + s.replace(", ", "_").replace("'", "").replace("\"", ""));
 				}
 			}
 		}
@@ -105,15 +94,18 @@ public class PipeHandlerService {
 
 		for (int i = 0; i < originalFileAttribute.length; i++) {
 			if (!hasPipes.contains(i)) {
-				newAttributes.add(originalFileAttribute[i]);
+				if (!newAttributes.contains(originalFileAttribute[i])) {
+					newAttributes.add(originalFileAttribute[i]);
+				}
 			}
 		}
 
 		for (String s : pipedAttributes) {
-			newAttributes.add(s);
+			if (!newAttributes.contains(s)) {
+				System.out.println(s);
+				newAttributes.add(s);
+			}
 		}
-
-		System.out.println("New attributes size: " + newAttributes.size());
 	}
 
 	public void updateFile() throws FileNotFoundException {
@@ -145,12 +137,7 @@ public class PipeHandlerService {
 
 						for (String s : values) {
 							s = s.replace(" ", "_").replace("'", "").replace("\"", "");
-							
-//							pipedAttributes.add(originalFileAttribute[i] + "_" + s.replace(" ", "_").replace("'", "").replace("\"", ""));
-//							if (!s.equals("null")) {
-//								System.out.println("att: " + att);
-//								System.out.println("s: " + s);
-//							}
+
 							if (att.contains(s)) {
 								contained = true;
 							}
@@ -170,11 +157,6 @@ public class PipeHandlerService {
 				}
 
 			}
-
-//			for (String s : sb.toString().split(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)", -1)) {
-//				System.out.println(s);
-//			}
-			System.out.println(sb.toString().split(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)", -1).length);
 
 			sb.deleteCharAt(sb.length() - 1);
 			sb.append("\n");
