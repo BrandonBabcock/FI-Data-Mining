@@ -92,7 +92,6 @@ public class PreprocessingService {
 
 		buildFile(wantedAttributesToFilesMap, userAttributesMap, groupByAttribute);
 
-
 		PipeHandlerService service = new PipeHandlerService(new File("Data/PreprocessedFile.csv"));
 		try {
 			service.detectPipe();
@@ -179,8 +178,13 @@ public class PreprocessingService {
 						if (readLine.charAt(i) == '"') {
 							inQuotes = !inQuotes;
 						}
+//						if (readLine.charAt(i) == ',' && inQuotes) {
+//							copy += '&';
+//						} else {
+//							copy += readLine.charAt(i);
+//						}
 						if (readLine.charAt(i) == ',' && inQuotes) {
-							copy += '|';
+//							copy += '&';
 						} else {
 							copy += readLine.charAt(i);
 						}
