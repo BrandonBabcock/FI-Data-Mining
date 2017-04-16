@@ -12,11 +12,11 @@ import weka.associations.FilteredAssociator;
 
 public class DataMiningServiceTest {
 
-	DataMiningService service;
+	DataMinerService service;
 
 	@Before
 	public void setUp() {
-		service = new DataMiningService();
+		service = new DataMinerService();
 	}
 
 	@After

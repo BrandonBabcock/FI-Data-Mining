@@ -52,7 +52,7 @@ public class CsvToArffConverterTest {
 
     @Test
     public void convertFileTest() throws IOException {
-        File arff = testConverter.convertFile();
+        File arff = testConverter.convertToArff();
         String filename = arff.getName();
         assertTrue(filename, filename.contains(".arff"));
 

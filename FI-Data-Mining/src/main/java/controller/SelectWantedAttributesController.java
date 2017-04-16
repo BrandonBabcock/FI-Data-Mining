@@ -17,7 +17,7 @@ import javafx.scene.control.CheckBox;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
-import service.PreprocessingService;
+import service.PreprocessorService;
 import util.DialogsUtil;
 
 /**
@@ -25,11 +25,31 @@ import util.DialogsUtil;
  */
 public class SelectWantedAttributesController {
 
+	/* The list of all inputted files */
 	private ArrayList<Path> inputtedFiles;
+
+	/* The list of all inputted files converted to CSV files */
 	private ArrayList<Path> convertedFiles;
+
+	/*
+	 * A map containing the file paths as keys and a list of all of the file's
+	 * attributes as values
+	 */
 	private HashMap<Path, ArrayList<String>> allAttributesToFilesMap;
+
+	/*
+	 * A map containing the file paths as keys and a list of the user's selected
+	 * wanted attributes from the files as values
+	 */
 	private HashMap<Path, ArrayList<String>> wantedAttributesToFilesMap = new HashMap<Path, ArrayList<String>>();
-	private PreprocessingService preprocessor;
+
+	/* The PreprocessorService */
+	private PreprocessorService preprocessor;
+
+	/*
+	 * The index of the current file that the user is selecting attributes for
+	 * in the convertedFiles list
+	 */
 	private int currentFileIndex;
 
 	@FXML
@@ -61,17 +81,18 @@ public class SelectWantedAttributesController {
 	 */
 	public void initData(ArrayList<Path> inputtedFiles) {
 		this.inputtedFiles = inputtedFiles;
-		this.preprocessor = new PreprocessingService();
+		preprocessor = new PreprocessorService();
 
 		convertedFiles = this.preprocessor.convertXmlToCsv(this.inputtedFiles);
 		currentFileIndex = 0;
-		currentFileName.setText(this.convertedFiles.get(currentFileIndex).getFileName().toString());
+		currentFileName.setText(this.inputtedFiles.get(currentFileIndex).getFileName().toString());
+
 		allAttributesToFilesMap = preprocessor.mapAllAttributesToFiles(convertedFiles);
 		loadAttributeCheckBoxes(currentFileIndex);
 	}
 
 	/**
-	 * Selects all of the checkboxes
+	 * Selects all of the check boxes
 	 * 
 	 * @param event
 	 *            the action performed on the select all button
@@ -86,7 +107,7 @@ public class SelectWantedAttributesController {
 	}
 
 	/**
-	 * Unselects all of the checkboxes
+	 * Unselects all of the check boxes
 	 * 
 	 * @param event
 	 *            the action performed on the unselect all button
@@ -101,7 +122,7 @@ public class SelectWantedAttributesController {
 	}
 
 	/**
-	 * Restarts to process back to step one.
+	 * Restarts to GUI back to step one.
 	 * 
 	 * @param event
 	 *            the action performed on the restart button
@@ -109,7 +130,7 @@ public class SelectWantedAttributesController {
 	@FXML
 	public void restart(ActionEvent event) {
 		Alert alert = DialogsUtil.createConfirmationDialog("Click OK to Restart",
-				"Clicking OK will restart from step one.");
+				"Clicking OK will restart to step one.");
 		Optional<ButtonType> result = alert.showAndWait();
 
 		if (result.get() == ButtonType.OK) {
@@ -123,7 +144,9 @@ public class SelectWantedAttributesController {
 	}
 
 	/**
-	 * Continues to the next screen or file is there are more files to go
+	 * Continues to the next screen or file if there are more files to go. The
+	 * user can only continue if they have done everything required on the
+	 * current screen.
 	 * 
 	 * @param event
 	 *            the action performed on the next button
@@ -174,7 +197,7 @@ public class SelectWantedAttributesController {
 	/**
 	 * Gets all of the currently checked attributes
 	 * 
-	 * @return a list of all the current checked attributes
+	 * @return a list of all the currently checked attributes
 	 */
 	private ArrayList<String> getCheckedAttributes() {
 		ArrayList<String> checkedAttributes = new ArrayList<String>();
@@ -191,7 +214,7 @@ public class SelectWantedAttributesController {
 	}
 
 	/**
-	 * Loads the checkboxes of file attributes onto the screen
+	 * Loads the check boxes of file attributes onto the screen
 	 * 
 	 * @param fileIndex
 	 *            index of the current file

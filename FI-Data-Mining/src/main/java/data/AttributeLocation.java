@@ -7,7 +7,10 @@ import java.util.ArrayList;
  */
 public class AttributeLocation {
 
+	/* The column of the group by attribute */
 	private int groupByIndex;
+
+	/* A list of the column numbers of file attributes */
 	private ArrayList<Integer> attributeIndexes = new ArrayList<Integer>();
 
 	/**

@@ -31,9 +31,13 @@ public class XmlToCsvConverter {
 	 * Converts an XML file to a CSV file
 	 */
 	public File convertToCsv(File xmlFile) {
-		// Create the CSV file
-		File csvFile = new File("Data/" + xmlFile.getName().replaceAll(".xml", ".csv"));
 		try {
+			// Create the CSV file
+			String fileName = xmlFile.getName();
+			fileName = fileName.substring(0, fileName.lastIndexOf("."));
+			File csvFile = File.createTempFile(fileName, ".xml");
+			csvFile.deleteOnExit();
+
 			// Configure PrintWriter to write to the CSV file
 			PrintWriter writer = new PrintWriter(csvFile);
 			// we append the values to string builder then write it to a csv
@@ -56,9 +60,9 @@ public class XmlToCsvConverter {
 							attributes.add(nm.item(j).getNodeName());
 							String value = nm.item(j).getNodeValue();
 
-							if(value.equals("")){
-							    value = "null";
-                            }
+							if (value.equals("")) {
+								value = "null";
+							}
 
 							value = value.replaceAll(",", "");
 							value = value.trim().replaceAll(" +", "_");
@@ -71,9 +75,9 @@ public class XmlToCsvConverter {
 								attributes.add(nl.item(j).getNodeName());
 								String value = nl.item(j).getFirstChild().getNodeValue();
 
-                                if(value.equals("")){
-                                    value = "null";
-                                }
+								if (value.equals("")) {
+									value = "null";
+								}
 
 								value = value.replaceAll(",", "");
 								value = value.replaceAll("\n", "");

@@ -27,7 +27,7 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
-import service.PreprocessingService;
+import service.PreprocessorService;
 
 @PrepareForTest(SelectWantedAttributesController.class)
 public class SelectWantedAttributesControllerTest extends ApplicationTest {
@@ -35,7 +35,7 @@ public class SelectWantedAttributesControllerTest extends ApplicationTest {
 	private SelectWantedAttributesController controller;
 
 	@Spy
-	private final PreprocessingService preprocessorSpy = new PreprocessingService();
+	private final PreprocessorService preprocessorSpy = new PreprocessorService();
 
 	@Spy
 	private final FXMLLoader fxmlLoaderSpy = new FXMLLoader(getClass().getResource("/view/Configuration.fxml"));
@@ -82,7 +82,7 @@ public class SelectWantedAttributesControllerTest extends ApplicationTest {
 		allAttributesToFilesMap.put(Paths.get("Data/TestCsvOne.csv"), firstFileAttributes);
 		allAttributesToFilesMap.put(Paths.get("Data/TestCsvTwo.csv"), secondFileAttributes);
 
-		whenNew(PreprocessingService.class).withNoArguments().thenReturn(preprocessorSpy);
+		whenNew(PreprocessorService.class).withNoArguments().thenReturn(preprocessorSpy);
 		doReturn(inputtedFiles).when(preprocessorSpy).convertXmlToCsv(isA(ArrayList.class));
 		doReturn(allAttributesToFilesMap).when(preprocessorSpy).mapAllAttributesToFiles(isA(ArrayList.class));
 

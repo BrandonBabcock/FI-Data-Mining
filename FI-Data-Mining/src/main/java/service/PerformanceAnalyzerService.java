@@ -8,7 +8,10 @@ import java.io.File;
  */
 public class PerformanceAnalyzerService {
 
+	/* The start time */
 	private double startTime;
+
+	/* The ending time */
 	private double stopTime;
 
 	/**

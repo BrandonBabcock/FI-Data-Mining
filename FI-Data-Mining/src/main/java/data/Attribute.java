@@ -5,8 +5,10 @@ package data;
  */
 public class Attribute {
 
+	/* The attribute's title */
 	private String title;
 
+	/* The attribute's value */
 	private String value;
 
 	/**

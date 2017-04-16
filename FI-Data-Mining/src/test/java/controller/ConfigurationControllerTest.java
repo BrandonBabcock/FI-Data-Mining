@@ -26,7 +26,7 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
-import service.PreprocessingService;
+import service.PreprocessorService;
 
 @PrepareForTest(ConfigurationController.class)
 public class ConfigurationControllerTest extends ApplicationTest {
@@ -34,7 +34,7 @@ public class ConfigurationControllerTest extends ApplicationTest {
 	private ConfigurationController controller;
 
 	@Spy
-	private final PreprocessingService preprocessorSpy = new PreprocessingService();
+	private final PreprocessorService preprocessorSpy = new PreprocessorService();
 
 	@Override
 	public void start(Stage primaryStage) throws Exception {
@@ -70,7 +70,7 @@ public class ConfigurationControllerTest extends ApplicationTest {
 		wantedAttributesToFileMap.put(Paths.get("Data/TestCsvOne.csv"), wantedAttributesList);
 		allAttributesToFilesMap.put(Paths.get("Data/TestCsvOne.csv"), allAttributesList);
 
-		whenNew(PreprocessingService.class).withNoArguments().thenReturn(preprocessorSpy);
+		whenNew(PreprocessorService.class).withNoArguments().thenReturn(preprocessorSpy);
 		doReturn(wantedAttributesList).when(preprocessorSpy).findCommonAttributesInMap(isA(HashMap.class));
 
 		controller.initData(wantedAttributesToFileMap, allAttributesToFilesMap);

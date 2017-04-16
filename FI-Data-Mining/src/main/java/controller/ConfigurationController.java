@@ -1,5 +1,6 @@
 package controller;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -14,16 +15,32 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.ComboBox;
 import javafx.scene.layout.BorderPane;
-import service.PreprocessingService;
+import service.DataMinerService;
+import service.PreprocessorService;
+import util.CsvToArffConverter;
 import util.DialogsUtil;
+import weka.associations.AbstractAssociator;
 
 /**
- * Controller for the Configuration screen
+ * Controller for the Configuration FXML screen
  */
 public class ConfigurationController {
 
-	private PreprocessingService preprocessor;
+	/* The PreprocessorService */
+	private PreprocessorService preprocessor;
+
+	private DataMinerService dataMiner;
+
+	/*
+	 * A map containing the file paths as keys and a list of the user's selected
+	 * wanted attributes from the files as values
+	 */
 	private HashMap<Path, ArrayList<String>> wantedAttributesToFilesMap;
+
+	/*
+	 * A map containing the file paths as keys and a list of all of the file's
+	 * attributes as values
+	 */
 	private HashMap<Path, ArrayList<String>> allAttributesToFilesMap;
 
 	@FXML
@@ -56,7 +73,8 @@ public class ConfigurationController {
 			HashMap<Path, ArrayList<String>> allAttributesToFilesMap) {
 		this.wantedAttributesToFilesMap = wantedAttributesToFileMap;
 		this.allAttributesToFilesMap = allAttributesToFilesMap;
-		this.preprocessor = new PreprocessingService();
+		this.preprocessor = new PreprocessorService();
+		this.dataMiner = new DataMinerService();
 
 		groupByAttributeComboBox.getItems()
 				.addAll(this.preprocessor.findCommonAttributesInMap(this.wantedAttributesToFilesMap));
@@ -87,7 +105,8 @@ public class ConfigurationController {
 	}
 
 	/**
-	 * Continues to the next screen and creates the preprocessed file
+	 * Continues to the next screen and creates the preprocessed file if the
+	 * user has done everything required on the current step
 	 * 
 	 * @param event
 	 *            the action performed on the next button
@@ -95,12 +114,21 @@ public class ConfigurationController {
 	@FXML
 	public void next(ActionEvent event) {
 		if (isAbleToContinue()) {
-			preprocessor.createPreprocessedFile(wantedAttributesToFilesMap, allAttributesToFilesMap,
-					groupByAttributeComboBox.getValue());
+			File preprocessedFile = preprocessor.createPreprocessedFile(wantedAttributesToFilesMap,
+					allAttributesToFilesMap, groupByAttributeComboBox.getValue());
+
+			CsvToArffConverter csvToArffConverter = new CsvToArffConverter(preprocessedFile);
+			File arffFile = csvToArffConverter.convertToArff();
+
+			AbstractAssociator associator = dataMiner.findAssociationRules(algorithmComboBox.getValue(),
+					arffFile.getPath());
 
 			try {
 				FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/Results.fxml"));
 				BorderPane screen = (BorderPane) loader.load();
+
+				ResultsController controller = loader.getController();
+				controller.initData(associator);
 
 				nextButton.getScene().setRoot(screen);
 			} catch (IOException e) {

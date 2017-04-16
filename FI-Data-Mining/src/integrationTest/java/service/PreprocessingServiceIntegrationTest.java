@@ -14,12 +14,12 @@ import org.mockito.MockitoAnnotations;
 
 public class PreprocessingServiceIntegrationTest {
 
-	private PreprocessingService preprocessor;
+	private PreprocessorService preprocessor;
 
 	@Before
 	public void setUp() {
 		MockitoAnnotations.initMocks(this);
-		preprocessor = new PreprocessingService();
+		preprocessor = new PreprocessorService();
 	}
 
 	@After

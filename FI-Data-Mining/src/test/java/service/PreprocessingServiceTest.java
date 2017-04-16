@@ -26,10 +26,10 @@ import data.Attribute;
 import data.AttributeLocation;
 import util.XmlToCsvConverter;
 
-@PrepareForTest(PreprocessingService.class)
+@PrepareForTest(PreprocessorService.class)
 public class PreprocessingServiceTest {
 
-	private PreprocessingService preprocessor;
+	private PreprocessorService preprocessor;
 
 	@Spy
 	private XmlToCsvConverter xmlToCsvConverterSPy = new XmlToCsvConverter();
@@ -37,7 +37,7 @@ public class PreprocessingServiceTest {
 	@Before
 	public void setUp() {
 		MockitoAnnotations.initMocks(this);
-		preprocessor = new PreprocessingService();
+		preprocessor = new PreprocessorService();
 	}
 
 	@After
