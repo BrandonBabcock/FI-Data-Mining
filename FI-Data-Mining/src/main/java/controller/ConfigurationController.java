@@ -14,6 +14,7 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.TextField;
 import javafx.scene.layout.BorderPane;
 import service.DataMinerService;
 import service.PerformanceAnalyzerService;
@@ -67,10 +68,25 @@ public class ConfigurationController {
 	private ComboBox<String> groupByAttributeComboBox;
 
 	@FXML
+	private ComboBox<String> algorithmComboBox;
+
+	@FXML
 	private ComboBox<String> performanceMetricsComboBox;
 
 	@FXML
-	private ComboBox<String> algorithmComboBox;
+	private TextField minimumConfidenceTextField;
+
+	@FXML
+	private TextField minimumSupportLowerBoundTextField;
+
+	@FXML
+	private TextField minimumSupportUpperBoundTextField;
+
+	@FXML
+	private TextField minimumSupportDeltaTextField;
+
+	@FXML
+	private TextField numberOfRulesTextField;
 
 	/**
 	 * Initializes data for the controller
@@ -114,7 +130,9 @@ public class ConfigurationController {
 
 		groupByAttributeComboBox.setDisable(true);
 		algorithmComboBox.getItems().addAll("Apriori", "Filtered Associator");
+		algorithmComboBox.setValue("Apriori");
 		performanceMetricsComboBox.getItems().addAll("Yes", "No");
+		performanceMetricsComboBox.setValue("Yes");
 	}
 
 	/**
@@ -156,14 +174,19 @@ public class ConfigurationController {
 			}
 
 			AbstractAssociator associator;
+			String[] dataMiningOptions = { numberOfRulesTextField.getText(), minimumConfidenceTextField.getText(),
+					minimumSupportDeltaTextField.getText(), minimumSupportUpperBoundTextField.getText(),
+					minimumSupportLowerBoundTextField.getText() };
 
 			if (performanceMetricsComboBox.getValue().equals("Yes")) {
 				performanceAnalyzer = new PerformanceAnalyzerService();
 				performanceAnalyzer.start();
-				associator = dataMiner.findAssociationRules(algorithmComboBox.getValue(), arffFile.getPath());
+				associator = dataMiner.findAssociationRules(algorithmComboBox.getValue(), arffFile.getPath(),
+						dataMiningOptions);
 				performanceAnalyzer.stop();
 			} else {
-				associator = dataMiner.findAssociationRules(algorithmComboBox.getValue(), arffFile.getPath());
+				associator = dataMiner.findAssociationRules(algorithmComboBox.getValue(), arffFile.getPath(),
+						dataMiningOptions);
 			}
 
 			try {
@@ -190,11 +213,20 @@ public class ConfigurationController {
 	private boolean isAbleToContinue() {
 		if (!usingArffFile) {
 			if (groupByAttributeComboBox.getValue() != null && algorithmComboBox.getValue() != null
-					&& performanceMetricsComboBox.getValue() != null) {
+					&& performanceMetricsComboBox.getValue() != null && isNumeric(minimumConfidenceTextField.getText())
+					&& isNumeric(minimumSupportLowerBoundTextField.getText())
+					&& isNumeric(minimumSupportUpperBoundTextField.getText())
+					&& isNumeric(minimumSupportDeltaTextField.getText())
+					&& isNumeric(numberOfRulesTextField.getText())) {
 				return true;
 			}
 		} else {
-			if (algorithmComboBox.getValue() != null && performanceMetricsComboBox.getValue() != null) {
+			if (algorithmComboBox.getValue() != null && performanceMetricsComboBox.getValue() != null
+					&& isNumeric(minimumConfidenceTextField.getText())
+					&& isNumeric(minimumSupportLowerBoundTextField.getText())
+					&& isNumeric(minimumSupportUpperBoundTextField.getText())
+					&& isNumeric(minimumSupportDeltaTextField.getText())
+					&& isNumeric(numberOfRulesTextField.getText())) {
 				return true;
 			}
 		}
@@ -203,6 +235,17 @@ public class ConfigurationController {
 				"At least one of the values is not configured.");
 		alert.showAndWait();
 		return false;
+	}
+
+	/**
+	 * Checks if a String is a valid number
+	 * 
+	 * @param s
+	 *            the String to check
+	 * @return true if the String is a valid number, false if it is not
+	 */
+	public boolean isNumeric(String s) {
+		return s.matches("[-+]?\\d*\\.?\\d+");
 	}
 
 }

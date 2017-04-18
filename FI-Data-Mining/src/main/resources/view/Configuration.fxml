@@ -50,6 +50,14 @@
                               <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                            </VBox.margin>
                         </Text>
+                        <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Performance Metrics:">
+                           <font>
+                              <Font size="18.0" />
+                           </font>
+                           <VBox.margin>
+                              <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                           </VBox.margin>
+                        </Text>
                         <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Algorithm:">
                            <font>
                               <Font size="18.0" />
@@ -58,7 +66,39 @@
                               <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                            </VBox.margin>
                         </Text>
-                        <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Performance Metrics:">
+                        <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Minimum Confidence:">
+                           <font>
+                              <Font size="18.0" />
+                           </font>
+                           <VBox.margin>
+                              <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                           </VBox.margin>
+                        </Text>
+                        <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Minimum Support Lower Bound:">
+                           <font>
+                              <Font size="18.0" />
+                           </font>
+                           <VBox.margin>
+                              <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                           </VBox.margin>
+                        </Text>
+                        <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Minimum Support Upper Bound:">
+                           <font>
+                              <Font size="18.0" />
+                           </font>
+                           <VBox.margin>
+                              <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                           </VBox.margin>
+                        </Text>
+                        <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Minimum Support Delta:">
+                           <font>
+                              <Font size="18.0" />
+                           </font>
+                           <VBox.margin>
+                              <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                           </VBox.margin>
+                        </Text>
+                        <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Number of Rules:">
                            <font>
                               <Font size="18.0" />
                            </font>
@@ -77,17 +117,98 @@
                            <VBox.margin>
                               <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                            </VBox.margin>
-                        </ComboBox>
-                        <ComboBox fx:id="algorithmComboBox" prefWidth="150.0">
-                           <VBox.margin>
-                              <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-                           </VBox.margin>
+                           <tooltip>
+                              <Tooltip consumeAutoHidingEvents="false" text="The group by attribute is the attribute to group all of the files together by." wrapText="true">
+                                 <font>
+                                    <Font size="14.0" />
+                                 </font>
+                              </Tooltip>
+                           </tooltip>
                         </ComboBox>
                         <ComboBox fx:id="performanceMetricsComboBox" prefWidth="150.0">
                            <VBox.margin>
                               <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                            </VBox.margin>
+                           <tooltip>
+                              <Tooltip text="Whether or not to record and display the runtime." wrapText="true">
+                                 <font>
+                                    <Font size="14.0" />
+                                 </font>
+                              </Tooltip>
+                           </tooltip>
                         </ComboBox>
+                        <ComboBox fx:id="algorithmComboBox" prefWidth="150.0">
+                           <VBox.margin>
+                              <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                           </VBox.margin>
+                           <tooltip>
+                              <Tooltip text="The data mining algorithm to use." wrapText="true">
+                                 <font>
+                                    <Font size="14.0" />
+                                 </font>
+                              </Tooltip>
+                           </tooltip>
+                        </ComboBox>
+                        <TextField fx:id="minimumConfidenceTextField" text="0.9">
+                           <VBox.margin>
+                              <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                           </VBox.margin>
+                           <tooltip>
+                              <Tooltip text="Confidence is an indication of how often the rule has been found to be true. A confidence of 1 means that two attributes must be found together 100% of the time to be considered a rule." wrapText="true">
+                                 <font>
+                                    <Font size="14.0" />
+                                 </font>
+                              </Tooltip>
+                           </tooltip>
+                        </TextField>
+                        <TextField fx:id="minimumSupportLowerBoundTextField" text="0.1">
+                           <VBox.margin>
+                              <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                           </VBox.margin>
+                           <tooltip>
+                              <Tooltip text="Support is an indication of how frequently the itemset appears in the dataset. The lower bound is how low of a frequency is acceptable. A lower bound of 1 would mean that only attributes that appear 100% of the time are considered." wrapText="true">
+                                 <font>
+                                    <Font size="14.0" />
+                                 </font>
+                              </Tooltip>
+                           </tooltip>
+                        </TextField>
+                        <TextField fx:id="minimumSupportUpperBoundTextField" text="1.0">
+                           <VBox.margin>
+                              <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                           </VBox.margin>
+                           <tooltip>
+                              <Tooltip text="Support is an indication of how frequently the itemset appears in the dataset. The upper bound is how high of a frequency is acceptable. An upper bound of 1 would mean that only attributes that appear 100% of the time or less (until hitting the lower bound) are considered." wrapText="true">
+                                 <font>
+                                    <Font size="14.0" />
+                                 </font>
+                              </Tooltip>
+                           </tooltip>
+                        </TextField>
+                        <TextField fx:id="minimumSupportDeltaTextField" text="0.05">
+                           <VBox.margin>
+                              <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                           </VBox.margin>
+                           <tooltip>
+                              <Tooltip text="The minimum support delta is the amount to reduce the minimum support by after each iteration." wrapText="true">
+                                 <font>
+                                    <Font size="14.0" />
+                                 </font>
+                              </Tooltip>
+                           </tooltip>
+                        </TextField>
+                        <TextField fx:id="numberOfRulesTextField" text="10">
+                           <tooltip>
+                              <Tooltip text="The amount of rules to try to find. The algorithm will go until this number of rules is found or until the lower bound minimum support is reached." wrapText="true">
+                                 <font>
+                                    <Font size="14.0" />
+                                 </font>
+                              </Tooltip>
+                           </tooltip>
+                           <VBox.margin>
+                              <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                           </VBox.margin>
+                        </TextField>
                      </children>
                      <HBox.margin>
                         <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
