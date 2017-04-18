@@ -12,17 +12,8 @@ import weka.core.converters.CSVLoader;
  */
 public class CsvToArffConverter {
 
-	/* The CSV file to convert */
-	private File csvFile;
+	private CsvToArffConverter() {
 
-	/**
-	 * Creates a new instance of the CsvToArffConverter
-	 * 
-	 * @param file
-	 *            the file to convert
-	 */
-	public CsvToArffConverter(File file) {
-		this.csvFile = file;
 	}
 
 	/**
@@ -30,22 +21,25 @@ public class CsvToArffConverter {
 	 * 
 	 * @return the ARFF file
 	 */
-	public File convertToArff() {
-		// Load CSV
-		CSVLoader loader = new CSVLoader();
+	public static File convertToArff(File csvFile) {
 		try {
+			// Load CSV file
+			CSVLoader loader = new CSVLoader();
 			loader.setSource(csvFile);
 			Instances data = loader.getDataSet();
 
-			String filename = csvFile.getName().substring(0, csvFile.getName().indexOf("."));
+			String filename = csvFile.getName().substring(0, csvFile.getName().lastIndexOf("."));
 
-			// Save ARFF
+			// Create ARFF file
 			File arffFile = File.createTempFile(filename, ".arff");
 			arffFile.deleteOnExit();
+
+			// Write to ARFF file
 			ArffSaver saver = new ArffSaver();
 			saver.setInstances(data);
 			saver.setFile(arffFile);
 			saver.writeBatch();
+
 			return arffFile;
 		} catch (IOException e) {
 			throw new IllegalArgumentException("Error: " + e.getMessage(), e);

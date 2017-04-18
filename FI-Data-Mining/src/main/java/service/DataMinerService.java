@@ -48,8 +48,11 @@ public class DataMinerService {
 			Instances data = DataSource.read(filePath);
 			data.setClassIndex(data.numAttributes() - 1);
 
+			String[] options = { "-N", "10", "-T", "0", "-C", "0.01", "-D", "0.01", "-U", "1.0", "-M", "0.01" };
+
 			// Build associator
 			Apriori apriori = new Apriori();
+			apriori.setOptions(options);
 			apriori.setClassIndex(data.classIndex());
 			apriori.buildAssociations(data);
 

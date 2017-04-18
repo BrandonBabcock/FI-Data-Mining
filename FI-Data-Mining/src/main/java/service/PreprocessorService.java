@@ -139,11 +139,7 @@ public class PreprocessorService {
 
 		File preprocessedFile = buildFile(wantedAttributesToFilesMap, userAttributesMap, groupByAttribute);
 
-		SpecialCharactersHandlerService service = new SpecialCharactersHandlerService(preprocessedFile);
-		service.detectSpecialCharacters();
-		File finalPreprocessedFile = service.updateFile();
-
-		return finalPreprocessedFile;
+		return preprocessedFile;
 	}
 
 	/**
@@ -237,7 +233,7 @@ public class PreprocessorService {
 
 					// Remove ,'s between double quotes
 					String readLine = fileReader.nextLine();
-					readLine = readLine.replace(",,", ",null,");
+					// readLine = readLine.replace(",,", ",null,");
 
 					if (readLine.substring(readLine.length() - 1).equals(",")) {
 						readLine += "null";

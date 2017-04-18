@@ -1,7 +1,5 @@
 package service;
 
-import java.io.File;
-
 /**
  * The PerformanceAnalyzerService can be used to generate performance metrics
  * for data mining tasks
@@ -34,22 +32,7 @@ public class PerformanceAnalyzerService {
 	 * @return the run time
 	 */
 	public double getRunTime() {
-		return this.stopTime - this.startTime;
-	}
-
-	/**
-	 * Gets the ratio between the data set size and run time
-	 * 
-	 * @param filePath
-	 *            the path to the data set to find the data set size to run time
-	 *            ratio of
-	 * @return the ratio between the data set size and run time
-	 */
-	public double getDataSetSizeToRunTimeRatio(String filePath) {
-		File file = new File(filePath);
-		double bytes = file.length();
-
-		return bytes / getRunTime();
+		return this.stopTime - this.startTime / 1000000000.0;
 	}
 
 }

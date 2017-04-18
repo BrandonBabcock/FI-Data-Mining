@@ -13,13 +13,10 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
-import javafx.scene.control.ChoiceDialog;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.FileChooser;
-import service.DataMinerService;
 import util.DialogsUtil;
-import weka.associations.AbstractAssociator;
 
 /**
  * Controller for the SelectFiles FXML screen
@@ -97,7 +94,7 @@ public class SelectFilesController {
 	public void addFile(ActionEvent event) {
 		if (isValidFile(fileTextField.getText()) && !isDuplicateFile(fileTextField.getText())) {
 			if (isArffFileAdded) {
-				promptToContinueToResults();
+				promptToContinueToConfiguration();
 			} else {
 				Path filePath = Paths.get(fileTextField.getText());
 				inputtedFiles.add(filePath);
@@ -242,20 +239,15 @@ public class SelectFilesController {
 	 * Also, the user is asked to pick a data mining algorithm to use if they
 	 * agree to continue.
 	 */
-	private void promptToContinueToResults() {
+	private void promptToContinueToConfiguration() {
 		Alert alert = DialogsUtil.createConfirmationDialog("ARFF File Entered",
-				"Only one ARFF file can be added. Click OK to data mine this file and continue to the results screen.");
+				"Only one ARFF file can be added. Click OK to use this file and continue to the configuration screen.");
 		Optional<ButtonType> alertResult = alert.showAndWait();
 
 		if (alertResult.get() == ButtonType.OK) {
-			ChoiceDialog<String> dialog = DialogsUtil.createStringChoiceDialog(
-					"Which data mining algorithm would you like to use?", "Choose an algorithm:");
-			Optional<String> dialogResult = dialog.showAndWait();
-
-			if (dialogResult.isPresent()) {
-				continueToResults(dialogResult.get());
-			}
+			continueToConfiguration();
 		} else {
+			isArffFileAdded = false;
 			fileTextField.clear();
 		}
 	}
@@ -263,16 +255,15 @@ public class SelectFilesController {
 	/**
 	 * Goes to the results screen
 	 */
-	private void continueToResults(String algorithm) {
-		DataMinerService dataMiner = new DataMinerService();
-		AbstractAssociator associator = dataMiner.findAssociationRules(algorithm, fileTextField.getText());
-
+	private void continueToConfiguration() {
 		try {
-			FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/Results.fxml"));
+			FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/Configuration.fxml"));
 			BorderPane screen = (BorderPane) loader.load();
 
-			ResultsController controller = loader.getController();
-			controller.initData(associator);
+			File arffFile = new File(fileTextField.getText());
+
+			ConfigurationController controller = loader.getController();
+			controller.initDataFromSelectFiles(arffFile);
 
 			addFileButton.getScene().setRoot(screen);
 		} catch (IOException e) {

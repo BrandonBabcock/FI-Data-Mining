@@ -160,9 +160,15 @@ public class SelectWantedAttributesController {
 					BorderPane screen = (BorderPane) loader.load();
 
 					ConfigurationController controller = loader.getController();
-					controller.initData(wantedAttributesToFilesMap, allAttributesToFilesMap);
+					boolean ableToConfigure = controller.initData(wantedAttributesToFilesMap, allAttributesToFilesMap);
 
-					nextButton.getScene().setRoot(screen);
+					if (ableToConfigure) {
+						nextButton.getScene().setRoot(screen);
+					} else {
+						Alert alert = DialogsUtil.createErrorDialog("No Common Attributes Found",
+								"No common attributes were found within the files. Click Restart to start over.");
+						alert.showAndWait();
+					}
 				} catch (IOException e) {
 					throw new IllegalArgumentException("Error: " + e.getMessage(), e);
 				}

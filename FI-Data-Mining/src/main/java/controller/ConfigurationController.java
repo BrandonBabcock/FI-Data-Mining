@@ -16,6 +16,7 @@ import javafx.scene.control.ButtonType;
 import javafx.scene.control.ComboBox;
 import javafx.scene.layout.BorderPane;
 import service.DataMinerService;
+import service.PerformanceAnalyzerService;
 import service.PreprocessorService;
 import util.CsvToArffConverter;
 import util.DialogsUtil;
@@ -29,7 +30,11 @@ public class ConfigurationController {
 	/* The PreprocessorService */
 	private PreprocessorService preprocessor;
 
+	/* The DataMinerService */
 	private DataMinerService dataMiner;
+
+	/* The PerformanceAnalyzerService */
+	private PerformanceAnalyzerService performanceAnalyzer;
 
 	/*
 	 * A map containing the file paths as keys and a list of the user's selected
@@ -42,6 +47,12 @@ public class ConfigurationController {
 	 * attributes as values
 	 */
 	private HashMap<Path, ArrayList<String>> allAttributesToFilesMap;
+
+	/* Whether or not the entered an ARFF file */
+	private boolean usingArffFile = false;
+
+	/* The ARFF file */
+	private File arffFile;
 
 	@FXML
 	private BorderPane borderPane;
@@ -69,15 +80,39 @@ public class ConfigurationController {
 	 * @param allAttributesToFilesMap
 	 *            a mapping of all attributes to their corresponding file
 	 */
-	public void initData(HashMap<Path, ArrayList<String>> wantedAttributesToFileMap,
+	public boolean initData(HashMap<Path, ArrayList<String>> wantedAttributesToFileMap,
 			HashMap<Path, ArrayList<String>> allAttributesToFilesMap) {
 		this.wantedAttributesToFilesMap = wantedAttributesToFileMap;
 		this.allAttributesToFilesMap = allAttributesToFilesMap;
 		this.preprocessor = new PreprocessorService();
 		this.dataMiner = new DataMinerService();
 
-		groupByAttributeComboBox.getItems()
-				.addAll(this.preprocessor.findCommonAttributesInMap(this.wantedAttributesToFilesMap));
+		ArrayList<String> commonAttributes = this.preprocessor
+				.findCommonAttributesInMap(this.wantedAttributesToFilesMap);
+		groupByAttributeComboBox.getItems().addAll(commonAttributes);
+
+		if (!commonAttributes.isEmpty()) {
+			groupByAttributeComboBox.setValue(commonAttributes.get(0));
+		} else {
+			return false;
+		}
+
+		algorithmComboBox.getItems().addAll("Apriori", "Filtered Associator");
+		algorithmComboBox.setValue("Apriori");
+
+		performanceMetricsComboBox.getItems().addAll("Yes", "No");
+		performanceMetricsComboBox.setValue("Yes");
+
+		return true;
+	}
+
+	public void initDataFromSelectFiles(File arffFile) {
+		this.preprocessor = new PreprocessorService();
+		this.dataMiner = new DataMinerService();
+		this.usingArffFile = true;
+		this.arffFile = arffFile;
+
+		groupByAttributeComboBox.setDisable(true);
 		algorithmComboBox.getItems().addAll("Apriori", "Filtered Associator");
 		performanceMetricsComboBox.getItems().addAll("Yes", "No");
 	}
@@ -114,21 +149,29 @@ public class ConfigurationController {
 	@FXML
 	public void next(ActionEvent event) {
 		if (isAbleToContinue()) {
-			File preprocessedFile = preprocessor.createPreprocessedFile(wantedAttributesToFilesMap,
-					allAttributesToFilesMap, groupByAttributeComboBox.getValue());
+			if (!usingArffFile) {
+				File preprocessedFile = preprocessor.createPreprocessedFile(wantedAttributesToFilesMap,
+						allAttributesToFilesMap, groupByAttributeComboBox.getValue());
+				arffFile = CsvToArffConverter.convertToArff(preprocessedFile);
+			}
 
-			CsvToArffConverter csvToArffConverter = new CsvToArffConverter(preprocessedFile);
-			File arffFile = csvToArffConverter.convertToArff();
+			AbstractAssociator associator;
 
-			AbstractAssociator associator = dataMiner.findAssociationRules(algorithmComboBox.getValue(),
-					arffFile.getPath());
+			if (performanceMetricsComboBox.getValue().equals("Yes")) {
+				performanceAnalyzer = new PerformanceAnalyzerService();
+				performanceAnalyzer.start();
+				associator = dataMiner.findAssociationRules(algorithmComboBox.getValue(), arffFile.getPath());
+				performanceAnalyzer.stop();
+			} else {
+				associator = dataMiner.findAssociationRules(algorithmComboBox.getValue(), arffFile.getPath());
+			}
 
 			try {
 				FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/Results.fxml"));
 				BorderPane screen = (BorderPane) loader.load();
 
 				ResultsController controller = loader.getController();
-				controller.initData(associator);
+				controller.initData(associator, performanceAnalyzer);
 
 				nextButton.getScene().setRoot(screen);
 			} catch (IOException e) {
@@ -145,15 +188,21 @@ public class ConfigurationController {
 	 *         false if not
 	 */
 	private boolean isAbleToContinue() {
-		if (groupByAttributeComboBox.getValue() != null && algorithmComboBox.getValue() != null
-				&& performanceMetricsComboBox.getValue() != null) {
-			return true;
+		if (!usingArffFile) {
+			if (groupByAttributeComboBox.getValue() != null && algorithmComboBox.getValue() != null
+					&& performanceMetricsComboBox.getValue() != null) {
+				return true;
+			}
 		} else {
-			Alert alert = DialogsUtil.createErrorDialog("Incomplete Configuration",
-					"At least one of the values is not configured.");
-			alert.showAndWait();
-			return false;
+			if (algorithmComboBox.getValue() != null && performanceMetricsComboBox.getValue() != null) {
+				return true;
+			}
 		}
+
+		Alert alert = DialogsUtil.createErrorDialog("Incomplete Configuration",
+				"At least one of the values is not configured.");
+		alert.showAndWait();
+		return false;
 	}
 
 }
