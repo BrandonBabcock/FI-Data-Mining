@@ -220,9 +220,10 @@ public class SelectFilesController {
 	private boolean isValidFileType(String filePath) {
 		filePath = filePath.toLowerCase();
 
-		if (filePath.contains(".csv") || filePath.contains(".xml")) {
+		if (filePath.substring(filePath.length() - 4).equals(".csv")
+				|| filePath.substring(filePath.length() - 4).equals(".xml")) {
 			return true;
-		} else if (filePath.contains(".arff")) {
+		} else if (filePath.substring(filePath.length() - 5).equals(".arff")) {
 			isArffFileAdded = true;
 			return true;
 		} else {

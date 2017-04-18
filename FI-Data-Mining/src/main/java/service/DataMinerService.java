@@ -21,7 +21,7 @@ public class DataMinerService {
 	 * @return the association rules
 	 */
 	public AbstractAssociator findAssociationRules(String algorithm, String filePath) {
-		if (filePath.toLowerCase().contains(".arff")) {
+		if (filePath.toLowerCase().substring(filePath.length() - 5).equals(".arff")) {
 			if (algorithm.equals("Apriori")) {
 				return findAprioriRules(filePath);
 			} else if (algorithm.equals("Filtered Associator")) {
