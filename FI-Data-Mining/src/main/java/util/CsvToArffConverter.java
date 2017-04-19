@@ -12,12 +12,15 @@ import weka.core.converters.CSVLoader;
  */
 public class CsvToArffConverter {
 
+	/**
+	 * Private constructor to avoid making instances of this utility class
+	 */
 	private CsvToArffConverter() {
 
 	}
 
 	/**
-	 * Converts a CSV file to an ARFF file
+	 * Converts a CSV file to a temporary ARFF file
 	 * 
 	 * @return the ARFF file
 	 */
@@ -28,10 +31,8 @@ public class CsvToArffConverter {
 			loader.setSource(csvFile);
 			Instances data = loader.getDataSet();
 
-			String filename = csvFile.getName().substring(0, csvFile.getName().lastIndexOf("."));
-
 			// Create ARFF file
-			File arffFile = File.createTempFile(filename, ".arff");
+			File arffFile = File.createTempFile("arffFile", ".arff");
 			arffFile.deleteOnExit();
 
 			// Write to ARFF file

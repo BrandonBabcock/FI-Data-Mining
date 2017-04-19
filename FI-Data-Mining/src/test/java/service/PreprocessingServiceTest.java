@@ -1,14 +1,14 @@
 package service;
 
+import static org.easymock.EasyMock.expect;
 import static org.hamcrest.CoreMatchers.endsWith;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Matchers.isA;
-import static org.mockito.Mockito.doReturn;
-import static org.powermock.api.mockito.PowerMockito.whenNew;
+import static org.powermock.api.easymock.PowerMock.mockStatic;
+import static org.powermock.api.easymock.PowerMock.replay;
+import static org.powermock.api.easymock.PowerMock.verify;
 
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -18,25 +18,22 @@ import java.util.HashMap;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.MockitoAnnotations;
-import org.mockito.Spy;
+import org.junit.runner.RunWith;
 import org.powermock.core.classloader.annotations.PrepareForTest;
+import org.powermock.modules.junit4.PowerMockRunner;
 
 import data.Attribute;
 import data.AttributeLocation;
 import util.XmlToCsvConverter;
 
-@PrepareForTest(PreprocessorService.class)
+@RunWith(PowerMockRunner.class)
+@PrepareForTest({ PreprocessorService.class, XmlToCsvConverter.class })
 public class PreprocessingServiceTest {
 
 	private PreprocessorService preprocessor;
 
-	@Spy
-	private XmlToCsvConverter xmlToCsvConverterSPy = new XmlToCsvConverter();
-
 	@Before
 	public void setUp() {
-		MockitoAnnotations.initMocks(this);
 		preprocessor = new PreprocessorService();
 	}
 
@@ -47,14 +44,17 @@ public class PreprocessingServiceTest {
 
 	@Test
 	public void should_return_a_list_with_a_csv_file_when_passed_a_list_with_an_xml_file() throws Exception {
-		whenNew(XmlToCsvConverter.class).withNoArguments().thenReturn(xmlToCsvConverterSPy);
-		doReturn(Paths.get("Data/TestXmlOne.csv").toFile()).when(xmlToCsvConverterSPy).convertToCsv(isA(File.class));
+		mockStatic(XmlToCsvConverter.class);
+		expect(XmlToCsvConverter.convertToCsv(Paths.get("Data/TestXmlOne.xml").toFile()))
+				.andReturn(Paths.get("Data/TestCsvOne.csv").toFile());
+		replay(XmlToCsvConverter.class);
 
 		ArrayList<Path> files = new ArrayList<Path>();
 		files.add(Paths.get("Data/TestXmlOne.xml"));
 
 		ArrayList<Path> convertedFiles = preprocessor.convertXmlToCsv(files);
 
+		verify(XmlToCsvConverter.class);
 		assertThat(convertedFiles.get(0).getFileName().toString(), endsWith(".csv"));
 	}
 
@@ -111,9 +111,8 @@ public class PreprocessingServiceTest {
 		HashMap<Path, AttributeLocation> attributeLocationsToFilesMap = new HashMap<Path, AttributeLocation>();
 		AttributeLocation attributeLocation = new AttributeLocation();
 		attributeLocation.setGroupByIndex(0);
-		ArrayList<Integer> attributeIndexes = new ArrayList<Integer>();
-		attributeIndexes.add(1);
-		attributeLocation.setAttributeIndexes(attributeIndexes);
+
+		attributeLocation.addAttributeIndex(1);
 		attributeLocationsToFilesMap.put(Paths.get("Data/TestCsvOne.csv"), attributeLocation);
 
 		HashMap<String, ArrayList<Attribute>> map = preprocessor.mapGroupedByAttributes(wantedAttributesToFilesMap,

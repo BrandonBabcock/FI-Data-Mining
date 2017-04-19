@@ -1,6 +1,7 @@
 package data;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Data type representing the locations of attributes within a file
@@ -11,7 +12,7 @@ public class AttributeLocation {
 	private int groupByIndex;
 
 	/* A list of the column numbers of file attributes */
-	private ArrayList<Integer> attributeIndexes = new ArrayList<Integer>();
+	private List<Integer> attributeIndexes = new ArrayList<Integer>();
 
 	/**
 	 * Gets the group by attribute's index
@@ -33,22 +34,12 @@ public class AttributeLocation {
 	}
 
 	/**
-	 * Get's the list of attribute indexes
+	 * Gets the list of attribute indexes
 	 * 
 	 * @return the list of attribute indexes
 	 */
-	public ArrayList<Integer> getAttributeIndexes() {
+	public List<Integer> getAttributeIndexes() {
 		return attributeIndexes;
-	}
-
-	/**
-	 * Set's the list of attribute indexes
-	 * 
-	 * @param attributeIndexes
-	 *            the list of attribute indexes to set
-	 */
-	public void setAttributeIndexes(ArrayList<Integer> attributeIndexes) {
-		this.attributeIndexes = attributeIndexes;
 	}
 
 	/**

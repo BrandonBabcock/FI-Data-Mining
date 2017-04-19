@@ -18,23 +18,21 @@ import org.xml.sax.SAXException;
  */
 public class XmlToCsvConverterTest {
 
-	private XmlToCsvConverter testConvert;
 	private File xmlFile;
 
 	@Before
 	public void setup() {
 		xmlFile = new File("Data/Bio.xml");
-		testConvert = new XmlToCsvConverter();
 	}
 
 	@After
 	public void teardown() {
-		testConvert = null;
+		xmlFile = null;
 	}
 
 	@Test
 	public void convertToCsvTest() throws IOException, SAXException {
-		File convertedFile = testConvert.convertToCsv(xmlFile);
+		File convertedFile = XmlToCsvConverter.convertToCsv(xmlFile);
 
 		// check file name
 		assertThat(convertedFile.getName(),
@@ -51,7 +49,7 @@ public class XmlToCsvConverterTest {
 
 		File xmlFile2 = new File("Data/TestXmlOne.xml");
 
-		convertedFile = testConvert.convertToCsv(xmlFile2);
+		convertedFile = XmlToCsvConverter.convertToCsv(xmlFile2);
 
 		assertThat(convertedFile.getName(),
 				equalTo(convertedFile.getName().substring(0, convertedFile.getName().indexOf(".")) + ".csv"));
@@ -70,6 +68,6 @@ public class XmlToCsvConverterTest {
 
 	@Test(expected = IllegalArgumentException.class)
 	public void IOExceptionTest() {
-		testConvert.convertToCsv(new File("Data/fakeFile.xml"));
+		XmlToCsvConverter.convertToCsv(new File("Data/fakeFile.xml"));
 	}
 }

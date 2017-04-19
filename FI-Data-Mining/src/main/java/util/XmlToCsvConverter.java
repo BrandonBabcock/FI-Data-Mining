@@ -4,61 +4,73 @@ import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.LinkedHashSet;
+import java.util.List;
+
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-import org.w3c.dom.*;
+
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.NamedNodeMap;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 /**
  * Converter to convert an XML file to a CSV file
  */
 public class XmlToCsvConverter {
-	private DocumentBuilderFactory factory;
-	private DocumentBuilder builder;
 
-	public XmlToCsvConverter() {
-		factory = DocumentBuilderFactory.newInstance();
-		try {
-			builder = factory.newDocumentBuilder();
-		} catch (ParserConfigurationException e) {
-			throw new IllegalArgumentException("Error: " + e.getMessage(), e);
-		}
+	/**
+	 * Private constructor to avoid making instances of this utility class
+	 */
+	private XmlToCsvConverter() {
+
 	}
 
 	/**
 	 * Converts an XML file to a CSV file
 	 */
-	public File convertToCsv(File xmlFile) {
+	public static File convertToCsv(File xmlFile) {
 		try {
+			DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+			DocumentBuilder builder = factory.newDocumentBuilder();
+
 			// Create the CSV file
-			String fileName = xmlFile.getName();
-			fileName = fileName.substring(0, fileName.lastIndexOf("."));
-			File csvFile = File.createTempFile(fileName, ".xml");
+			File csvFile = File.createTempFile("xmlFile", ".csv");
 			csvFile.deleteOnExit();
 
 			// Configure PrintWriter to write to the CSV file
 			PrintWriter writer = new PrintWriter(csvFile);
-			// we append the values to string builder then write it to a csv
-			// file
+
+			// Values are appended to StringBuilder and written to the XML file
 			StringBuilder strBuilder = new StringBuilder();
+
 			// Parse through the XML file
 			Document document = builder.parse(xmlFile);
 			Element root = document.getDocumentElement();
-			NodeList nList = root.getChildNodes();
-			LinkedHashSet<String> attributes = new LinkedHashSet<>();
-			ArrayList<ArrayList<String>> values = new ArrayList<>();
-			for (int i = 0; i < nList.getLength(); i++) {
-				Node node = nList.item(i);
+			NodeList nodeList = root.getChildNodes();
+
+			HashSet<String> attributes = new LinkedHashSet<String>();
+			List<List<String>> values = new ArrayList<List<String>>();
+
+			// Get all of the attributes and values from the file
+			for (int i = 0; i < nodeList.getLength(); i++) {
+				Node node = nodeList.item(i);
+
 				if (node.getNodeType() == Node.ELEMENT_NODE && node.getNodeType() != Node.TEXT_NODE) {
-					NodeList nl = node.getChildNodes();
-					ArrayList<String> temp = new ArrayList<String>();
-					if (nl.getLength() == 0) {
-						NamedNodeMap nm = node.getAttributes();
-						for (int j = 0; j < nm.getLength(); j++) {
-							attributes.add(nm.item(j).getNodeName());
-							String value = nm.item(j).getNodeValue();
+					NodeList childNodes = node.getChildNodes();
+					List<String> nodeMapNodeValues = new ArrayList<String>();
+
+					if (childNodes.getLength() == 0) {
+						NamedNodeMap nodeMap = node.getAttributes();
+
+						for (int j = 0; j < nodeMap.getLength(); j++) {
+							attributes.add(nodeMap.item(j).getNodeName());
+							String value = nodeMap.item(j).getNodeValue();
 
 							if (value.equals("")) {
 								value = "null";
@@ -66,14 +78,15 @@ public class XmlToCsvConverter {
 
 							value = value.replaceAll(",", "");
 							value = value.trim().replaceAll(" +", "_");
-							temp.add(value);
+
+							nodeMapNodeValues.add(value);
 						}
 					} else {
-						for (int j = 0; j < nl.getLength(); j++) {
-							if (nl.item(j).getNodeType() == Node.ELEMENT_NODE
-									&& nl.item(j).getNodeType() != Node.TEXT_NODE) {
-								attributes.add(nl.item(j).getNodeName());
-								String value = nl.item(j).getFirstChild().getNodeValue();
+						for (int j = 0; j < childNodes.getLength(); j++) {
+							if (childNodes.item(j).getNodeType() == Node.ELEMENT_NODE
+									&& childNodes.item(j).getNodeType() != Node.TEXT_NODE) {
+								attributes.add(childNodes.item(j).getNodeName());
+								String value = childNodes.item(j).getFirstChild().getNodeValue();
 
 								if (value.equals("")) {
 									value = "null";
@@ -82,24 +95,31 @@ public class XmlToCsvConverter {
 								value = value.replaceAll(",", "");
 								value = value.replaceAll("\n", "");
 								value = value.trim().replaceAll(" +", "_");
-								temp.add(value);
+
+								nodeMapNodeValues.add(value);
 							}
 						}
 					}
-					values.add(temp);
+					values.add(nodeMapNodeValues);
 				}
 			}
+
+			// Append the attributes to the StringBuilder
 			int count = 0;
 			for (String attribute : attributes) {
 				strBuilder.append(attribute);
 				count++;
+
 				if (count != attributes.size()) {
 					strBuilder.append(",");
 				}
 			}
+
 			// Make a new line
 			strBuilder.append('\n');
-			for (ArrayList<String> list : values) {
+
+			// Append the values to the StringBuilder
+			for (List<String> list : values) {
 				count = 0;
 				for (String str : list) {
 					strBuilder.append(str);
@@ -110,11 +130,13 @@ public class XmlToCsvConverter {
 				}
 				strBuilder.append('\n');
 			}
-			// write the string builder to a file
+
+			// Write the StringBuilder to a file
 			writer.write(strBuilder.toString());
 			writer.close();
+
 			return csvFile;
-		} catch (SAXException | IOException e) {
+		} catch (ParserConfigurationException | SAXException | IOException e) {
 			throw new IllegalArgumentException("Error: " + e.getMessage(), e);
 		}
 	}

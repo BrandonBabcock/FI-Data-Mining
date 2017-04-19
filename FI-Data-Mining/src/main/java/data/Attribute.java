@@ -15,9 +15,9 @@ public class Attribute {
 	 * Constructs a new Attribute object
 	 * 
 	 * @param title
-	 *            the attribute title
+	 *            the attribute's title
 	 * @param value
-	 *            the attribute value
+	 *            the attribute's value
 	 */
 	public Attribute(String title, String value) {
 		this.title = title;
