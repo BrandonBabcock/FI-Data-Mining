@@ -22,7 +22,7 @@ import org.xml.sax.SAXException;
 /**
  * Converter to convert an XML file to a CSV file
  */
-public class XmlToCsvConverter {
+public final class XmlToCsvConverter {
 
 	/**
 	 * Private constructor to avoid making instances of this utility class

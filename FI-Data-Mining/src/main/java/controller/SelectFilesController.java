@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import javafx.event.ActionEvent;
@@ -27,7 +28,7 @@ public class SelectFilesController {
 	private File selectedFile;
 
 	/* The list of all inputted files */
-	private ArrayList<Path> inputtedFiles = new ArrayList<Path>();
+	private List<Path> inputtedFiles = new ArrayList<Path>();
 
 	/* Whether or not an ARFF file has been added */
 	private boolean isArffFileAdded = false;
@@ -85,7 +86,7 @@ public class SelectFilesController {
 
 	/**
 	 * Adds a file to the list of inputted files. If an ARFF file is added,
-	 * prompts the user to continue directly to the results screen.
+	 * prompts the user to continue directly to the configuration screen.
 	 * 
 	 * @param event
 	 *            the action performed on the add file button
@@ -141,7 +142,7 @@ public class SelectFilesController {
 	}
 
 	/**
-	 * Takes the user to the next step, which is the SelectWantedAttributes
+	 * Takes the user to the next step, which is the select wanted attributes
 	 * screen
 	 * 
 	 * @param event
@@ -162,6 +163,15 @@ public class SelectFilesController {
 				throw new IllegalArgumentException("Error: " + e.getMessage(), e);
 			}
 		}
+	}
+
+	/**
+	 * Gets the list of inputted files
+	 * 
+	 * @return the list of inputted files
+	 */
+	public List<Path> getInputtedFiles() {
+		return this.inputtedFiles;
 	}
 
 	/**
@@ -235,10 +245,28 @@ public class SelectFilesController {
 	}
 
 	/**
+	 * Checks if the entered file has already been inputted
+	 * 
+	 * @param filePath
+	 *            the entered file
+	 * @return true if the entered file has already been inputted, false if not
+	 */
+	private boolean isDuplicateFile(String filePath) {
+		if (inputtedFiles.contains(Paths.get(filePath))) {
+			Alert alert = DialogsUtil.createErrorDialog("File Already Inputted",
+					"The entered file has already been inputted.");
+			alert.showAndWait();
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	/**
 	 * If an ARFF file is entered, the user is informed that only one ARFF file
-	 * can be added and that they would need to continue to the results screen.
-	 * Also, the user is asked to pick a data mining algorithm to use if they
-	 * agree to continue.
+	 * can be added and that they would need to continue to the configuration
+	 * screen. Also, the user is asked to pick a data mining algorithm to use if
+	 * they agree to continue.
 	 */
 	private void promptToContinueToConfiguration() {
 		Alert alert = DialogsUtil.createConfirmationDialog("ARFF File Entered",
@@ -254,7 +282,7 @@ public class SelectFilesController {
 	}
 
 	/**
-	 * Goes to the results screen
+	 * Goes to the configuration screen
 	 */
 	private void continueToConfiguration() {
 		try {
@@ -270,33 +298,6 @@ public class SelectFilesController {
 		} catch (IOException e) {
 			throw new IllegalArgumentException("Error: " + e.getMessage(), e);
 		}
-	}
-
-	/**
-	 * Checks if the entered file has already been inputted
-	 * 
-	 * @param filePath
-	 *            the entered file
-	 * @return true if the file has already been inputted, false if not
-	 */
-	private boolean isDuplicateFile(String filePath) {
-		if (inputtedFiles.contains(Paths.get(filePath))) {
-			Alert alert = DialogsUtil.createErrorDialog("File Already Inputted",
-					"The entered file has already been inputted.");
-			alert.showAndWait();
-			return true;
-		} else {
-			return false;
-		}
-	}
-
-	/**
-	 * Gets the list of inputted files
-	 * 
-	 * @return the list of inputted files
-	 */
-	public ArrayList<Path> getInputtedFiles() {
-		return this.inputtedFiles;
 	}
 
 }

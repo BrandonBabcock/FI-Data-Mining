@@ -6,7 +6,7 @@ import javafx.scene.control.Alert.AlertType;
 /**
  * Utility class to create JavaFX dialogs
  */
-public class DialogsUtil {
+public final class DialogsUtil {
 
 	/**
 	 * Private constructor to avoid making instances of this utility class

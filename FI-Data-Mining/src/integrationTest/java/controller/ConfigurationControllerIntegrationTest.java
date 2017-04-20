@@ -9,6 +9,8 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import org.junit.Test;
 import org.testfx.framework.junit.ApplicationTest;
@@ -16,7 +18,6 @@ import org.testfx.framework.junit.ApplicationTest;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
 public class ConfigurationControllerIntegrationTest extends ApplicationTest {
@@ -41,10 +42,10 @@ public class ConfigurationControllerIntegrationTest extends ApplicationTest {
 	}
 
 	private void initializeController() throws Exception {
-		HashMap<Path, ArrayList<String>> wantedAttributesToFileMap = new HashMap<Path, ArrayList<String>>();
-		HashMap<Path, ArrayList<String>> allAttributesToFilesMap = new HashMap<Path, ArrayList<String>>();
+		Map<Path, List<String>> wantedAttributesToFileMap = new HashMap<Path, List<String>>();
+		Map<Path, List<String>> allAttributesToFilesMap = new HashMap<Path, List<String>>();
 
-		ArrayList<String> wantedAttributesList = new ArrayList<String>();
+		List<String> wantedAttributesList = new ArrayList<String>();
 		wantedAttributesList.add("attributeOne");
 		wantedAttributesList.add("attributeTwo");
 
@@ -70,7 +71,7 @@ public class ConfigurationControllerIntegrationTest extends ApplicationTest {
 		clickOn("#algorithmComboBox");
 		clickOn("Apriori");
 
-		clickOn("#performanceMetricsComboBox");
+		clickOn("#recordRuntimeComboBox");
 		clickOn("Yes");
 
 		clickOn("#nextButton");

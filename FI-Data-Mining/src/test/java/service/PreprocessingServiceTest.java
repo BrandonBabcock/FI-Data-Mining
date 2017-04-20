@@ -14,6 +14,8 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import org.junit.After;
 import org.junit.Before;
@@ -52,7 +54,7 @@ public class PreprocessingServiceTest {
 		ArrayList<Path> files = new ArrayList<Path>();
 		files.add(Paths.get("Data/TestXmlOne.xml"));
 
-		ArrayList<Path> convertedFiles = preprocessor.convertXmlToCsv(files);
+		List<Path> convertedFiles = preprocessor.convertXmlToCsv(files);
 
 		verify(XmlToCsvConverter.class);
 		assertThat(convertedFiles.get(0).getFileName().toString(), endsWith(".csv"));
@@ -63,7 +65,7 @@ public class PreprocessingServiceTest {
 		ArrayList<Path> files = new ArrayList<Path>();
 		files.add(Paths.get("Data/TestCsvOne.csv"));
 
-		HashMap<Path, ArrayList<String>> map = preprocessor.mapAllAttributesToFiles(files);
+		Map<Path, List<String>> map = preprocessor.mapAllAttributesToFiles(files);
 
 		assertThat(map.containsKey(Paths.get("Data/TestCsvOne.csv")), equalTo(true));
 		assertThat(map.get(Paths.get("Data/TestCsvOne.csv")).contains("attributeOne"), equalTo(true));
@@ -85,8 +87,8 @@ public class PreprocessingServiceTest {
 		files.add(Paths.get("Data/TestCsvOne.csv"));
 		files.add(Paths.get("Data/TestCsvTwo.csv"));
 
-		HashMap<Path, ArrayList<String>> map = preprocessor.mapAllAttributesToFiles(files);
-		ArrayList<String> commonAttributes = preprocessor.findCommonAttributesInMap(map);
+		Map<Path, List<String>> map = preprocessor.mapAllAttributesToFiles(files);
+		List<String> commonAttributes = preprocessor.findCommonAttributesInMap(map);
 
 		assertThat(commonAttributes.contains("attributeOne"), equalTo(true));
 		assertThat(commonAttributes.contains("attributeTwo"), equalTo(true));
@@ -96,12 +98,12 @@ public class PreprocessingServiceTest {
 
 	@Test
 	public void should_map_group_by_attributes() throws FileNotFoundException {
-		HashMap<Path, ArrayList<String>> wantedAttributesToFilesMap = new HashMap<Path, ArrayList<String>>();
-		ArrayList<String> wantedAttributes = new ArrayList<String>();
+		Map<Path, List<String>> wantedAttributesToFilesMap = new HashMap<Path, List<String>>();
+		List<String> wantedAttributes = new ArrayList<String>();
 		wantedAttributes.add("attributeTwo");
 		wantedAttributesToFilesMap.put(Paths.get("Data/TestCsvOne.csv"), wantedAttributes);
 
-		HashMap<Path, ArrayList<String>> allAttributesToFilesMap = new HashMap<Path, ArrayList<String>>();
+		Map<Path, List<String>> allAttributesToFilesMap = new HashMap<Path, List<String>>();
 		ArrayList<String> allAttributes = new ArrayList<String>();
 		allAttributes.add("attributeOne");
 		allAttributes.add("attributeTwo");
@@ -115,10 +117,10 @@ public class PreprocessingServiceTest {
 		attributeLocation.addAttributeIndex(1);
 		attributeLocationsToFilesMap.put(Paths.get("Data/TestCsvOne.csv"), attributeLocation);
 
-		HashMap<String, ArrayList<Attribute>> map = preprocessor.mapGroupedByAttributes(wantedAttributesToFilesMap,
+		Map<String, List<Attribute>> map = preprocessor.mapGroupedByAttributes(wantedAttributesToFilesMap,
 				allAttributesToFilesMap, attributeLocationsToFilesMap);
 
-		ArrayList<Attribute> values = map.get("valueOne");
+		List<Attribute> values = map.get("valueOne");
 		Attribute firstAttr = values.get(0);
 		Attribute secondAttr = values.get(1);
 
@@ -129,12 +131,12 @@ public class PreprocessingServiceTest {
 
 	@Test(expected = IllegalArgumentException.class)
 	public void should_throw_error_when_mapping_group_by_attributes_with_invalid_file() throws FileNotFoundException {
-		HashMap<Path, ArrayList<String>> wantedAttributesToFilesMap = new HashMap<Path, ArrayList<String>>();
-		ArrayList<String> wantedAttributes = new ArrayList<String>();
+		Map<Path, List<String>> wantedAttributesToFilesMap = new HashMap<Path, List<String>>();
+		List<String> wantedAttributes = new ArrayList<String>();
 		wantedAttributesToFilesMap.put(Paths.get("Data/InvalidFile.csv"), wantedAttributes);
 
-		HashMap<Path, ArrayList<String>> allAttributesToFilesMap = new HashMap<Path, ArrayList<String>>();
-		HashMap<Path, AttributeLocation> attributeLocationsToFilesMap = new HashMap<Path, AttributeLocation>();
+		Map<Path, List<String>> allAttributesToFilesMap = new HashMap<Path, List<String>>();
+		Map<Path, AttributeLocation> attributeLocationsToFilesMap = new HashMap<Path, AttributeLocation>();
 
 		preprocessor.mapGroupedByAttributes(wantedAttributesToFilesMap, allAttributesToFilesMap,
 				attributeLocationsToFilesMap);
@@ -142,13 +144,13 @@ public class PreprocessingServiceTest {
 
 	@Test
 	public void should_create_preprocessed_file() {
-		HashMap<Path, ArrayList<String>> wantedAttributesToFilesMap = new HashMap<Path, ArrayList<String>>();
-		ArrayList<String> wantedAttributes = new ArrayList<String>();
+		Map<Path, List<String>> wantedAttributesToFilesMap = new HashMap<Path, List<String>>();
+		List<String> wantedAttributes = new ArrayList<String>();
 		wantedAttributes.add("attributeOne");
 		wantedAttributes.add("attributeTwo");
 		wantedAttributesToFilesMap.put(Paths.get("Data/TestCsvOne.csv"), wantedAttributes);
 
-		HashMap<Path, ArrayList<String>> allAttributesToFilesMap = new HashMap<Path, ArrayList<String>>();
+		Map<Path, List<String>> allAttributesToFilesMap = new HashMap<Path, List<String>>();
 		ArrayList<String> allAttributes = new ArrayList<String>();
 		allAttributes.add("attributeOne");
 		allAttributes.add("attributeTwo");

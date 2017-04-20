@@ -6,6 +6,7 @@ import static org.junit.Assert.assertThat;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.List;
 
 import org.junit.After;
 import org.junit.Before;
@@ -29,10 +30,10 @@ public class PreprocessingServiceIntegrationTest {
 
 	@Test
 	public void should_convert_xml_file_to_csv_file() {
-		ArrayList<Path> files = new ArrayList<Path>();
+		List<Path> files = new ArrayList<Path>();
 		files.add(Paths.get("Data/TestXmlOne.xml"));
 
-		ArrayList<Path> convertedFiles = preprocessor.convertXmlToCsv(files);
+		List<Path> convertedFiles = preprocessor.convertXmlToCsv(files);
 
 		assertThat(convertedFiles.get(0).getFileName().toString(), endsWith(".csv"));
 	}

@@ -1,10 +1,9 @@
 package service;
 
 /**
- * The PerformanceAnalyzerService can be used to generate performance metrics
- * for data mining tasks
+ * The RuntimeRecorderService can be used to record the runtime of a method
  */
-public class PerformanceAnalyzerService {
+public class RuntimeRecorderService {
 
 	/* The start time */
 	private double startTime;

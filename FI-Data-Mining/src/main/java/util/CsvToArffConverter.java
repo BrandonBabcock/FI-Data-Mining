@@ -10,7 +10,7 @@ import weka.core.converters.CSVLoader;
 /**
  * Converter to convert a CSV file to an ARFF file
  */
-public class CsvToArffConverter {
+public final class CsvToArffConverter {
 
 	/**
 	 * Private constructor to avoid making instances of this utility class

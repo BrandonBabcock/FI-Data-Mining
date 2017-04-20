@@ -12,6 +12,8 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import org.junit.Test;
 import org.mockito.MockitoAnnotations;
@@ -55,8 +57,8 @@ public class ConfigurationControllerTest extends ApplicationTest {
 	}
 
 	private void initializeController() throws Exception {
-		HashMap<Path, ArrayList<String>> wantedAttributesToFileMap = new HashMap<Path, ArrayList<String>>();
-		HashMap<Path, ArrayList<String>> allAttributesToFilesMap = new HashMap<Path, ArrayList<String>>();
+		Map<Path, List<String>> wantedAttributesToFileMap = new HashMap<Path, List<String>>();
+		Map<Path, List<String>> allAttributesToFilesMap = new HashMap<Path, List<String>>();
 
 		ArrayList<String> wantedAttributesList = new ArrayList<String>();
 		wantedAttributesList.add("attributeOne");
@@ -107,7 +109,7 @@ public class ConfigurationControllerTest extends ApplicationTest {
 		clickOn("#algorithmComboBox");
 		clickOn("Apriori");
 
-		clickOn("#performanceMetricsComboBox");
+		clickOn("#recordRuntimeComboBox");
 		clickOn("Yes");
 
 		clickOn("#nextButton");
@@ -118,11 +120,11 @@ public class ConfigurationControllerTest extends ApplicationTest {
 	}
 
 	@Test
-	public void should_allow_selection_of_enabling_performance_metrics() {
-		clickOn("#performanceMetricsComboBox");
+	public void should_allow_selection_of_enabling_recording_of_runtime() {
+		clickOn("#recordRuntimeComboBox");
 		clickOn("Yes");
 
-		ComboBox<String> comboBox = lookup("#performanceMetricsComboBox").query();
+		ComboBox<String> comboBox = lookup("#recordRuntimeComboBox").query();
 
 		assertThat(comboBox.getValue(), equalTo("Yes"));
 	}

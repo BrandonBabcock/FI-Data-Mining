@@ -14,7 +14,7 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
-import service.PerformanceAnalyzerService;
+import service.RuntimeRecorderService;
 import util.DialogsUtil;
 import weka.associations.AbstractAssociator;
 import weka.associations.Apriori;
@@ -47,12 +47,12 @@ public class ResultsController {
 	 * 
 	 * @param associator
 	 *            the data mining results
-	 * @param performanceAnalyzer
-	 *            the performance analyzer
+	 * @param runtimeRecorder
+	 *            the runtime recorder
 	 */
-	public void initData(AbstractAssociator associator, PerformanceAnalyzerService performanceAnalyzer) {
-		if (performanceAnalyzer != null) {
-			runTimeValue.setText(Double.toString(performanceAnalyzer.getRunTime()));
+	public void initData(AbstractAssociator associator, RuntimeRecorderService runtimeRecorder) {
+		if (runtimeRecorder != null) {
+			runTimeValue.setText(Double.toString(runtimeRecorder.getRunTime()));
 		} else {
 			runTimeValue.setText("Not Recorded");
 		}
@@ -66,32 +66,40 @@ public class ResultsController {
 			AssociationRules associationRules = apriori.getAssociationRules();
 			List<AssociationRule> rulesList = associationRules.getRules();
 
-			for (AssociationRule rule : rulesList) {
-				Text text = new Text(rule.toString());
-				text.setFont(Font.font(12));
-				rulesVbox.getChildren().add(text);
+			if (!rulesList.isEmpty()) {
+				for (AssociationRule rule : rulesList) {
+					Text ruleText = new Text(rule.toString());
+					ruleText.setFont(Font.font(12));
+					rulesVbox.getChildren().add(ruleText);
+				}
+			} else {
+				alertNoResults();
 			}
 		} else if (associator instanceof FilteredAssociator) {
 			FilteredAssociator filteredAssociator = (FilteredAssociator) associator;
 			AssociationRules associationRules = filteredAssociator.getAssociationRules();
 			List<AssociationRule> rulesList = associationRules.getRules();
 
-			for (AssociationRule rule : rulesList) {
-				Text text = new Text(rule.toString());
-				text.setFont(Font.font(12));
-				rulesVbox.getChildren().add(text);
+			if (!rulesList.isEmpty()) {
+				for (AssociationRule rule : rulesList) {
+					Text ruleText = new Text(rule.toString());
+					ruleText.setFont(Font.font(12));
+					rulesVbox.getChildren().add(ruleText);
+				}
+			} else {
+				alertNoResults();
 			}
 		}
 	}
 
 	/**
-	 * Restarts to process back to step one.
+	 * Restarts the process back to step one
 	 * 
 	 * @param event
 	 *            the action performed on the restart button
 	 */
 	@FXML
-	void restart(ActionEvent event) {
+	public void restart(ActionEvent event) {
 		Alert alert = DialogsUtil.createConfirmationDialog("Click OK to Restart",
 				"Clicking OK will restart from step one.");
 		Optional<ButtonType> result = alert.showAndWait();
@@ -104,6 +112,16 @@ public class ResultsController {
 				throw new IllegalArgumentException("Error: " + e.getMessage(), e);
 			}
 		}
+	}
+
+	private void alertNoResults() {
+		Text noRulesText = new Text("No association rules were found.");
+		noRulesText.setFont(Font.font(12));
+		rulesVbox.getChildren().add(noRulesText);
+
+		Alert alert = DialogsUtil.createErrorDialog("No Rules Found",
+				"No association rules were found. Click Restart to start over.");
+		alert.showAndWait();
 	}
 
 }

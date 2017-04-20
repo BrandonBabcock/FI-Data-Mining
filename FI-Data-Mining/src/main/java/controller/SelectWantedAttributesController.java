@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import javafx.event.ActionEvent;
@@ -26,22 +28,22 @@ import util.DialogsUtil;
 public class SelectWantedAttributesController {
 
 	/* The list of all inputted files */
-	private ArrayList<Path> inputtedFiles;
+	private List<Path> inputtedFiles;
 
 	/* The list of all inputted files converted to CSV files */
-	private ArrayList<Path> convertedFiles;
+	private List<Path> convertedFiles;
 
 	/*
 	 * A map containing the file paths as keys and a list of all of the file's
 	 * attributes as values
 	 */
-	private HashMap<Path, ArrayList<String>> allAttributesToFilesMap;
+	private Map<Path, List<String>> allAttributesToFilesMap;
 
 	/*
 	 * A map containing the file paths as keys and a list of the user's selected
 	 * wanted attributes from the files as values
 	 */
-	private HashMap<Path, ArrayList<String>> wantedAttributesToFilesMap = new HashMap<Path, ArrayList<String>>();
+	private Map<Path, List<String>> wantedAttributesToFilesMap = new HashMap<Path, List<String>>();
 
 	/* The PreprocessorService */
 	private PreprocessorService preprocessor;
@@ -62,13 +64,13 @@ public class SelectWantedAttributesController {
 	private Button restartButton;
 
 	@FXML
+	private Button selectAllButton;
+
+	@FXML
 	private Button unselectAllButton;
 
 	@FXML
 	private Text currentFileName;
-
-	@FXML
-	private Button selectAllButton;
 
 	@FXML
 	private VBox attributesVbox;
@@ -79,16 +81,16 @@ public class SelectWantedAttributesController {
 	 * @param inputtedFiles
 	 *            the list of inputted files
 	 */
-	public void initData(ArrayList<Path> inputtedFiles) {
+	public void initData(List<Path> inputtedFiles) {
 		this.inputtedFiles = inputtedFiles;
 		preprocessor = new PreprocessorService();
 
-		convertedFiles = this.preprocessor.convertXmlToCsv(this.inputtedFiles);
+		convertedFiles = preprocessor.convertXmlToCsv(this.inputtedFiles);
 		currentFileIndex = 0;
 		currentFileName.setText(this.inputtedFiles.get(currentFileIndex).getFileName().toString());
 
 		allAttributesToFilesMap = preprocessor.mapAllAttributesToFiles(convertedFiles);
-		loadAttributeCheckBoxes(currentFileIndex);
+		loadAttributeCheckBoxes();
 	}
 
 	/**
@@ -122,7 +124,7 @@ public class SelectWantedAttributesController {
 	}
 
 	/**
-	 * Restarts to GUI back to step one.
+	 * Restarts to GUI back to step one
 	 * 
 	 * @param event
 	 *            the action performed on the restart button
@@ -175,7 +177,7 @@ public class SelectWantedAttributesController {
 			} else {
 				currentFileIndex++;
 				currentFileName.setText(this.inputtedFiles.get(currentFileIndex).getFileName().toString());
-				loadAttributeCheckBoxes(currentFileIndex);
+				loadAttributeCheckBoxes();
 			}
 		}
 	}
@@ -188,7 +190,7 @@ public class SelectWantedAttributesController {
 	 *         false if not
 	 */
 	private boolean isAbleToContinue() {
-		ArrayList<String> wantedAttributes = getCheckedAttributes();
+		List<String> wantedAttributes = getCheckedAttributes();
 
 		if (!wantedAttributes.isEmpty()) {
 			wantedAttributesToFilesMap.put(convertedFiles.get(currentFileIndex), wantedAttributes);
@@ -205,8 +207,8 @@ public class SelectWantedAttributesController {
 	 * 
 	 * @return a list of all the currently checked attributes
 	 */
-	private ArrayList<String> getCheckedAttributes() {
-		ArrayList<String> checkedAttributes = new ArrayList<String>();
+	private List<String> getCheckedAttributes() {
+		List<String> checkedAttributes = new ArrayList<String>();
 
 		for (Node child : attributesVbox.getChildren()) {
 			if (child instanceof CheckBox) {
@@ -220,15 +222,16 @@ public class SelectWantedAttributesController {
 	}
 
 	/**
-	 * Loads the check boxes of file attributes onto the screen
+	 * Loads the check boxes of file attributes for the current file onto the
+	 * screen
 	 * 
 	 * @param fileIndex
 	 *            index of the current file
 	 */
-	private void loadAttributeCheckBoxes(int fileIndex) {
+	private void loadAttributeCheckBoxes() {
 		attributesVbox.getChildren().clear();
 
-		for (String attributeTitle : allAttributesToFilesMap.get(convertedFiles.get(fileIndex))) {
+		for (String attributeTitle : allAttributesToFilesMap.get(convertedFiles.get(currentFileIndex))) {
 			CheckBox checkBox = new CheckBox(attributeTitle);
 			attributesVbox.getChildren().add(checkBox);
 		}

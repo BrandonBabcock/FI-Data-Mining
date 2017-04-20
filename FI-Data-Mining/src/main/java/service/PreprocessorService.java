@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 
@@ -31,8 +32,8 @@ public class PreprocessorService {
 	 *            the list of files to convert
 	 * @return the converted files
 	 */
-	public ArrayList<Path> convertXmlToCsv(ArrayList<Path> files) {
-		ArrayList<Path> convertedFiles = new ArrayList<Path>();
+	public List<Path> convertXmlToCsv(List<Path> files) {
+		List<Path> convertedFiles = new ArrayList<Path>();
 
 		for (Path filePath : files) {
 			String fileName = filePath.getFileName().toString();
@@ -49,15 +50,15 @@ public class PreprocessorService {
 	}
 
 	/**
-	 * Creates a map containing the file paths as keys and a list of the
-	 * attributes within the file as values
+	 * Creates a map containing the file paths as keys and lists of the
+	 * attributes within the files as values
 	 * 
 	 * @param files
 	 *            the files to map the attributes to
 	 * @return a map of the file paths mapped to their attributes
 	 */
-	public HashMap<Path, ArrayList<String>> mapAllAttributesToFiles(ArrayList<Path> files) {
-		HashMap<Path, ArrayList<String>> allAttributesToFilesMap = new HashMap<Path, ArrayList<String>>();
+	public Map<Path, List<String>> mapAllAttributesToFiles(List<Path> files) {
+		Map<Path, List<String>> allAttributesToFilesMap = new HashMap<Path, List<String>>();
 
 		for (Path filePath : files) {
 			try {
@@ -79,12 +80,12 @@ public class PreprocessorService {
 	 *            the map of the file paths mapped to their attributes
 	 * @return the common attributes
 	 */
-	public ArrayList<String> findCommonAttributesInMap(HashMap<Path, ArrayList<String>> map) {
-		HashMap<Path, ArrayList<String>> attributeSuffixesToFilesMap = createAttributeSuffixesToFilesMap(map);
-		Map.Entry<Path, ArrayList<String>> entry = attributeSuffixesToFilesMap.entrySet().iterator().next();
+	public List<String> findCommonAttributesInMap(Map<Path, List<String>> map) {
+		Map<Path, List<String>> attributeSuffixesToFilesMap = createAttributeSuffixesToFilesMap(map);
+		Map.Entry<Path, List<String>> entry = attributeSuffixesToFilesMap.entrySet().iterator().next();
 		ArrayList<String> commonValues = new ArrayList<String>(entry.getValue());
 
-		for (ArrayList<String> list : attributeSuffixesToFilesMap.values()) {
+		for (List<String> list : attributeSuffixesToFilesMap.values()) {
 			commonValues.retainAll(list);
 		}
 
@@ -100,12 +101,13 @@ public class PreprocessorService {
 	 *            the map of the file paths mapped to their attributes
 	 * @return a map of the file paths mapped to the attribute suffixes
 	 */
-	private HashMap<Path, ArrayList<String>> createAttributeSuffixesToFilesMap(HashMap<Path, ArrayList<String>> map) {
-		ArrayList<String> attributeSuffixes;
-		HashMap<Path, ArrayList<String>> attributeSuffixesToFilesMap = new HashMap<Path, ArrayList<String>>();
+	private Map<Path, List<String>> createAttributeSuffixesToFilesMap(Map<Path, List<String>> map) {
+		List<String> attributeSuffixes;
+		Map<Path, List<String>> attributeSuffixesToFilesMap = new HashMap<Path, List<String>>();
 
-		for (Map.Entry<Path, ArrayList<String>> entry : map.entrySet()) {
+		for (Map.Entry<Path, List<String>> entry : map.entrySet()) {
 			attributeSuffixes = new ArrayList<String>();
+
 			for (String attribute : entry.getValue()) {
 				attributeSuffixes.add(attribute.substring(attribute.lastIndexOf(".") + 1));
 			}
@@ -126,14 +128,14 @@ public class PreprocessorService {
 	 *            the group by attribute
 	 * @return the preprocessed file
 	 */
-	public File createPreprocessedFile(HashMap<Path, ArrayList<String>> wantedAttributesToFilesMap,
-			HashMap<Path, ArrayList<String>> allAttributesToFilesMap, String groupByAttribute) {
+	public File createPreprocessedFile(Map<Path, List<String>> wantedAttributesToFilesMap,
+			Map<Path, List<String>> allAttributesToFilesMap, String groupByAttribute) {
 		removeAttributeFromMap(wantedAttributesToFilesMap, groupByAttribute);
 
-		HashMap<Path, AttributeLocation> attributeLocationsToFilesMap = mapAttributeLocationsToFiles(
+		Map<Path, AttributeLocation> attributeLocationsToFilesMap = mapAttributeLocationsToFiles(
 				wantedAttributesToFilesMap, allAttributesToFilesMap, groupByAttribute);
 
-		HashMap<String, ArrayList<Attribute>> userAttributesMap = mapGroupedByAttributes(wantedAttributesToFilesMap,
+		Map<String, List<Attribute>> userAttributesMap = mapGroupedByAttributes(wantedAttributesToFilesMap,
 				allAttributesToFilesMap, attributeLocationsToFilesMap);
 
 		File preprocessedFile = buildFile(wantedAttributesToFilesMap, userAttributesMap, groupByAttribute);
@@ -150,10 +152,9 @@ public class PreprocessorService {
 	 * @param attribute
 	 *            the attribute to remove from the map
 	 */
-	private void removeAttributeFromMap(HashMap<Path, ArrayList<String>> map, String attribute) {
-		for (Iterator<Map.Entry<Path, ArrayList<String>>> mapIterator = map.entrySet().iterator(); mapIterator
-				.hasNext();) {
-			Map.Entry<Path, ArrayList<String>> entry = mapIterator.next();
+	private void removeAttributeFromMap(Map<Path, List<String>> map, String attribute) {
+		for (Iterator<Map.Entry<Path, List<String>>> mapIterator = map.entrySet().iterator(); mapIterator.hasNext();) {
+			Map.Entry<Path, List<String>> entry = mapIterator.next();
 
 			for (Iterator<String> entryIterator = entry.getValue().iterator(); entryIterator.hasNext();) {
 				String attr = entryIterator.next();
@@ -177,15 +178,15 @@ public class PreprocessorService {
 	 * @return the map of the file paths to the location of the wanted
 	 *         attributes
 	 */
-	private HashMap<Path, AttributeLocation> mapAttributeLocationsToFiles(
-			HashMap<Path, ArrayList<String>> wantedAttributesToFilesMap,
-			HashMap<Path, ArrayList<String>> allAttributesToFilesMap, String groupByAttribute) {
-		HashMap<Path, AttributeLocation> attributeLocationsToFilesMap = new HashMap<Path, AttributeLocation>();
+	private Map<Path, AttributeLocation> mapAttributeLocationsToFiles(
+			Map<Path, List<String>> wantedAttributesToFilesMap, Map<Path, List<String>> allAttributesToFilesMap,
+			String groupByAttribute) {
+		Map<Path, AttributeLocation> attributeLocationsToFilesMap = new HashMap<Path, AttributeLocation>();
 		Scanner fileReader;
 
 		for (Path filePath : wantedAttributesToFilesMap.keySet()) {
-			// Read first line of file
 			try {
+				// Read first line of file
 				fileReader = new Scanner(filePath.toFile());
 				String[] firstLine = fileReader.nextLine().split(",");
 
@@ -215,11 +216,10 @@ public class PreprocessorService {
 		return attributeLocationsToFilesMap;
 	}
 
-	public HashMap<String, ArrayList<Attribute>> mapGroupedByAttributes(
-			HashMap<Path, ArrayList<String>> wantedAttributesToFilesMap,
-			HashMap<Path, ArrayList<String>> allAttributesToFilesMap,
-			HashMap<Path, AttributeLocation> attributeLocationsToFilesMap) {
-		HashMap<String, ArrayList<Attribute>> userAttributesMap = new HashMap<String, ArrayList<Attribute>>();
+	public Map<String, List<Attribute>> mapGroupedByAttributes(Map<Path, List<String>> wantedAttributesToFilesMap,
+			Map<Path, List<String>> allAttributesToFilesMap,
+			Map<Path, AttributeLocation> attributeLocationsToFilesMap) {
+		Map<String, List<Attribute>> userAttributesMap = new HashMap<String, List<Attribute>>();
 		Scanner fileReader;
 
 		for (Path filePath : wantedAttributesToFilesMap.keySet()) {
@@ -276,12 +276,12 @@ public class PreprocessorService {
 		return userAttributesMap;
 	}
 
-	private File buildFile(HashMap<Path, ArrayList<String>> wantedAttributesToFilesMap,
-			HashMap<String, ArrayList<Attribute>> userAttributesMap, String groupByAttribute) {
-		ArrayList<String> attributeTitles = new ArrayList<String>();
+	private File buildFile(Map<Path, List<String>> wantedAttributesToFilesMap,
+			Map<String, List<Attribute>> userAttributesMap, String groupByAttribute) {
+		List<String> attributeTitles = new ArrayList<String>();
 		attributeTitles.add(groupByAttribute);
 
-		for (ArrayList<String> attributes : wantedAttributesToFilesMap.values()) {
+		for (List<String> attributes : wantedAttributesToFilesMap.values()) {
 			for (String attribute : attributes) {
 				attributeTitles.add(attribute);
 			}
@@ -297,7 +297,7 @@ public class PreprocessorService {
 
 			fileWriter.append(fileHeader);
 
-			for (Map.Entry<String, ArrayList<Attribute>> entry : userAttributesMap.entrySet()) {
+			for (Map.Entry<String, List<Attribute>> entry : userAttributesMap.entrySet()) {
 				String[] attributes = new String[attributeTitles.size()];
 				attributes[0] = entry.getKey();
 

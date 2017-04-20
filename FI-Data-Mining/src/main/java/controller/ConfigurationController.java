@@ -3,8 +3,8 @@ package controller;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import javafx.event.ActionEvent;
@@ -17,7 +17,7 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.BorderPane;
 import service.DataMinerService;
-import service.PerformanceAnalyzerService;
+import service.RuntimeRecorderService;
 import service.PreprocessorService;
 import util.CsvToArffConverter;
 import util.DialogsUtil;
@@ -34,22 +34,22 @@ public class ConfigurationController {
 	/* The DataMinerService */
 	private DataMinerService dataMiner;
 
-	/* The PerformanceAnalyzerService */
-	private PerformanceAnalyzerService performanceAnalyzer;
+	/* The RuntimeRecorderService */
+	private RuntimeRecorderService runtimeRecorder;
 
 	/*
 	 * A map containing the file paths as keys and a list of the user's selected
 	 * wanted attributes from the files as values
 	 */
-	private HashMap<Path, ArrayList<String>> wantedAttributesToFilesMap;
+	private Map<Path, List<String>> wantedAttributesToFilesMap;
 
 	/*
 	 * A map containing the file paths as keys and a list of all of the file's
 	 * attributes as values
 	 */
-	private HashMap<Path, ArrayList<String>> allAttributesToFilesMap;
+	private Map<Path, List<String>> allAttributesToFilesMap;
 
-	/* Whether or not the entered an ARFF file */
+	/* Whether or not the user entered an ARFF file */
 	private boolean usingArffFile = false;
 
 	/* The ARFF file */
@@ -71,7 +71,7 @@ public class ConfigurationController {
 	private ComboBox<String> algorithmComboBox;
 
 	@FXML
-	private ComboBox<String> performanceMetricsComboBox;
+	private ComboBox<String> recordRuntimeComboBox;
 
 	@FXML
 	private TextField minimumConfidenceTextField;
@@ -95,16 +95,16 @@ public class ConfigurationController {
 	 *            a mapping of wanted attributes to their corresponding file
 	 * @param allAttributesToFilesMap
 	 *            a mapping of all attributes to their corresponding file
+	 * @return true if the controller initialized properly, false if not
 	 */
-	public boolean initData(HashMap<Path, ArrayList<String>> wantedAttributesToFileMap,
-			HashMap<Path, ArrayList<String>> allAttributesToFilesMap) {
+	public boolean initData(Map<Path, List<String>> wantedAttributesToFileMap,
+			Map<Path, List<String>> allAttributesToFilesMap) {
 		this.wantedAttributesToFilesMap = wantedAttributesToFileMap;
 		this.allAttributesToFilesMap = allAttributesToFilesMap;
-		this.preprocessor = new PreprocessorService();
-		this.dataMiner = new DataMinerService();
+		preprocessor = new PreprocessorService();
+		dataMiner = new DataMinerService();
 
-		ArrayList<String> commonAttributes = this.preprocessor
-				.findCommonAttributesInMap(this.wantedAttributesToFilesMap);
+		List<String> commonAttributes = preprocessor.findCommonAttributesInMap(this.wantedAttributesToFilesMap);
 		groupByAttributeComboBox.getItems().addAll(commonAttributes);
 
 		if (!commonAttributes.isEmpty()) {
@@ -116,27 +116,27 @@ public class ConfigurationController {
 		algorithmComboBox.getItems().addAll("Apriori", "Filtered Associator");
 		algorithmComboBox.setValue("Apriori");
 
-		performanceMetricsComboBox.getItems().addAll("Yes", "No");
-		performanceMetricsComboBox.setValue("Yes");
+		recordRuntimeComboBox.getItems().addAll("Yes", "No");
+		recordRuntimeComboBox.setValue("Yes");
 
 		return true;
 	}
 
 	public void initDataFromSelectFiles(File arffFile) {
-		this.preprocessor = new PreprocessorService();
-		this.dataMiner = new DataMinerService();
-		this.usingArffFile = true;
 		this.arffFile = arffFile;
+		preprocessor = new PreprocessorService();
+		dataMiner = new DataMinerService();
+		usingArffFile = true;
 
 		groupByAttributeComboBox.setDisable(true);
 		algorithmComboBox.getItems().addAll("Apriori", "Filtered Associator");
 		algorithmComboBox.setValue("Apriori");
-		performanceMetricsComboBox.getItems().addAll("Yes", "No");
-		performanceMetricsComboBox.setValue("Yes");
+		recordRuntimeComboBox.getItems().addAll("Yes", "No");
+		recordRuntimeComboBox.setValue("Yes");
 	}
 
 	/**
-	 * Restarts to process back to step one.
+	 * Restarts the process back to step one
 	 * 
 	 * @param event
 	 *            the action performed on the restart button
@@ -144,7 +144,7 @@ public class ConfigurationController {
 	@FXML
 	public void restart(ActionEvent event) {
 		Alert alert = DialogsUtil.createConfirmationDialog("Click OK to Restart",
-				"Clicking OK will restart from step one.");
+				"Clicking OK will restart to step one.");
 		Optional<ButtonType> result = alert.showAndWait();
 
 		if (result.get() == ButtonType.OK) {
@@ -178,12 +178,12 @@ public class ConfigurationController {
 					minimumSupportDeltaTextField.getText(), minimumSupportUpperBoundTextField.getText(),
 					minimumSupportLowerBoundTextField.getText() };
 
-			if (performanceMetricsComboBox.getValue().equals("Yes")) {
-				performanceAnalyzer = new PerformanceAnalyzerService();
-				performanceAnalyzer.start();
+			if (recordRuntimeComboBox.getValue().equals("Yes")) {
+				runtimeRecorder = new RuntimeRecorderService();
+				runtimeRecorder.start();
 				associator = dataMiner.findAssociationRules(algorithmComboBox.getValue(), arffFile.getPath(),
 						dataMiningOptions);
-				performanceAnalyzer.stop();
+				runtimeRecorder.stop();
 			} else {
 				associator = dataMiner.findAssociationRules(algorithmComboBox.getValue(), arffFile.getPath(),
 						dataMiningOptions);
@@ -194,7 +194,7 @@ public class ConfigurationController {
 				BorderPane screen = (BorderPane) loader.load();
 
 				ResultsController controller = loader.getController();
-				controller.initData(associator, performanceAnalyzer);
+				controller.initData(associator, runtimeRecorder);
 
 				nextButton.getScene().setRoot(screen);
 			} catch (IOException e) {
@@ -207,13 +207,13 @@ public class ConfigurationController {
 	 * Checks if the user has done everything required to continue to the next
 	 * step
 	 * 
-	 * @return true if the user has done everything required to continue and
-	 *         false if not
+	 * @return true if the user has done everything required to continue, false
+	 *         if not
 	 */
 	private boolean isAbleToContinue() {
 		if (!usingArffFile) {
 			if (groupByAttributeComboBox.getValue() != null && algorithmComboBox.getValue() != null
-					&& performanceMetricsComboBox.getValue() != null && isNumeric(minimumConfidenceTextField.getText())
+					&& recordRuntimeComboBox.getValue() != null && isNumeric(minimumConfidenceTextField.getText())
 					&& isNumeric(minimumSupportLowerBoundTextField.getText())
 					&& isNumeric(minimumSupportUpperBoundTextField.getText())
 					&& isNumeric(minimumSupportDeltaTextField.getText())
@@ -221,7 +221,7 @@ public class ConfigurationController {
 				return true;
 			}
 		} else {
-			if (algorithmComboBox.getValue() != null && performanceMetricsComboBox.getValue() != null
+			if (algorithmComboBox.getValue() != null && recordRuntimeComboBox.getValue() != null
 					&& isNumeric(minimumConfidenceTextField.getText())
 					&& isNumeric(minimumSupportLowerBoundTextField.getText())
 					&& isNumeric(minimumSupportUpperBoundTextField.getText())
@@ -232,7 +232,7 @@ public class ConfigurationController {
 		}
 
 		Alert alert = DialogsUtil.createErrorDialog("Incomplete Configuration",
-				"At least one of the values is not configured.");
+				"At least one of the values is not configured properly.");
 		alert.showAndWait();
 		return false;
 	}
@@ -240,12 +240,12 @@ public class ConfigurationController {
 	/**
 	 * Checks if a String is a valid number
 	 * 
-	 * @param s
+	 * @param str
 	 *            the String to check
 	 * @return true if the String is a valid number, false if it is not
 	 */
-	public boolean isNumeric(String s) {
-		return s.matches("[-+]?\\d*\\.?\\d+");
+	private boolean isNumeric(String str) {
+		return str.matches("[-+]?\\d*\\.?\\d+");
 	}
 
 }
