@@ -1,5 +1,6 @@
 package controller;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
@@ -14,6 +15,7 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
+import service.DataMinerService;
 import service.RuntimeRecorderService;
 import util.DialogsUtil;
 import weka.associations.AbstractAssociator;
@@ -50,17 +52,24 @@ public class ResultsController {
 	 * @param runtimeRecorder
 	 *            the runtime recorder
 	 */
-	public void initData(AbstractAssociator associator, RuntimeRecorderService runtimeRecorder) {
-		if (runtimeRecorder != null) {
+	public boolean initData(File arffFile, String algorithm, String[] dataMiningOptions, boolean recordRuntime,
+			DataMinerService dataMiner, RuntimeRecorderService runtimeRecorder) {
+		AbstractAssociator associator;
+
+		if (recordRuntime) {
+			runtimeRecorder.start();
+			associator = dataMiner.findAssociationRules(algorithm, arffFile.getPath(), dataMiningOptions);
+			runtimeRecorder.stop();
 			runTimeValue.setText(Double.toString(runtimeRecorder.getRunTime()));
 		} else {
+			associator = dataMiner.findAssociationRules(algorithm, arffFile.getPath(), dataMiningOptions);
 			runTimeValue.setText("Not Recorded");
 		}
 
-		loadRules(associator);
+		return loadRules(associator);
 	}
 
-	private void loadRules(AbstractAssociator associator) {
+	private boolean loadRules(AbstractAssociator associator) {
 		if (associator instanceof Apriori) {
 			Apriori apriori = (Apriori) associator;
 			AssociationRules associationRules = apriori.getAssociationRules();
@@ -73,8 +82,9 @@ public class ResultsController {
 					rulesVbox.getChildren().add(ruleText);
 				}
 			} else {
-				alertNoResults();
+				return false;
 			}
+			return true;
 		} else if (associator instanceof FilteredAssociator) {
 			FilteredAssociator filteredAssociator = (FilteredAssociator) associator;
 			AssociationRules associationRules = filteredAssociator.getAssociationRules();
@@ -87,8 +97,11 @@ public class ResultsController {
 					rulesVbox.getChildren().add(ruleText);
 				}
 			} else {
-				alertNoResults();
+				return false;
 			}
+			return true;
+		} else {
+			return false;
 		}
 	}
 
@@ -112,16 +125,6 @@ public class ResultsController {
 				throw new IllegalArgumentException("Error: " + e.getMessage(), e);
 			}
 		}
-	}
-
-	private void alertNoResults() {
-		Text noRulesText = new Text("No association rules were found.");
-		noRulesText.setFont(Font.font(12));
-		rulesVbox.getChildren().add(noRulesText);
-
-		Alert alert = DialogsUtil.createErrorDialog("No Rules Found",
-				"No association rules were found. Click Restart to start over.");
-		alert.showAndWait();
 	}
 
 }

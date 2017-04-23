@@ -2,23 +2,28 @@ package controller;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Matchers.isA;
-import static org.mockito.Mockito.doNothing;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.Mockito.doReturn;
-import static org.powermock.api.mockito.PowerMockito.whenNew;
 
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import org.junit.Test;
-import org.mockito.MockitoAnnotations;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
 import org.mockito.Spy;
-import org.powermock.core.classloader.annotations.PrepareForTest;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.testfx.framework.junit.ApplicationTest;
 
+import converter.CsvToArffConverter;
+import converter.XmlToCsvConverter;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Scene;
@@ -29,29 +34,27 @@ import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import service.PreprocessorService;
 
-@PrepareForTest(SelectWantedAttributesController.class)
+@RunWith(MockitoJUnitRunner.class)
 public class SelectWantedAttributesControllerTest extends ApplicationTest {
 
 	private SelectWantedAttributesController controller;
 
-	@Spy
-	private final PreprocessorService preprocessorSpy = new PreprocessorService();
+	@Mock
+	PreprocessorService preprocessorMock;
+
+	@Mock
+	ConfigurationController configurationControllerMock;
 
 	@Spy
-	private final FXMLLoader fxmlLoaderSpy = new FXMLLoader(getClass().getResource("/view/Configuration.fxml"));
-
-	@Spy
-	private final ConfigurationController configurationControllerSpy = new ConfigurationController();
+	FXMLLoader fxmlLoaderSpy;
 
 	@Override
 	public void start(Stage primaryStage) throws Exception {
 		try {
-			MockitoAnnotations.initMocks(this);
 			FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/SelectWantedAttributes.fxml"));
 			BorderPane screen = (BorderPane) loader.load();
 			controller = loader.getController();
 			initializeController();
-
 			Scene scene = new Scene(screen);
 			primaryStage.setScene(scene);
 			primaryStage.setTitle("Fischer International Data Mining");
@@ -62,13 +65,13 @@ public class SelectWantedAttributesControllerTest extends ApplicationTest {
 	}
 
 	private void initializeController() throws Exception {
-		ArrayList<Path> inputtedFiles = new ArrayList<Path>();
+		List<Path> inputtedFiles = new ArrayList<Path>();
 		inputtedFiles.add(Paths.get("Data/TestCsvOne.csv"));
 		inputtedFiles.add(Paths.get("Data/TestCsvTwo.csv"));
 
-		HashMap<Path, ArrayList<String>> allAttributesToFilesMap = new HashMap<Path, ArrayList<String>>();
-		ArrayList<String> firstFileAttributes = new ArrayList<String>();
-		ArrayList<String> secondFileAttributes = new ArrayList<String>();
+		Map<Path, List<String>> allAttributesToFilesMap = new HashMap<Path, List<String>>();
+		List<String> firstFileAttributes = new ArrayList<String>();
+		List<String> secondFileAttributes = new ArrayList<String>();
 
 		firstFileAttributes.add("attributeOne");
 		firstFileAttributes.add("attributeTwo");
@@ -82,11 +85,10 @@ public class SelectWantedAttributesControllerTest extends ApplicationTest {
 		allAttributesToFilesMap.put(Paths.get("Data/TestCsvOne.csv"), firstFileAttributes);
 		allAttributesToFilesMap.put(Paths.get("Data/TestCsvTwo.csv"), secondFileAttributes);
 
-		whenNew(PreprocessorService.class).withNoArguments().thenReturn(preprocessorSpy);
-		doReturn(inputtedFiles).when(preprocessorSpy).convertXmlToCsv(isA(ArrayList.class));
-		doReturn(allAttributesToFilesMap).when(preprocessorSpy).mapAllAttributesToFiles(isA(ArrayList.class));
+		doReturn(inputtedFiles).when(preprocessorMock).convertXmlToCsv(anyList(), any(XmlToCsvConverter.class));
+		doReturn(allAttributesToFilesMap).when(preprocessorMock).mapAllAttributesToFiles(anyList());
 
-		controller.initData(inputtedFiles);
+		controller.initData(inputtedFiles, preprocessorMock, fxmlLoaderSpy);
 	}
 
 	@Test
@@ -94,6 +96,22 @@ public class SelectWantedAttributesControllerTest extends ApplicationTest {
 		Text text = lookup("#currentFileName").query();
 
 		assertThat(text.getText(), equalTo("TestCsvOne.csv"));
+	}
+
+	@Test
+	public void should_have_correct_attributes_displayed_when_screen_is_loaded() {
+		VBox attributesVbox = lookup("#attributesVbox").query();
+		List<String> attributes = new ArrayList<String>();
+
+		for (Node child : attributesVbox.getChildren()) {
+			if (child instanceof CheckBox) {
+				attributes.add(((CheckBox) child).getText());
+			}
+		}
+
+		assertThat(attributes.get(0), equalTo("attributeOne"));
+		assertThat(attributes.get(1), equalTo("attributeTwo"));
+		assertThat(attributes.get(2), equalTo("attributeThree"));
 	}
 
 	@Test
@@ -130,21 +148,39 @@ public class SelectWantedAttributesControllerTest extends ApplicationTest {
 	}
 
 	@Test
-	public void should_continue_to_next_screen() throws Exception {
-		whenNew(FXMLLoader.class).withArguments(getClass().getResource("/view/Configuration.fxml"))
-				.thenReturn(fxmlLoaderSpy);
-		doReturn(configurationControllerSpy).when(fxmlLoaderSpy).getController();
-		doNothing().when(configurationControllerSpy).initData(isA(HashMap.class), isA(HashMap.class));
+	public void should_continue_to_next_screen() {
+		doReturn(configurationControllerMock).when(fxmlLoaderSpy).getController();
+		doReturn(true).when(configurationControllerMock).initData(anyMap(), anyMap(), any(PreprocessorService.class),
+				any(CsvToArffConverter.class), any(FXMLLoader.class));
 
 		clickOn("attributeOne");
 		clickOn("#nextButton");
-
 		clickOn("attributeOne");
 		clickOn("#nextButton");
 
 		Text text = lookup("#stepNumberText").query();
 
 		assertThat(text.getText(), equalTo("Step 3/4:"));
+	}
+
+	@Test
+	public void should_display_error_and_not_continue_if_no_common_attributes_are_found() {
+		doReturn(configurationControllerMock).when(fxmlLoaderSpy).getController();
+		doReturn(false).when(configurationControllerMock).initData(anyMap(), anyMap(), any(PreprocessorService.class),
+				any(CsvToArffConverter.class), any(FXMLLoader.class));
+
+		clickOn("attributeOne");
+		clickOn("#nextButton");
+		clickOn("attributeOne");
+		clickOn("#nextButton");
+
+		Text text = lookup("#stepNumberText").query();
+		Node errorDialog = lookup(".alert").query();
+
+		assertThat(errorDialog.isVisible(), equalTo(true));
+		assertThat(text.getText(), equalTo("Step 2/4:"));
+
+		clickOn("OK");
 	}
 
 	@Test

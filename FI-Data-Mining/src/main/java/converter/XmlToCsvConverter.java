@@ -1,4 +1,4 @@
-package util;
+package converter;
 
 import java.io.File;
 import java.io.IOException;
@@ -22,19 +22,12 @@ import org.xml.sax.SAXException;
 /**
  * Converter to convert an XML file to a CSV file
  */
-public final class XmlToCsvConverter {
-
-	/**
-	 * Private constructor to avoid making instances of this utility class
-	 */
-	private XmlToCsvConverter() {
-
-	}
+public class XmlToCsvConverter {
 
 	/**
 	 * Converts an XML file to a CSV file
 	 */
-	public static File convertToCsv(File xmlFile) {
+	public File convertToCsv(File xmlFile) {
 		try {
 			DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
 			DocumentBuilder builder = factory.newDocumentBuilder();

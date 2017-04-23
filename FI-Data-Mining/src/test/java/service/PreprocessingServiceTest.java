@@ -1,14 +1,12 @@
 package service;
 
-import static org.easymock.EasyMock.expect;
-import static org.hamcrest.CoreMatchers.endsWith;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.junit.Assert.assertThat;
-import static org.powermock.api.easymock.PowerMock.mockStatic;
-import static org.powermock.api.easymock.PowerMock.replay;
-import static org.powermock.api.easymock.PowerMock.verify;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doReturn;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -21,18 +19,20 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnitRunner;
 
+import converter.XmlToCsvConverter;
 import data.Attribute;
 import data.AttributeLocation;
-import util.XmlToCsvConverter;
 
-@RunWith(PowerMockRunner.class)
-@PrepareForTest({ PreprocessorService.class, XmlToCsvConverter.class })
+@RunWith(MockitoJUnitRunner.class)
 public class PreprocessingServiceTest {
 
 	private PreprocessorService preprocessor;
+
+	@Mock
+	private XmlToCsvConverter xmlToCsvConverter = new XmlToCsvConverter();
 
 	@Before
 	public void setUp() {
@@ -45,19 +45,19 @@ public class PreprocessingServiceTest {
 	}
 
 	@Test
-	public void should_return_a_list_with_a_csv_file_when_passed_a_list_with_an_xml_file() throws Exception {
-		mockStatic(XmlToCsvConverter.class);
-		expect(XmlToCsvConverter.convertToCsv(Paths.get("Data/TestXmlOne.xml").toFile()))
-				.andReturn(Paths.get("Data/TestCsvOne.csv").toFile());
-		replay(XmlToCsvConverter.class);
-
-		ArrayList<Path> files = new ArrayList<Path>();
+	public void should_return_a_list_with_csv_files_when_passed_a_list_with_xml_files() throws Exception {
+		List<Path> files = new ArrayList<Path>();
 		files.add(Paths.get("Data/TestXmlOne.xml"));
+		files.add(Paths.get("Data/TestCsvOne.csv"));
 
-		List<Path> convertedFiles = preprocessor.convertXmlToCsv(files);
+		doReturn(new File("Data/TestCsvOne.csv")).when(xmlToCsvConverter).convertToCsv(any(File.class));
+		List<Path> actualConvertedFiles = preprocessor.convertXmlToCsv(files, xmlToCsvConverter);
 
-		verify(XmlToCsvConverter.class);
-		assertThat(convertedFiles.get(0).getFileName().toString(), endsWith(".csv"));
+		String firstFileName = actualConvertedFiles.get(0).getFileName().toString();
+		String secondFileName = actualConvertedFiles.get(1).getFileName().toString();
+
+		assertThat(firstFileName.substring(firstFileName.length() - 4), equalTo(".csv"));
+		assertThat(secondFileName.substring(secondFileName.length() - 4), equalTo(".csv"));
 	}
 
 	@Test

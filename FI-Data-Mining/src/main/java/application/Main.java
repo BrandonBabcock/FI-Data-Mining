@@ -2,6 +2,7 @@ package application;
 
 import java.io.IOException;
 
+import controller.SelectFilesController;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -19,7 +20,12 @@ public class Main extends Application {
 	@Override
 	public void start(Stage primaryStage) {
 		try {
-			BorderPane screen = (BorderPane) FXMLLoader.load(getClass().getResource("/view/SelectFiles.fxml"));
+			FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/SelectFiles.fxml"));
+			BorderPane screen = (BorderPane) loader.load();
+			
+			SelectFilesController controller = loader.getController();
+			controller.initData(new FXMLLoader());
+			
 			Scene scene = new Scene(screen);
 			primaryStage.setScene(scene);
 			primaryStage.setTitle("Fischer International Data Mining");

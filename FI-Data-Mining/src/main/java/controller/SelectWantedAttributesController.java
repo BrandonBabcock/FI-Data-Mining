@@ -8,6 +8,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import converter.CsvToArffConverter;
+import converter.XmlToCsvConverter;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -45,14 +47,14 @@ public class SelectWantedAttributesController {
 	 */
 	private Map<Path, List<String>> wantedAttributesToFilesMap = new HashMap<Path, List<String>>();
 
-	/* The PreprocessorService */
-	private PreprocessorService preprocessor;
-
 	/*
 	 * The index of the current file that the user is selecting attributes for
 	 * in the convertedFiles list
 	 */
 	private int currentFileIndex;
+
+	/* The FXMLLoader to load FXML screens */
+	private FXMLLoader fxmlLoader;
 
 	@FXML
 	private BorderPane borderPane;
@@ -81,11 +83,11 @@ public class SelectWantedAttributesController {
 	 * @param inputtedFiles
 	 *            the list of inputted files
 	 */
-	public void initData(List<Path> inputtedFiles) {
+	public void initData(List<Path> inputtedFiles, PreprocessorService preprocessor, FXMLLoader fxmlLoader) {
 		this.inputtedFiles = inputtedFiles;
-		preprocessor = new PreprocessorService();
+		this.fxmlLoader = fxmlLoader;
 
-		convertedFiles = preprocessor.convertXmlToCsv(this.inputtedFiles);
+		convertedFiles = preprocessor.convertXmlToCsv(this.inputtedFiles, new XmlToCsvConverter());
 		currentFileIndex = 0;
 		currentFileName.setText(this.inputtedFiles.get(currentFileIndex).getFileName().toString());
 
@@ -137,7 +139,8 @@ public class SelectWantedAttributesController {
 
 		if (result.get() == ButtonType.OK) {
 			try {
-				BorderPane screen = (BorderPane) FXMLLoader.load(getClass().getResource("/view/SelectFiles.fxml"));
+				fxmlLoader.setLocation(getClass().getResource("/view/SelectFiles.fxml"));
+				BorderPane screen = (BorderPane) fxmlLoader.load();
 				restartButton.getScene().setRoot(screen);
 			} catch (IOException e) {
 				throw new IllegalArgumentException("Error: " + e.getMessage(), e);
@@ -158,11 +161,12 @@ public class SelectWantedAttributesController {
 		if (isAbleToContinue()) {
 			if (currentFileIndex == convertedFiles.size() - 1) {
 				try {
-					FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/Configuration.fxml"));
-					BorderPane screen = (BorderPane) loader.load();
+					fxmlLoader.setLocation(getClass().getResource("/view/Configuration.fxml"));
+					BorderPane screen = (BorderPane) fxmlLoader.load();
 
-					ConfigurationController controller = loader.getController();
-					boolean ableToConfigure = controller.initData(wantedAttributesToFilesMap, allAttributesToFilesMap);
+					ConfigurationController controller = fxmlLoader.getController();
+					boolean ableToConfigure = controller.initData(wantedAttributesToFilesMap, allAttributesToFilesMap,
+							new PreprocessorService(), new CsvToArffConverter(), new FXMLLoader());
 
 					if (ableToConfigure) {
 						nextButton.getScene().setRoot(screen);

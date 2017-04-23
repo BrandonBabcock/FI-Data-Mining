@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import converter.CsvToArffConverter;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -17,6 +18,7 @@ import javafx.scene.control.ButtonType;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.FileChooser;
+import service.PreprocessorService;
 import util.DialogsUtil;
 
 /**
@@ -32,6 +34,9 @@ public class SelectFilesController {
 
 	/* Whether or not an ARFF file has been added */
 	private boolean isArffFileAdded = false;
+
+	/* The FXMLLoader to load FXML screens */
+	private FXMLLoader fxmlLoader;
 
 	@FXML
 	private BorderPane borderPane;
@@ -56,6 +61,10 @@ public class SelectFilesController {
 
 	@FXML
 	private Button nextButton;
+
+	public void initData(FXMLLoader fxmlLoader) {
+		this.fxmlLoader = fxmlLoader;
+	}
 
 	/**
 	 * Allows the user to select a file from their machine to input
@@ -152,15 +161,16 @@ public class SelectFilesController {
 	public void next(ActionEvent event) {
 		if (isAbleToContinue()) {
 			try {
-				FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/SelectWantedAttributes.fxml"));
-				BorderPane screen = (BorderPane) loader.load();
+				fxmlLoader.setLocation(getClass().getResource("/view/SelectWantedAttributes.fxml"));
+				BorderPane screen = (BorderPane) fxmlLoader.load();
 
-				SelectWantedAttributesController controller = loader.getController();
-				controller.initData(inputtedFiles);
+				SelectWantedAttributesController controller = fxmlLoader.getController();
+				controller.initData(inputtedFiles, new PreprocessorService(), new FXMLLoader());
 
 				nextButton.getScene().setRoot(screen);
 			} catch (IOException e) {
-				throw new IllegalArgumentException("Error: " + e.getMessage(), e);
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 			}
 		}
 	}
@@ -274,29 +284,22 @@ public class SelectFilesController {
 		Optional<ButtonType> alertResult = alert.showAndWait();
 
 		if (alertResult.get() == ButtonType.OK) {
-			continueToConfiguration();
+			try {
+				fxmlLoader.setLocation(getClass().getResource("/view/Configuration.fxml"));
+				BorderPane screen = (BorderPane) fxmlLoader.load();
+
+				File arffFile = new File(fileTextField.getText());
+				ConfigurationController controller = fxmlLoader.getController();
+				controller.initDataFromSelectFiles(arffFile, new PreprocessorService(), new CsvToArffConverter(),
+						new FXMLLoader());
+
+				addFileButton.getScene().setRoot(screen);
+			} catch (IOException e) {
+				throw new IllegalArgumentException("Error: " + e.getMessage(), e);
+			}
 		} else {
 			isArffFileAdded = false;
 			fileTextField.clear();
-		}
-	}
-
-	/**
-	 * Goes to the configuration screen
-	 */
-	private void continueToConfiguration() {
-		try {
-			FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/Configuration.fxml"));
-			BorderPane screen = (BorderPane) loader.load();
-
-			File arffFile = new File(fileTextField.getText());
-
-			ConfigurationController controller = loader.getController();
-			controller.initDataFromSelectFiles(arffFile);
-
-			addFileButton.getScene().setRoot(screen);
-		} catch (IOException e) {
-			throw new IllegalArgumentException("Error: " + e.getMessage(), e);
 		}
 	}
 

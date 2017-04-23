@@ -8,6 +8,7 @@
       <publish_date>2000-10-01</publish_date>
       <description>An in-depth look at creating applications 
       with XML.</description>
+      <attributeOne>Attribute One</attributeOne>
    </book>
    <book id="bk102">
       <author>Ralls, Kim</author>

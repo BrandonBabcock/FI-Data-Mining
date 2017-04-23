@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import converter.CsvToArffConverter;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -17,11 +18,9 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.BorderPane;
 import service.DataMinerService;
-import service.RuntimeRecorderService;
 import service.PreprocessorService;
-import util.CsvToArffConverter;
+import service.RuntimeRecorderService;
 import util.DialogsUtil;
-import weka.associations.AbstractAssociator;
 
 /**
  * Controller for the Configuration FXML screen
@@ -30,12 +29,6 @@ public class ConfigurationController {
 
 	/* The PreprocessorService */
 	private PreprocessorService preprocessor;
-
-	/* The DataMinerService */
-	private DataMinerService dataMiner;
-
-	/* The RuntimeRecorderService */
-	private RuntimeRecorderService runtimeRecorder;
 
 	/*
 	 * A map containing the file paths as keys and a list of the user's selected
@@ -52,8 +45,14 @@ public class ConfigurationController {
 	/* Whether or not the user entered an ARFF file */
 	private boolean usingArffFile = false;
 
+	/* The FXMLLoader use to load FXML screens */
+	private FXMLLoader fxmlLoader;
+
 	/* The ARFF file */
 	private File arffFile;
+
+	/* The CsvToArffConverter */
+	private CsvToArffConverter csvToArffConverter;
 
 	@FXML
 	private BorderPane borderPane;
@@ -98,11 +97,13 @@ public class ConfigurationController {
 	 * @return true if the controller initialized properly, false if not
 	 */
 	public boolean initData(Map<Path, List<String>> wantedAttributesToFileMap,
-			Map<Path, List<String>> allAttributesToFilesMap) {
+			Map<Path, List<String>> allAttributesToFilesMap, PreprocessorService preprocessor,
+			CsvToArffConverter csvToArffConverter, FXMLLoader fxmlLoader) {
 		this.wantedAttributesToFilesMap = wantedAttributesToFileMap;
 		this.allAttributesToFilesMap = allAttributesToFilesMap;
-		preprocessor = new PreprocessorService();
-		dataMiner = new DataMinerService();
+		this.preprocessor = preprocessor;
+		this.csvToArffConverter = csvToArffConverter;
+		this.fxmlLoader = fxmlLoader;
 
 		List<String> commonAttributes = preprocessor.findCommonAttributesInMap(this.wantedAttributesToFilesMap);
 		groupByAttributeComboBox.getItems().addAll(commonAttributes);
@@ -122,10 +123,12 @@ public class ConfigurationController {
 		return true;
 	}
 
-	public void initDataFromSelectFiles(File arffFile) {
+	public void initDataFromSelectFiles(File arffFile, PreprocessorService preprocessor,
+			CsvToArffConverter csvToArffConverter, FXMLLoader fxmlLoader) {
 		this.arffFile = arffFile;
-		preprocessor = new PreprocessorService();
-		dataMiner = new DataMinerService();
+		this.preprocessor = preprocessor;
+		this.csvToArffConverter = csvToArffConverter;
+		this.fxmlLoader = fxmlLoader;
 		usingArffFile = true;
 
 		groupByAttributeComboBox.setDisable(true);
@@ -149,7 +152,8 @@ public class ConfigurationController {
 
 		if (result.get() == ButtonType.OK) {
 			try {
-				BorderPane screen = (BorderPane) FXMLLoader.load(getClass().getResource("/view/SelectFiles.fxml"));
+				fxmlLoader.setLocation(getClass().getResource("/view/SelectFiles.fxml"));
+				BorderPane screen = fxmlLoader.load();
 				restartButton.getScene().setRoot(screen);
 			} catch (IOException e) {
 				throw new IllegalArgumentException("Error: " + e.getMessage(), e);
@@ -170,37 +174,44 @@ public class ConfigurationController {
 			if (!usingArffFile) {
 				File preprocessedFile = preprocessor.createPreprocessedFile(wantedAttributesToFilesMap,
 						allAttributesToFilesMap, groupByAttributeComboBox.getValue());
-				arffFile = CsvToArffConverter.convertToArff(preprocessedFile);
+				arffFile = csvToArffConverter.convertToArff(preprocessedFile);
 			}
 
-			AbstractAssociator associator;
 			String[] dataMiningOptions = { numberOfRulesTextField.getText(), minimumConfidenceTextField.getText(),
 					minimumSupportDeltaTextField.getText(), minimumSupportUpperBoundTextField.getText(),
 					minimumSupportLowerBoundTextField.getText() };
+			boolean recordRuntime = false;
 
 			if (recordRuntimeComboBox.getValue().equals("Yes")) {
-				runtimeRecorder = new RuntimeRecorderService();
-				runtimeRecorder.start();
-				associator = dataMiner.findAssociationRules(algorithmComboBox.getValue(), arffFile.getPath(),
-						dataMiningOptions);
-				runtimeRecorder.stop();
-			} else {
-				associator = dataMiner.findAssociationRules(algorithmComboBox.getValue(), arffFile.getPath(),
-						dataMiningOptions);
+				recordRuntime = true;
 			}
 
 			try {
-				FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/Results.fxml"));
-				BorderPane screen = (BorderPane) loader.load();
+				fxmlLoader.setLocation(getClass().getResource("/view/Results.fxml"));
+				BorderPane screen = fxmlLoader.load();
 
-				ResultsController controller = loader.getController();
-				controller.initData(associator, runtimeRecorder);
+				ResultsController controller = fxmlLoader.getController();
+				boolean rulesFound = controller.initData(arffFile, algorithmComboBox.getValue(), dataMiningOptions,
+						recordRuntime, new DataMinerService(), new RuntimeRecorderService());
 
-				nextButton.getScene().setRoot(screen);
+				if (rulesFound) {
+					nextButton.getScene().setRoot(screen);
+				} else {
+					alertNoResults();
+				}
 			} catch (IOException e) {
 				throw new IllegalArgumentException("Error: " + e.getMessage(), e);
 			}
 		}
+	}
+
+	/**
+	 * Alerts the user that no association rules were found
+	 */
+	private void alertNoResults() {
+		Alert alert = DialogsUtil.createErrorDialog("No Rules Found",
+				"No association rules were found. Click Restart to start over.");
+		alert.showAndWait();
 	}
 
 	/**

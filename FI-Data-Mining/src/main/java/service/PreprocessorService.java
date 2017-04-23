@@ -15,9 +15,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 
+import converter.XmlToCsvConverter;
 import data.Attribute;
 import data.AttributeLocation;
-import util.XmlToCsvConverter;
 
 /**
  * Service for preprocessing tasks
@@ -32,14 +32,14 @@ public class PreprocessorService {
 	 *            the list of files to convert
 	 * @return the converted files
 	 */
-	public List<Path> convertXmlToCsv(List<Path> files) {
+	public List<Path> convertXmlToCsv(List<Path> files, XmlToCsvConverter xmlToCsvConverter) {
 		List<Path> convertedFiles = new ArrayList<Path>();
 
 		for (Path filePath : files) {
 			String fileName = filePath.getFileName().toString();
 
 			if (fileName.toLowerCase().substring(fileName.length() - 4).equals(".xml")) {
-				File csvFile = XmlToCsvConverter.convertToCsv(filePath.toFile());
+				File csvFile = xmlToCsvConverter.convertToCsv(filePath.toFile());
 				convertedFiles.add(Paths.get(csvFile.getAbsolutePath()));
 			} else {
 				convertedFiles.add(filePath);
