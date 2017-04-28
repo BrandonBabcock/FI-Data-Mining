@@ -105,7 +105,7 @@ public class ConfigurationController {
 		this.csvToArffConverter = csvToArffConverter;
 		this.fxmlLoader = fxmlLoader;
 
-		List<String> commonAttributes = preprocessor.findCommonAttributesInMap(this.wantedAttributesToFilesMap);
+		List<String> commonAttributes = this.preprocessor.findCommonAttributesInMap(this.wantedAttributesToFilesMap);
 		groupByAttributeComboBox.getItems().addAll(commonAttributes);
 
 		if (!commonAttributes.isEmpty()) {
