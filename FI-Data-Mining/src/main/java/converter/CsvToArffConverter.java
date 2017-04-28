@@ -13,9 +13,11 @@ import weka.core.converters.CSVLoader;
 public class CsvToArffConverter {
 
 	/**
-	 * Converts a CSV file to a temporary ARFF file
+	 * Converts a CSV file to an ARFF file
 	 * 
-	 * @return the ARFF file
+	 * @param csvFile
+	 *            the CSV file to convert
+	 * @return the converted file
 	 */
 	public File convertToArff(File csvFile) {
 		try {

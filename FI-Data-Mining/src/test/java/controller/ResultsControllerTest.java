@@ -72,13 +72,13 @@ public class ResultsControllerTest extends ApplicationTest {
 		doReturn(5.0).when(runtimeRecorderMock).getRunTime();
 
 		rulesFoundWithApriori = controller.initData(arffFile, "Apriori", dataMiningOptions, true, dataMinerMock,
-				runtimeRecorderMock);
+				runtimeRecorderMock, new FXMLLoader());
 
 		doAnswer(invocation -> findFilteredAssociatorRules("Data/TestArffOne.arff", dataMiningOptions))
 				.when(dataMinerMock).findAssociationRules(anyString(), anyString(), any());
 
 		rulesFoundWithFilteredAssociator = controller.initData(arffFile, "Filtered Associator", dataMiningOptions, true,
-				dataMinerMock, runtimeRecorderMock);
+				dataMinerMock, runtimeRecorderMock, new FXMLLoader());
 	}
 
 	@Test

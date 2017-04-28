@@ -77,11 +77,18 @@ public class SelectWantedAttributesController {
 	@FXML
 	private VBox attributesVbox;
 
+	@FXML
+	private Text stepNumberText;
+
 	/**
-	 * Initializes data for the controller
+	 * Initializes the controller
 	 * 
 	 * @param inputtedFiles
-	 *            the list of inputted files
+	 *            the user inputted files
+	 * @param preprocessor
+	 *            the PreprocessorService
+	 * @param fxmlLoader
+	 *            the FXMLLoader to load the screens
 	 */
 	public void initData(List<Path> inputtedFiles, PreprocessorService preprocessor, FXMLLoader fxmlLoader) {
 		this.inputtedFiles = inputtedFiles;
@@ -141,6 +148,10 @@ public class SelectWantedAttributesController {
 			try {
 				fxmlLoader.setLocation(getClass().getResource("/view/SelectFiles.fxml"));
 				BorderPane screen = (BorderPane) fxmlLoader.load();
+
+				SelectFilesController controller = fxmlLoader.getController();
+				controller.initData(new FXMLLoader());
+
 				restartButton.getScene().setRoot(screen);
 			} catch (IOException e) {
 				throw new IllegalArgumentException("Error: " + e.getMessage(), e);

@@ -30,6 +30,8 @@ public class PreprocessorService {
 	 * 
 	 * @param files
 	 *            the list of files to convert
+	 * @param xmlToCsvConverter
+	 *            the XmlToCsvConverter
 	 * @return the converted files
 	 */
 	public List<Path> convertXmlToCsv(List<Path> files, XmlToCsvConverter xmlToCsvConverter) {
@@ -135,10 +137,10 @@ public class PreprocessorService {
 		Map<Path, AttributeLocation> attributeLocationsToFilesMap = mapAttributeLocationsToFiles(
 				wantedAttributesToFilesMap, allAttributesToFilesMap, groupByAttribute);
 
-		Map<String, List<Attribute>> userAttributesMap = mapGroupedByAttributes(wantedAttributesToFilesMap,
+		Map<String, List<Attribute>> groupedByAttributesMap = mapGroupedByAttributes(wantedAttributesToFilesMap,
 				allAttributesToFilesMap, attributeLocationsToFilesMap);
 
-		File preprocessedFile = buildFile(wantedAttributesToFilesMap, userAttributesMap, groupByAttribute);
+		File preprocessedFile = buildFile(wantedAttributesToFilesMap, groupedByAttributesMap, groupByAttribute);
 
 		return preprocessedFile;
 	}
@@ -216,6 +218,17 @@ public class PreprocessorService {
 		return attributeLocationsToFilesMap;
 	}
 
+	/**
+	 * Maps the group by attribute the the wanted attribute values
+	 * 
+	 * @param wantedAttributesToFilesMap
+	 *            the map of file paths to wanted attributes
+	 * @param allAttributesToFilesMap
+	 *            the map of file paths to all attributes
+	 * @param attributeLocationsToFilesMap
+	 *            the map of file paths to the location of the wanted attributes
+	 * @return the map of the group by attribute to the wanted attribute values
+	 */
 	public Map<String, List<Attribute>> mapGroupedByAttributes(Map<Path, List<String>> wantedAttributesToFilesMap,
 			Map<Path, List<String>> allAttributesToFilesMap,
 			Map<Path, AttributeLocation> attributeLocationsToFilesMap) {
@@ -276,8 +289,20 @@ public class PreprocessorService {
 		return userAttributesMap;
 	}
 
+	/**
+	 * Builds the final preprocessed CSV file
+	 * 
+	 * @param wantedAttributesToFilesMap
+	 *            the map of file paths to wanted attributes
+	 * @param groupedByAttributeMap
+	 *            the map of the group by attribute's values to the wanted
+	 *            attributes' values
+	 * @param groupByAttribute
+	 *            the group by attribute
+	 * @return
+	 */
 	private File buildFile(Map<Path, List<String>> wantedAttributesToFilesMap,
-			Map<String, List<Attribute>> userAttributesMap, String groupByAttribute) {
+			Map<String, List<Attribute>> groupedByAttributeMap, String groupByAttribute) {
 		List<String> attributeTitles = new ArrayList<String>();
 		attributeTitles.add(groupByAttribute);
 
@@ -297,7 +322,7 @@ public class PreprocessorService {
 
 			fileWriter.append(fileHeader);
 
-			for (Map.Entry<String, List<Attribute>> entry : userAttributesMap.entrySet()) {
+			for (Map.Entry<String, List<Attribute>> entry : groupedByAttributeMap.entrySet()) {
 				String[] attributes = new String[attributeTitles.size()];
 				attributes[0] = entry.getKey();
 

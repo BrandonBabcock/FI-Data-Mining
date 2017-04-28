@@ -14,18 +14,20 @@ import javafx.stage.Stage;
  */
 public class Main extends Application {
 
-	/**
-	 * Launches the GUI to the first screen
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see javafx.application.Application#start(javafx.stage.Stage)
 	 */
 	@Override
 	public void start(Stage primaryStage) {
 		try {
 			FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/SelectFiles.fxml"));
 			BorderPane screen = (BorderPane) loader.load();
-			
+
 			SelectFilesController controller = loader.getController();
 			controller.initData(new FXMLLoader());
-			
+
 			Scene scene = new Scene(screen);
 			primaryStage.setScene(scene);
 			primaryStage.setTitle("Fischer International Data Mining");

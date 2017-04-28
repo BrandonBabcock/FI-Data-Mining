@@ -17,6 +17,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.text.Text;
 import javafx.stage.FileChooser;
 import service.PreprocessorService;
 import util.DialogsUtil;
@@ -62,6 +63,15 @@ public class SelectFilesController {
 	@FXML
 	private Button nextButton;
 
+	@FXML
+	private Text stepNumberText;
+
+	/**
+	 * Initializes the controller
+	 * 
+	 * @param fxmlLoader
+	 *            the loader to load FXML screens
+	 */
 	public void initData(FXMLLoader fxmlLoader) {
 		this.fxmlLoader = fxmlLoader;
 	}

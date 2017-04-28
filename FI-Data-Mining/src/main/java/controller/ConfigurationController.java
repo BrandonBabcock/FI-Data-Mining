@@ -94,6 +94,12 @@ public class ConfigurationController {
 	 *            a mapping of wanted attributes to their corresponding file
 	 * @param allAttributesToFilesMap
 	 *            a mapping of all attributes to their corresponding file
+	 * @param preprocessor
+	 *            the PreprocessorService
+	 * @param csvToArffConverter
+	 *            the CsvToArffConverter
+	 * @param fxmlLoader
+	 *            the FXMLLoader to load the screens
 	 * @return true if the controller initialized properly, false if not
 	 */
 	public boolean initData(Map<Path, List<String>> wantedAttributesToFileMap,
@@ -123,6 +129,19 @@ public class ConfigurationController {
 		return true;
 	}
 
+	/**
+	 * Initializes data for the controller when coming from the file selection
+	 * screen
+	 * 
+	 * @param arffFile
+	 *            the inputted ARFF file
+	 * @param preprocessor
+	 *            the PreprocessorService
+	 * @param csvToArffConverter
+	 *            the CsvToArffConverter
+	 * @param fxmlLoader
+	 *            the FXMLLoader to load the screens
+	 */
 	public void initDataFromSelectFiles(File arffFile, PreprocessorService preprocessor,
 			CsvToArffConverter csvToArffConverter, FXMLLoader fxmlLoader) {
 		this.arffFile = arffFile;
@@ -154,6 +173,10 @@ public class ConfigurationController {
 			try {
 				fxmlLoader.setLocation(getClass().getResource("/view/SelectFiles.fxml"));
 				BorderPane screen = fxmlLoader.load();
+
+				SelectFilesController controller = fxmlLoader.getController();
+				controller.initData(new FXMLLoader());
+
 				restartButton.getScene().setRoot(screen);
 			} catch (IOException e) {
 				throw new IllegalArgumentException("Error: " + e.getMessage(), e);
@@ -192,7 +215,7 @@ public class ConfigurationController {
 
 				ResultsController controller = fxmlLoader.getController();
 				boolean rulesFound = controller.initData(arffFile, algorithmComboBox.getValue(), dataMiningOptions,
-						recordRuntime, new DataMinerService(), new RuntimeRecorderService());
+						recordRuntime, new DataMinerService(), new RuntimeRecorderService(), new FXMLLoader());
 
 				if (rulesFound) {
 					nextButton.getScene().setRoot(screen);

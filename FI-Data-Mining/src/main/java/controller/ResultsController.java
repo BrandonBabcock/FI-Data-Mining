@@ -29,6 +29,9 @@ import weka.associations.FilteredAssociator;
  */
 public class ResultsController {
 
+	/* The FXMLLoader use to load FXML screens */
+	private FXMLLoader fxmlLoader;
+
 	@FXML
 	private BorderPane borderPane;
 
@@ -45,15 +48,26 @@ public class ResultsController {
 	private VBox rulesVbox;
 
 	/**
-	 * Initializes data for the controller
+	 * Initializes the controller
 	 * 
-	 * @param associator
-	 *            the data mining results
+	 * @param arffFile
+	 *            the ARFF file to data mine
+	 * @param algorithm
+	 *            the data mining algorithm to use
+	 * @param dataMiningOptions
+	 *            the data mining parameters to send
+	 * @param recordRuntime
+	 *            whether or not to record the runtime
+	 * @param dataMiner
+	 *            the DataMinerService
 	 * @param runtimeRecorder
-	 *            the runtime recorder
+	 *            the RuntimeRecorderService
+	 * @param fxmlLoader
+	 *            the FXMLLoader to load the screens
+	 * @return true if association rules were found, false otherwise
 	 */
 	public boolean initData(File arffFile, String algorithm, String[] dataMiningOptions, boolean recordRuntime,
-			DataMinerService dataMiner, RuntimeRecorderService runtimeRecorder) {
+			DataMinerService dataMiner, RuntimeRecorderService runtimeRecorder, FXMLLoader fxmlLoader) {
 		AbstractAssociator associator;
 
 		if (recordRuntime) {
@@ -69,6 +83,13 @@ public class ResultsController {
 		return loadRules(associator);
 	}
 
+	/**
+	 * Loads the association rules onto the screen
+	 * 
+	 * @param associator
+	 *            the data mining results
+	 * @return true if there were rules to display, false if not
+	 */
 	private boolean loadRules(AbstractAssociator associator) {
 		if (associator instanceof Apriori) {
 			Apriori apriori = (Apriori) associator;
@@ -120,6 +141,10 @@ public class ResultsController {
 		if (result.get() == ButtonType.OK) {
 			try {
 				BorderPane screen = (BorderPane) FXMLLoader.load(getClass().getResource("/view/SelectFiles.fxml"));
+
+				SelectFilesController controller = fxmlLoader.getController();
+				controller.initData(new FXMLLoader());
+
 				restartButton.getScene().setRoot(screen);
 			} catch (IOException e) {
 				throw new IllegalArgumentException("Error: " + e.getMessage(), e);

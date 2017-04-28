@@ -26,6 +26,10 @@ public class XmlToCsvConverter {
 
 	/**
 	 * Converts an XML file to a CSV file
+	 * 
+	 * @param xmlFile
+	 *            the XML file to convert
+	 * @return the converted file
 	 */
 	public File convertToCsv(File xmlFile) {
 		try {

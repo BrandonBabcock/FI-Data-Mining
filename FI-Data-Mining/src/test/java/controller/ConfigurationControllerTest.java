@@ -224,7 +224,7 @@ public class ConfigurationControllerTest extends ApplicationTest {
 		doReturn(new File("Data/TestArffOne.arff")).when(csvToArffConverterMock).convertToArff(any(File.class));
 		doReturn(resultsControllerMock).when(fxmlLoaderSpy).getController();
 		doReturn(true).when(resultsControllerMock).initData(any(File.class), anyString(), any(), anyBoolean(),
-				any(DataMinerService.class), any(RuntimeRecorderService.class));
+				any(DataMinerService.class), any(RuntimeRecorderService.class), any(FXMLLoader.class));
 
 		clickOn("#recordRuntimeComboBox");
 		clickOn("No");
@@ -242,7 +242,7 @@ public class ConfigurationControllerTest extends ApplicationTest {
 		doReturn(new File("Data/TestArffOne.arff")).when(csvToArffConverterMock).convertToArff(any(File.class));
 		doReturn(resultsControllerMock).when(fxmlLoaderSpy).getController();
 		doReturn(true).when(resultsControllerMock).initData(any(File.class), anyString(), any(), anyBoolean(),
-				any(DataMinerService.class), any(RuntimeRecorderService.class));
+				any(DataMinerService.class), any(RuntimeRecorderService.class), any(FXMLLoader.class));
 
 		clickOn("#nextButton");
 
@@ -255,7 +255,7 @@ public class ConfigurationControllerTest extends ApplicationTest {
 	public void should_continue_to_next_screen_when_using_arff_file() {
 		doReturn(resultsControllerMock).when(fxmlLoaderSpy).getController();
 		doReturn(true).when(resultsControllerMock).initData(any(File.class), anyString(), any(), anyBoolean(),
-				any(DataMinerService.class), any(RuntimeRecorderService.class));
+				any(DataMinerService.class), any(RuntimeRecorderService.class), any(FXMLLoader.class));
 
 		File arffFile = new File("Data/TestArffOne.arff");
 		controller.initDataFromSelectFiles(arffFile, preprocessorMock, csvToArffConverterMock, fxmlLoaderSpy);
@@ -275,7 +275,7 @@ public class ConfigurationControllerTest extends ApplicationTest {
 		doReturn(new File("Data/TestArffOne.arff")).when(csvToArffConverterMock).convertToArff(any(File.class));
 		doReturn(resultsControllerMock).when(fxmlLoaderSpy).getController();
 		doReturn(false).when(resultsControllerMock).initData(any(File.class), anyString(), any(), anyBoolean(),
-				any(DataMinerService.class), any(RuntimeRecorderService.class));
+				any(DataMinerService.class), any(RuntimeRecorderService.class), any(FXMLLoader.class));
 
 		clickOn("#nextButton");
 

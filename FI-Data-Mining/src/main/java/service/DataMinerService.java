@@ -18,6 +18,8 @@ public class DataMinerService {
 	 *            the algorithm to use
 	 * @param filePath
 	 *            the file path of the file to find the association rules in
+	 * @param dataMiningOptions
+	 *            the data mining algorithm parameters to use
 	 * @return the association rules
 	 */
 	public AbstractAssociator findAssociationRules(String algorithm, String filePath, String[] dataMiningOptions) {
@@ -40,6 +42,8 @@ public class DataMinerService {
 	 * 
 	 * @param filePath
 	 *            the file path of the file to find the association rules in
+	 * @param dataMiningOptions
+	 *            the data mining algorithm parameters to use
 	 * @return the Apriori object containing the association rules
 	 */
 	private Apriori findAprioriRules(String filePath, String[] dataMiningOptions) {
@@ -74,6 +78,8 @@ public class DataMinerService {
 	 * 
 	 * @param filePath
 	 *            the file path of the file to find the association rules in
+	 * @param dataMiningOptions
+	 *            the data mining algorithm parameters to use
 	 * @return the FilteredAssociator object containing the association rules
 	 */
 	private FilteredAssociator findFilteredAssociatorRules(String filePath, String[] dataMiningOptions) {

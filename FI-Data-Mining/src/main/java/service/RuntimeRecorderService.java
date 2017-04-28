@@ -1,5 +1,7 @@
 package service;
 
+import java.util.concurrent.TimeUnit;
+
 /**
  * The RuntimeRecorderService can be used to record the runtime of a method
  */
@@ -31,7 +33,7 @@ public class RuntimeRecorderService {
 	 * @return the run time
 	 */
 	public double getRunTime() {
-		return this.stopTime - this.startTime / 1000000000.0;
+		return (TimeUnit.SECONDS.convert((long) (stopTime - startTime), TimeUnit.NANOSECONDS));
 	}
 
 }
