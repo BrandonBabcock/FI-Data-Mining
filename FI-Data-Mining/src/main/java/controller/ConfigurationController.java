@@ -135,18 +135,11 @@ public class ConfigurationController {
 	 * 
 	 * @param arffFile
 	 *            the inputted ARFF file
-	 * @param preprocessor
-	 *            the PreprocessorService
-	 * @param csvToArffConverter
-	 *            the CsvToArffConverter
 	 * @param fxmlLoader
 	 *            the FXMLLoader to load the screens
 	 */
-	public void initDataFromSelectFiles(File arffFile, PreprocessorService preprocessor,
-			CsvToArffConverter csvToArffConverter, FXMLLoader fxmlLoader) {
+	public void initDataFromSelectFiles(File arffFile, FXMLLoader fxmlLoader) {
 		this.arffFile = arffFile;
-		this.preprocessor = preprocessor;
-		this.csvToArffConverter = csvToArffConverter;
 		this.fxmlLoader = fxmlLoader;
 		usingArffFile = true;
 
@@ -220,6 +213,8 @@ public class ConfigurationController {
 				if (rulesFound) {
 					nextButton.getScene().setRoot(screen);
 				} else {
+					fxmlLoader.setRoot(null);
+					fxmlLoader.setController(null);
 					alertNoResults();
 				}
 			} catch (IOException e) {
@@ -246,8 +241,7 @@ public class ConfigurationController {
 	 */
 	private boolean isAbleToContinue() {
 		if (!usingArffFile) {
-			if (groupByAttributeComboBox.getValue() != null && algorithmComboBox.getValue() != null
-					&& recordRuntimeComboBox.getValue() != null && isNumeric(minimumConfidenceTextField.getText())
+			if (isNumeric(minimumConfidenceTextField.getText())
 					&& isNumeric(minimumSupportLowerBoundTextField.getText())
 					&& isNumeric(minimumSupportUpperBoundTextField.getText())
 					&& isNumeric(minimumSupportDeltaTextField.getText())
@@ -255,8 +249,7 @@ public class ConfigurationController {
 				return true;
 			}
 		} else {
-			if (algorithmComboBox.getValue() != null && recordRuntimeComboBox.getValue() != null
-					&& isNumeric(minimumConfidenceTextField.getText())
+			if (isNumeric(minimumConfidenceTextField.getText())
 					&& isNumeric(minimumSupportLowerBoundTextField.getText())
 					&& isNumeric(minimumSupportUpperBoundTextField.getText())
 					&& isNumeric(minimumSupportDeltaTextField.getText())

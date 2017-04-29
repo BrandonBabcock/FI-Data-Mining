@@ -182,6 +182,8 @@ public class SelectWantedAttributesController {
 					if (ableToConfigure) {
 						nextButton.getScene().setRoot(screen);
 					} else {
+						fxmlLoader.setRoot(null);
+						fxmlLoader.setController(null);
 						Alert alert = DialogsUtil.createErrorDialog("No Common Attributes Found",
 								"No common attributes were found within the files. Click Restart to start over.");
 						alert.showAndWait();

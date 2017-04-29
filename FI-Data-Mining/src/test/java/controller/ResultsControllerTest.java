@@ -14,6 +14,7 @@ import java.io.IOException;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.mockito.Spy;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.testfx.framework.junit.ApplicationTest;
 
@@ -39,6 +40,12 @@ public class ResultsControllerTest extends ApplicationTest {
 
 	@Mock
 	private RuntimeRecorderService runtimeRecorderMock;
+
+	@Mock
+	SelectFilesController selectFilesControllerMock;
+
+	@Spy
+	private FXMLLoader fxmlLoaderSpy;
 
 	private boolean rulesFoundWithApriori;
 
@@ -72,13 +79,13 @@ public class ResultsControllerTest extends ApplicationTest {
 		doReturn(5.0).when(runtimeRecorderMock).getRunTime();
 
 		rulesFoundWithApriori = controller.initData(arffFile, "Apriori", dataMiningOptions, true, dataMinerMock,
-				runtimeRecorderMock, new FXMLLoader());
+				runtimeRecorderMock, fxmlLoaderSpy);
 
 		doAnswer(invocation -> findFilteredAssociatorRules("Data/TestArffOne.arff", dataMiningOptions))
 				.when(dataMinerMock).findAssociationRules(anyString(), anyString(), any());
 
-		rulesFoundWithFilteredAssociator = controller.initData(arffFile, "Filtered Associator", dataMiningOptions, true,
-				dataMinerMock, runtimeRecorderMock, new FXMLLoader());
+		rulesFoundWithFilteredAssociator = controller.initData(arffFile, "Filtered Associator", dataMiningOptions,
+				false, dataMinerMock, runtimeRecorderMock, fxmlLoaderSpy);
 	}
 
 	@Test
@@ -93,6 +100,9 @@ public class ResultsControllerTest extends ApplicationTest {
 
 	@Test
 	public void should_restart_to_step_one_if_user_accepts() {
+		doReturn(selectFilesControllerMock).when(fxmlLoaderSpy).getController();
+		doNothing().when(selectFilesControllerMock).initData(any(FXMLLoader.class));
+
 		clickOn("#restartButton");
 		clickOn("OK");
 

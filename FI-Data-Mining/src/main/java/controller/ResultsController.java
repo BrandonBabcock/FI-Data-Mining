@@ -68,6 +68,7 @@ public class ResultsController {
 	 */
 	public boolean initData(File arffFile, String algorithm, String[] dataMiningOptions, boolean recordRuntime,
 			DataMinerService dataMiner, RuntimeRecorderService runtimeRecorder, FXMLLoader fxmlLoader) {
+		this.fxmlLoader = fxmlLoader;
 		AbstractAssociator associator;
 
 		if (recordRuntime) {
@@ -140,7 +141,8 @@ public class ResultsController {
 
 		if (result.get() == ButtonType.OK) {
 			try {
-				BorderPane screen = (BorderPane) FXMLLoader.load(getClass().getResource("/view/SelectFiles.fxml"));
+				fxmlLoader.setLocation(getClass().getResource("/view/SelectFiles.fxml"));
+				BorderPane screen = (BorderPane) fxmlLoader.load();
 
 				SelectFilesController controller = fxmlLoader.getController();
 				controller.initData(new FXMLLoader());

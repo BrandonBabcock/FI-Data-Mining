@@ -6,6 +6,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.doNothing;
 
 import java.io.IOException;
 import java.nio.file.Path;
@@ -44,6 +45,9 @@ public class SelectWantedAttributesControllerTest extends ApplicationTest {
 
 	@Mock
 	ConfigurationController configurationControllerMock;
+	
+	@Mock
+	SelectFilesController selectFilesControllerMock;
 
 	@Spy
 	FXMLLoader fxmlLoaderSpy;
@@ -116,6 +120,9 @@ public class SelectWantedAttributesControllerTest extends ApplicationTest {
 
 	@Test
 	public void should_restart_to_step_one_if_user_accepts() {
+		doReturn(selectFilesControllerMock).when(fxmlLoaderSpy).getController();
+		doNothing().when(selectFilesControllerMock).initData(any(FXMLLoader.class));
+		
 		clickOn("#restartButton");
 		clickOn("OK");
 

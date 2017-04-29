@@ -27,7 +27,7 @@ import data.Attribute;
 import data.AttributeLocation;
 
 @RunWith(MockitoJUnitRunner.class)
-public class PreprocessingServiceTest {
+public class PreprocessorServiceTest {
 
 	private PreprocessorService preprocessor;
 

@@ -6,6 +6,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
 
 import java.io.File;
@@ -49,6 +50,9 @@ public class ConfigurationControllerTest extends ApplicationTest {
 
 	@Mock
 	private ResultsController resultsControllerMock;
+	
+	@Mock
+	SelectFilesController selectFilesControllerMock;
 
 	@Spy
 	private FXMLLoader fxmlLoaderSpy;
@@ -104,7 +108,7 @@ public class ConfigurationControllerTest extends ApplicationTest {
 	@Test
 	public void should_disable_group_by_attribute_combo_box_from_select_files() {
 		File arffFile = new File("Data/TestArffOne.arff");
-		controller.initDataFromSelectFiles(arffFile, preprocessorMock, csvToArffConverterMock, fxmlLoaderSpy);
+		controller.initDataFromSelectFiles(arffFile, fxmlLoaderSpy);
 
 		ComboBox<String> groupByAttributeComboBox = lookup("#groupByAttributeComboBox").query();
 
@@ -123,7 +127,7 @@ public class ConfigurationControllerTest extends ApplicationTest {
 	@Test
 	public void should_populate_and_set_algorithm_combo_box_from_select_select_files() {
 		File arffFile = new File("Data/TestArffOne.arff");
-		controller.initDataFromSelectFiles(arffFile, preprocessorMock, csvToArffConverterMock, fxmlLoaderSpy);
+		controller.initDataFromSelectFiles(arffFile, fxmlLoaderSpy);
 
 		ComboBox<String> algorithmComboBox = lookup("#algorithmComboBox").query();
 
@@ -144,7 +148,7 @@ public class ConfigurationControllerTest extends ApplicationTest {
 	@Test
 	public void should_populate_and_set_record_runtime_combo_box_from_select_files() {
 		File arffFile = new File("Data/TestArffOne.arff");
-		controller.initDataFromSelectFiles(arffFile, preprocessorMock, csvToArffConverterMock, fxmlLoaderSpy);
+		controller.initDataFromSelectFiles(arffFile, fxmlLoaderSpy);
 
 		ComboBox<String> recordRuntimeComboBox = lookup("#recordRuntimeComboBox").query();
 
@@ -199,6 +203,9 @@ public class ConfigurationControllerTest extends ApplicationTest {
 
 	@Test
 	public void should_restart_to_step_one_if_user_accepts() {
+		doReturn(selectFilesControllerMock).when(fxmlLoaderSpy).getController();
+		doNothing().when(selectFilesControllerMock).initData(any(FXMLLoader.class));
+		
 		clickOn("#restartButton");
 		clickOn("OK");
 
@@ -258,7 +265,7 @@ public class ConfigurationControllerTest extends ApplicationTest {
 				any(DataMinerService.class), any(RuntimeRecorderService.class), any(FXMLLoader.class));
 
 		File arffFile = new File("Data/TestArffOne.arff");
-		controller.initDataFromSelectFiles(arffFile, preprocessorMock, csvToArffConverterMock, fxmlLoaderSpy);
+		controller.initDataFromSelectFiles(arffFile, fxmlLoaderSpy);
 
 		clickOn("#nextButton");
 
@@ -289,7 +296,7 @@ public class ConfigurationControllerTest extends ApplicationTest {
 	}
 
 	@Test
-	public void should_show_error_when_clicking_next_without_proper_configuration() {
+	public void should_show_error_when_clicking_next_without_proper_confidence() {
 		clickOn("#minimumConfidenceTextField").write("a");
 		clickOn("#nextButton");
 
@@ -299,5 +306,54 @@ public class ConfigurationControllerTest extends ApplicationTest {
 
 		clickOn("OK");
 	}
+	
+	@Test
+	public void should_show_error_when_clicking_next_without_proper_support_lower_bound() {
+		clickOn("#minimumSupportLowerBoundTextField").write("a");
+		clickOn("#nextButton");
+
+		Node errorDialog = lookup(".alert").query();
+
+		assertThat(errorDialog.isVisible(), equalTo(true));
+
+		clickOn("OK");
+	}
+	
+	@Test
+	public void should_show_error_when_clicking_next_without_proper_support_upper_bound() {
+		clickOn("#minimumSupportUpperBoundTextField").write("a");
+		clickOn("#nextButton");
+
+		Node errorDialog = lookup(".alert").query();
+
+		assertThat(errorDialog.isVisible(), equalTo(true));
+
+		clickOn("OK");
+	}
+	
+	@Test
+	public void should_show_error_when_clicking_next_without_proper_support_delta() {
+		clickOn("#minimumSupportDeltaTextField").write("a");
+		clickOn("#nextButton");
+
+		Node errorDialog = lookup(".alert").query();
+
+		assertThat(errorDialog.isVisible(), equalTo(true));
+
+		clickOn("OK");
+	}
+	
+	@Test
+	public void should_show_error_when_clicking_next_without_proper_number_of_rules() {
+		clickOn("#numberOfRulesTextField").write("a");
+		clickOn("#nextButton");
+
+		Node errorDialog = lookup(".alert").query();
+
+		assertThat(errorDialog.isVisible(), equalTo(true));
+
+		clickOn("OK");
+	}
+
 
 }

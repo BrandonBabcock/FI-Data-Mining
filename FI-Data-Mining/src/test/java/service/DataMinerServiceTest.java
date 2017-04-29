@@ -5,20 +5,15 @@ import static org.junit.Assert.assertThat;
 
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 
 import weka.associations.AbstractAssociator;
 import weka.associations.Apriori;
 import weka.associations.FilteredAssociator;
 
-public class DataMiningServiceTest {
+public class DataMinerServiceTest {
 
-	DataMinerService service;
-
-	@Rule
-	public ExpectedException expectedException = ExpectedException.none();
+	private DataMinerService service;
 
 	@Before
 	public void setUp() {
@@ -60,11 +55,9 @@ public class DataMiningServiceTest {
 		assertThat(hasRules, equalTo(true));
 	}
 
-	// @Test(expected = IllegalArgumentException.class)
-	@Test
+	@Test(expected = IllegalArgumentException.class)
 	public void should_throw_error_when_invalid_file_passed_with_filtered_associator_algorithm() {
-		expectedException.expect(IllegalArgumentException.class);
-		// expectedException.exp
+
 		String[] options = { "10", "0.9", "0.05", "1.0", "0.1" };
 
 		service.findAssociationRules("Filtered Associator", "InvalidFile.arff", options);

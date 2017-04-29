@@ -21,7 +21,6 @@ import org.mockito.Spy;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.testfx.framework.junit.ApplicationTest;
 
-import converter.CsvToArffConverter;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Scene;
@@ -236,8 +235,7 @@ public class SelectFilesControllerTest extends ApplicationTest {
 	@Test
 	public void should_continue_to_configuration_screen_when_adding_arff_file() throws Exception {
 		doReturn(configurationControllerMock).when(fxmlLoaderSpy).getController();
-		doNothing().when(configurationControllerMock).initDataFromSelectFiles(any(File.class),
-				any(PreprocessorService.class), any(CsvToArffConverter.class), any(FXMLLoader.class));
+		doNothing().when(configurationControllerMock).initDataFromSelectFiles(any(File.class), any(FXMLLoader.class));
 
 		clickOn("#fileTextField").write("Data/TestArffOne.arff");
 		clickOn("#addFileButton");

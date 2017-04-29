@@ -8,7 +8,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import converter.CsvToArffConverter;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -179,8 +178,7 @@ public class SelectFilesController {
 
 				nextButton.getScene().setRoot(screen);
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				throw new IllegalArgumentException("Error: " + e.getMessage(), e);
 			}
 		}
 	}
@@ -300,8 +298,7 @@ public class SelectFilesController {
 
 				File arffFile = new File(fileTextField.getText());
 				ConfigurationController controller = fxmlLoader.getController();
-				controller.initDataFromSelectFiles(arffFile, new PreprocessorService(), new CsvToArffConverter(),
-						new FXMLLoader());
+				controller.initDataFromSelectFiles(arffFile, new FXMLLoader());
 
 				addFileButton.getScene().setRoot(screen);
 			} catch (IOException e) {
