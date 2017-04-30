@@ -10,6 +10,8 @@ import static org.mockito.Mockito.doReturn;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -19,8 +21,10 @@ import org.mockito.junit.MockitoJUnitRunner;
 import org.testfx.framework.junit.ApplicationTest;
 
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import service.DataMinerService;
@@ -90,11 +94,33 @@ public class ResultsControllerTest extends ApplicationTest {
 
 	@Test
 	public void should_return_true_when_rules_are_found_with_apriori() {
+		VBox rulesVbox = lookup("#rulesVbox").query();
+		List<String> rules = new ArrayList<String>();
+
+		for (Node child : rulesVbox.getChildren()) {
+			if (child instanceof Text) {
+				rules.add(((Text) child).getText());
+			}
+		}
+
 		assertThat(rulesFoundWithApriori, equalTo(true));
+		assertThat(rules.get(0).contains("outlook=overcast"), equalTo(true));
+		assertThat(rules.get(1).contains("temperature=cool"), equalTo(true));
 	}
 
 	@Test
 	public void should_return_true_when_rules_are_found_with_filtered_associator() {
+		VBox rulesVbox = lookup("#rulesVbox").query();
+		List<String> rules = new ArrayList<String>();
+
+		for (Node child : rulesVbox.getChildren()) {
+			if (child instanceof Text) {
+				rules.add(((Text) child).getText());
+			}
+		}
+		
+		assertThat(rules.get(0).contains("outlook=overcast"), equalTo(true));
+		assertThat(rules.get(1).contains("temperature=cool"), equalTo(true));
 		assertThat(rulesFoundWithFilteredAssociator, equalTo(true));
 	}
 

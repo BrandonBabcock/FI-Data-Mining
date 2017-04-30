@@ -2,11 +2,12 @@ package controller;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.fail;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyMap;
-import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doReturn;
 
 import java.io.IOException;
 import java.nio.file.Path;
@@ -45,7 +46,7 @@ public class SelectWantedAttributesControllerTest extends ApplicationTest {
 
 	@Mock
 	ConfigurationController configurationControllerMock;
-	
+
 	@Mock
 	SelectFilesController selectFilesControllerMock;
 
@@ -103,6 +104,16 @@ public class SelectWantedAttributesControllerTest extends ApplicationTest {
 	}
 
 	@Test
+	public void should_have_the_second_file_in_list_as_current_file_when_progressing_past_first_file() {
+		clickOn("#selectAllButton");
+		clickOn("#nextButton");
+
+		Text text = lookup("#currentFileName").query();
+
+		assertThat(text.getText(), equalTo("TestCsvTwo.csv"));
+	}
+
+	@Test
 	public void should_have_correct_attributes_displayed_when_screen_is_loaded() {
 		VBox attributesVbox = lookup("#attributesVbox").query();
 		List<String> attributes = new ArrayList<String>();
@@ -119,10 +130,23 @@ public class SelectWantedAttributesControllerTest extends ApplicationTest {
 	}
 
 	@Test
+	public void should_allow_user_to_select_an_attribute() {
+		clickOn("attributeOne");
+
+		VBox attributesVbox = lookup("#attributesVbox").query();
+
+		if (attributesVbox.getChildren().get(0) instanceof CheckBox) {
+			assertThat((((CheckBox) attributesVbox.getChildren().get(0)).isSelected()), equalTo(true));
+		} else {
+			fail();
+		}
+	}
+
+	@Test
 	public void should_restart_to_step_one_if_user_accepts() {
 		doReturn(selectFilesControllerMock).when(fxmlLoaderSpy).getController();
 		doNothing().when(selectFilesControllerMock).initData(any(FXMLLoader.class));
-		
+
 		clickOn("#restartButton");
 		clickOn("OK");
 

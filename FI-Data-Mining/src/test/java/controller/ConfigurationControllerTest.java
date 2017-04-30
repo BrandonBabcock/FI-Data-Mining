@@ -50,7 +50,7 @@ public class ConfigurationControllerTest extends ApplicationTest {
 
 	@Mock
 	private ResultsController resultsControllerMock;
-	
+
 	@Mock
 	SelectFilesController selectFilesControllerMock;
 
@@ -103,6 +103,48 @@ public class ConfigurationControllerTest extends ApplicationTest {
 		assertThat(groupByAttributeComboBox.getItems().contains("attributeOne"), equalTo(true));
 		assertThat(groupByAttributeComboBox.getItems().contains("attributeTwo"), equalTo(true));
 		assertThat(groupByAttributeComboBox.getValue(), equalTo("attributeOne"));
+	}
+
+	@Test
+	public void should_allow_the_user_to_change_the_group_by_attribute() {
+		ComboBox<String> groupByAttributeComboBox = lookup("#groupByAttributeComboBox").query();
+		String originalValue = groupByAttributeComboBox.getValue();
+
+		clickOn("#groupByAttributeComboBox");
+		clickOn("attributeTwo");
+
+		String newValue = groupByAttributeComboBox.getValue();
+
+		assertThat(newValue, equalTo("attributeTwo"));
+		assertThat(originalValue.equals(newValue), equalTo(false));
+	}
+	
+	@Test
+	public void should_allow_the_user_to_change_the_algorithm() {
+		ComboBox<String> algorithmComboBox = lookup("#algorithmComboBox").query();
+		String originalValue = algorithmComboBox.getValue();
+
+		clickOn("#algorithmComboBox");
+		clickOn("Filtered Associator");
+
+		String newValue = algorithmComboBox.getValue();
+
+		assertThat(algorithmComboBox.getValue(), equalTo("Filtered Associator"));
+		assertThat(originalValue.equals(newValue), equalTo(false));
+	}
+	
+	@Test
+	public void should_allow_the_user_to_change_whether_or_not_to_record_runtime() {
+		ComboBox<String> recordRuntimeComboBox = lookup("#recordRuntimeComboBox").query();
+		String originalValue = recordRuntimeComboBox.getValue();
+
+		clickOn("#recordRuntimeComboBox");
+		clickOn("No");
+
+		String newValue = recordRuntimeComboBox.getValue();
+
+		assertThat(recordRuntimeComboBox.getValue(), equalTo("No"));
+		assertThat(originalValue.equals(newValue), equalTo(false));
 	}
 
 	@Test
@@ -205,7 +247,7 @@ public class ConfigurationControllerTest extends ApplicationTest {
 	public void should_restart_to_step_one_if_user_accepts() {
 		doReturn(selectFilesControllerMock).when(fxmlLoaderSpy).getController();
 		doNothing().when(selectFilesControllerMock).initData(any(FXMLLoader.class));
-		
+
 		clickOn("#restartButton");
 		clickOn("OK");
 
@@ -306,7 +348,7 @@ public class ConfigurationControllerTest extends ApplicationTest {
 
 		clickOn("OK");
 	}
-	
+
 	@Test
 	public void should_show_error_when_clicking_next_without_proper_support_lower_bound() {
 		clickOn("#minimumSupportLowerBoundTextField").write("a");
@@ -318,7 +360,7 @@ public class ConfigurationControllerTest extends ApplicationTest {
 
 		clickOn("OK");
 	}
-	
+
 	@Test
 	public void should_show_error_when_clicking_next_without_proper_support_upper_bound() {
 		clickOn("#minimumSupportUpperBoundTextField").write("a");
@@ -330,7 +372,7 @@ public class ConfigurationControllerTest extends ApplicationTest {
 
 		clickOn("OK");
 	}
-	
+
 	@Test
 	public void should_show_error_when_clicking_next_without_proper_support_delta() {
 		clickOn("#minimumSupportDeltaTextField").write("a");
@@ -342,7 +384,7 @@ public class ConfigurationControllerTest extends ApplicationTest {
 
 		clickOn("OK");
 	}
-	
+
 	@Test
 	public void should_show_error_when_clicking_next_without_proper_number_of_rules() {
 		clickOn("#numberOfRulesTextField").write("a");
@@ -354,6 +396,5 @@ public class ConfigurationControllerTest extends ApplicationTest {
 
 		clickOn("OK");
 	}
-
 
 }

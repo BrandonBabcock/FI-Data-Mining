@@ -79,6 +79,6 @@ public class CsvToArffConverterTest {
 
 	@Test(expected = IllegalArgumentException.class)
 	public void should_throw_illegal_argument_exception_for_invalid_file() {
-		csvToArffConverter.convertToArff(null);
+		csvToArffConverter.convertToArff(new File("Data/TestXmlOne.xml"));
 	}
 }
